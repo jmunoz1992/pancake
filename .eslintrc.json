@@ -1,9 +1,12 @@
 {
-	"root": true,
-	"parser": "babel-eslint",
-	"extends": "fullstack",
-	"rules": {
-		"semi": 0,
-		"new-cap": [1, { "capIsNewExceptions": ["Router"] }]
-	}
+  "root": true,
+  "parser": "babel-eslint",
+  "extends": "fullstack",
+  "rules": {
+    "react/jsx-no-undef": "error",
+    "no-undef": "error",
+    "semi": [1, "always"],
+    "quotes": ["warn", "double"],
+    "new-cap": [1, { "capIsNewExceptions": ["Router"] }]
+  }
 }
