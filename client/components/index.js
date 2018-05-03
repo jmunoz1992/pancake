@@ -5,5 +5,6 @@
  */
 export { default as Navbar } from "./navbar";
 export { default as UserHome } from "./user-home";
+export { default as Welcome } from "./welcome";
 export { Login, Signup } from "./auth-form";
 export { TestComponent } from "./TestComponent";

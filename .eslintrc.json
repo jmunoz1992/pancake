@@ -5,8 +5,22 @@
   "rules": {
     "react/jsx-no-undef": "error",
     "no-undef": "error",
-    "semi": [1, "always"],
-    "quotes": ["warn", "double"],
-    "new-cap": [1, { "capIsNewExceptions": ["Router"] }]
+    "semi": [
+      1,
+      "always"
+    ],
+    "quotes": [
+      "warn",
+      "double"
+    ],
+    "new-cap": [
+      1,
+      {
+        "capIsNewExceptions": [
+          "Router"
+        ]
+      }
+    ],
+    "class-methods-use-this": 0
   }
 }
