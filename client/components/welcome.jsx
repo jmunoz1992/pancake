@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
 import { Button, Form, Icon } from "semantic-ui-react";
+import { withRouter } from "react-router-dom";
 
 class Welcome extends Component {
   constructor(props) {
@@ -54,7 +55,7 @@ class Welcome extends Component {
   onCreateProjectClick = () => {
     axios
       .post("/api/project/", { owner: this.state.selectedOrg, repository: this.state.selectedRepo })
-      .then(thing => console.log("we made it!", thing));
+      .then(() => this.props.history.push("/"));
   };
 
   onChange = (evt, { name, value }) => {
@@ -104,4 +105,4 @@ const mapState = ({ user }) => {
   return { user: user.username ? user : { username: "Nothing" } };
 };
 
-export default connect(mapState, null)(Welcome);
+export default withRouter(connect(mapState, null)(Welcome));

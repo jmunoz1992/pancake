@@ -6,10 +6,10 @@ module.exports = router;
  * return all issues for a project
  */
 router.get("/", async (req, res, next) => {
-    try {
-        const issues = await req.octokit.issues.getForRepo({ owner: req.repoOwner, repo: req.repoName });
-        res.json(issues);
-    } catch (err) {
-        next(err);
-    }
+  try {
+    const response = await req.octokit.issues.getForRepo({ owner: req.repoOwner, repo: req.repoName });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
 });

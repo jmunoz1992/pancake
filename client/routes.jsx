@@ -2,11 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter, Route, Switch } from "react-router-dom";
 import PropTypes from "prop-types";
-import {
-  App,
-  Login,
-  Welcome,
-} from "./components";
+import { App, Login, Welcome } from "./components";
 import { me } from "./store";
 
 /**
@@ -24,9 +20,7 @@ class Routes extends Component {
       <Switch>
         {/* Routes placed here are available to all visitors */}
         {isLoggedIn && (
-          <Switch>
-            {hasActiveProject ? (<Route component={App} />) : (<Route component={Welcome} />)}
-          </Switch>
+          <Switch>{hasActiveProject ? <Route component={App} /> : <Route component={Welcome} />}</Switch>
         )}
         <Route component={Login} />
         {/* Displays our Login component as a fallback */}
