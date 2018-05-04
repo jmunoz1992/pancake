@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Button, Form, Icon, Dropdown } from "semantic-ui-react";
+import { Button, Form, Icon } from "semantic-ui-react";
 
 class Welcome extends Component {
   constructor(props) {
@@ -51,7 +51,11 @@ class Welcome extends Component {
       });
   }
 
-  onCreateProjectClick = () => {};
+  onCreateProjectClick = () => {
+    axios
+      .post("/api/project/", { owner: this.state.selectedOrg, repository: this.state.selectedRepo })
+      .then(thing => console.log("we made it!", thing));
+  };
 
   onChange = (evt, { name, value }) => {
     this.setState({ [name]: value });
@@ -92,28 +96,6 @@ class Welcome extends Component {
           <Icon name="github" /> Create Project
         </Button>
       </div>
-
-      // <div>
-      //   <Dropdown
-      //     value={this.state.selectedOrg}
-      //     text="LiviLammister"
-      //     onChange={event => this.onChange(event, event.target)}
-      //     name="selectedOrg">
-      //     <Dropdown.Menu>
-      //       <Dropdown.Item text="LiviLammister" key="livilammister" value="livilammister" />
-      //       {orgs.map(org => <Dropdown.Item text={org.login} key={org.id} value={org.login} />)}
-      //     </Dropdown.Menu>
-      //   </Dropdown>
-      //   <Dropdown
-      //     text="Repositories..."
-      //     value={this.state.selectedRepo}
-      //     onChange={this.onChange}
-      //     name="selectedOrg">
-      //     <Dropdown.Menu>
-      //       {repos.map(repo => <Dropdown.Item text={repo.name} key={repo.id} value={repo.name} />)}
-      //     </Dropdown.Menu>
-      //   </Dropdown>
-      // </div>
     );
   }
 }
