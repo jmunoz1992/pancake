@@ -10,3 +10,4 @@ export { default as Login } from "./login";
 export { default as App } from "./app";
 export { default as Sidebar } from "./sidebar";
 export { default as Issues } from "./issues";
+export * from "./designer";

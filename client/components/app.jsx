@@ -1,7 +1,7 @@
 import React, { Component } from "react";
-import { Navbar, Sidebar } from "./index";
+import { Navbar, Sidebar, DesignerCanvas } from "./index";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
+import { withRouter, Switch, Route } from "react-router-dom";
 import { fetchIssues } from "../store";
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
@@ -19,11 +19,19 @@ class App extends Component {
     return (
       <StyledAppWrapper>
         <Navbar />
-        <Grid>
+        <Grid style={{ paddingTop: "0px" }}>
           <Grid.Row>
             <Grid.Column id="main">
-              <h2>Main Content</h2>
-              <p>Render the appropriate Main component here.</p>
+              <Switch>
+                <Route path="/wireframes" component={DesignerCanvas} />
+                <Route
+                  render={() => (
+                    <div>
+                      <h2>No matching route</h2>
+                    </div>
+                  )}
+                />
+              </Switch>
             </Grid.Column>
             <Grid.Column id="sidebar">
               <h2>Sidebar</h2>
@@ -38,14 +46,20 @@ class App extends Component {
 
 const StyledAppWrapper = styled.div`
   #main {
-    width: 80%;
+    width: calc(100% - 275px);
+    height: 100%;
+    margin-top: 60px;
+    overflow: hidden;
   }
 
   #sidebar {
     position: fixed;
-    top: 3em;
+    top: 60px;
     right: 0;
-    width: 20%;
+    width: 275px;
+    min-height: 100%;
+    box-shadow: 0px 0px 30px 4px rgba(0, 0, 0, 0.3);
+    z-index: 1;
   }
 `;
 
