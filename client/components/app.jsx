@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Navbar, Sidebar, DesignerCanvas, DesignerProperties } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
-import { fetchIssues } from "../store";
+import { fetchIssues, designerOperations } from "../store";
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
 
@@ -13,6 +13,7 @@ class App extends Component {
 
   componentDidMount() {
     this.props.loadIssues();
+    this.props.addDemoTextboxes();
   }
 
   render() {
@@ -72,10 +73,26 @@ const StyledAppWrapper = styled.div`
   }
 `;
 
+// TODO: remove textbox demo code
+import { Textbox } from "./designer/elements";
+function getRandomIntInclusive(min, max) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
 const mapDispatch = dispatch => {
   return {
     loadIssues() {
       dispatch(fetchIssues());
+    },
+    addDemoTextboxes() {
+      for (let i = 0; i < 100; i++) {
+        const textbox = new Textbox();
+        textbox.top = getRandomIntInclusive(0, 1000);
+        textbox.left = getRandomIntInclusive(0, 1000);
+        dispatch(designerOperations.createNewElement(textbox));
+      }
     }
   };
 };

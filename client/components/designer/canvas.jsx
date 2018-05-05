@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { default as DesignerElement } from "./element";
-import { Textbox } from "./elements";
 import { designerOperations } from "../../store";
 import { connect } from "react-redux";
 
@@ -13,16 +12,6 @@ class DesignerCanvas extends Component {
       panOffsetY: 0,
       dragging: false
     };
-    for (let i = 0; i < 100; i++) {
-      const textbox = this.makeRandomElement();
-      textbox.top = getRandomIntInclusive(0, 500);
-      textbox.left = getRandomIntInclusive(0, 500);
-      this.props.addElement(textbox);
-    }
-  }
-
-  makeRandomElement() {
-    return new Textbox();
   }
 
   componentDidMount() {
@@ -92,12 +81,6 @@ class DesignerCanvas extends Component {
       </StyledCanvas>
     );
   }
-}
-
-function getRandomIntInclusive(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 const StyledCanvas = styled.div.attrs({
