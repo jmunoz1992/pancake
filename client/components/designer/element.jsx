@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import styled from 'styled-components';
-import { Textbox, Button, Checkbox } from './elements';
-import Rnd from 'react-rnd';
+import React, { Component } from "react";
+import { connect } from "react-redux";
+import styled from "styled-components";
+import Rnd from "react-rnd";
 
 class WireframeElement extends Component {
   constructor(props) {
@@ -28,12 +27,16 @@ class WireframeElement extends Component {
   };
 
   render() {
-    // return <div className={this.props.className}>{this.pickElement()}</div>;
+    console.log("Element props:", this.props.element);
     return (
       <Rnd
         className={this.props.className}
-        size={{ width: this.state.width, height: this.state.height }}
-        position={{ x: this.state.x, y: this.state.y }}
+        default={{
+          x: this.props.element.left,
+          y: this.props.element.top,
+          width: this.props.element.width,
+          height: this.props.element.height
+        }}
         onDragStop={this.onDragStop}
         onResize={this.onResize}>
         {this.renderElement()}
@@ -42,25 +45,13 @@ class WireframeElement extends Component {
   }
 
   renderElement() {
-    const Element = this.pickElement();
+    const ElementToRender = Object.getPrototypeOf(this.props.element).constructor.COMPONENT;
+    console.log("Component:", ElementToRender);
     return (
       <ClickInterceptor>
-        <Element />
+        <ElementToRender />
       </ClickInterceptor>
     );
-  }
-
-  pickElement() {
-    switch (this.props.elementData.type) {
-      case Textbox.TYPE:
-        return Textbox;
-      case Button.TYPE:
-        return Button;
-      case Checkbox.TYPE:
-        return Checkbox;
-      default:
-        throw new Error(`Invalid component type specified for ${this.props.elementData}.)`);
-    }
   }
 }
 
@@ -74,8 +65,8 @@ const ClickInterceptor = styled.div`
 
 const StyledWireframeElement = styled(WireframeElement)`
   position: absolute;
-  top: ${props => props.elementData.posX}px;
-  left: ${({ elementData }) => elementData.posX}px;
+  top: ${({ element }) => element.top}px;
+  left: ${({ element }) => element.left}px;
   border: 1px solid black;
   overflow: hidden;
 `;

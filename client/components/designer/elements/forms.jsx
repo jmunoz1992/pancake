@@ -1,7 +1,11 @@
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
+import { BaseElement } from "./base";
 
-export const Textbox = props => {
+/*
+  TEXTBOX
+*/
+export const TextboxComponent = props => {
   return (
     <div>
       <span>Textbox Label</span>
@@ -9,23 +13,44 @@ export const Textbox = props => {
     </div>
   );
 };
-Textbox.TYPE = 'forms/textbox';
 
-export const Checkbox = props => {
-  return (
-    <div>
-      <input type="checkbox" />
-      <label>Checkbox Label</label>
-    </div>
-  );
-};
-Checkbox.TYPE = 'forms/checkbox';
+export class Textbox extends BaseElement {
+  constructor() {
+    super();
+    this.placeholder = "Placeholder";
+    this.height = 20;
+    this.width = 100;
+  }
 
-export const Button = props => {
-  return (
-    <div>
-      <input type="button" value="Button" />
-    </div>
-  );
-};
-Button.TYPE = 'forms/button';
+  static COMPONENT = TextboxComponent;
+  static MAX_HEIGHT = 40;
+  static MAX_WIDTH = 1000;
+}
+
+// export const CheckboxComponent = props => {
+//   return (
+//     <div>
+//       <input type="checkbox" />
+//       <label>Checkbox Label</label>
+//     </div>
+//   );
+// };
+
+// export class Checkbox extends BaseElement {
+//   constructor() {
+//     super();
+//     this.placeholder = "Placeholder";
+//   }
+
+//   static COMPONENT = TextboxComponent;
+//   static MAX_HEIGHT = 40;
+//   static MAX_WIDTH = 1000;
+// }
+
+// export const Button = props => {
+//   return (
+//     <div>
+//       <input type="button" value="Button" />
+//     </div>
+//   );
+// };

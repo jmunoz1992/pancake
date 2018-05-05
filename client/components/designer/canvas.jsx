@@ -1,27 +1,30 @@
-import React, { Component } from 'react';
-import styled from 'styled-components';
-import { default as DesignerElement } from './element';
+import React, { Component } from "react";
+import styled from "styled-components";
+import { default as DesignerElement } from "./element";
+import { Textbox } from "./elements";
 
 class DesignerCanvas extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      elements: [this.makeRandomElement(), this.makeRandomElement(), this.makeRandomElement()]
+      elements: []
     };
+    for (let i = 0; i < 5; i++) {
+      const textbox = this.makeRandomElement();
+      textbox.top = getRandomIntInclusive(0, 500);
+      textbox.left = getRandomIntInclusive(0, 500);
+      this.state.elements.push(textbox);
+    }
   }
 
   makeRandomElement() {
-    return {
-      type: 'forms/textbox',
-      posX: getRandomIntInclusive(0, 500),
-      posY: getRandomIntInclusive(0, 500)
-    };
+    return new Textbox();
   }
 
   render() {
     return (
-      <div className={this.props.className} data-attr="test">
-        {this.state.elements.map(data => <DesignerElement key={Math.random()} elementData={data} />)}
+      <div className={this.props.className}>
+        {this.state.elements.map((element, index) => <DesignerElement key={index} element={element} />)}
       </div>
     );
   }
@@ -35,8 +38,8 @@ function getRandomIntInclusive(min, max) {
 
 const StyledCanvas = styled(DesignerCanvas)`
   background-color: whitesmoke;
-  width: 800px;
-  height: 800px;
+  width: 100%;
+  height: 100%;
 `;
 
 export default StyledCanvas;

@@ -18,8 +18,10 @@ class App extends Component {
   render() {
     return (
       <StyledAppWrapper>
-        <Navbar />
         <Grid style={{ paddingTop: "0px" }}>
+          <Grid.Row style={{ height: "60px" }}>
+            <Navbar />
+          </Grid.Row>
           <Grid.Row>
             <Grid.Column id="main">
               <Switch>
@@ -47,8 +49,7 @@ class App extends Component {
 const StyledAppWrapper = styled.div`
   #main {
     width: calc(100% - 275px);
-    height: 100%;
-    margin-top: 60px;
+    height: 2000px;
     overflow: hidden;
   }
 
