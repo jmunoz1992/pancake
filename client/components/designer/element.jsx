@@ -88,12 +88,11 @@ const ClickInterceptor = styled.div`
 
 const StyledWireframeElement = styled(WireframeElement)`
   position: absolute;
-  box-sizing: border-box;
   top: ${({ element }) => element.top}px;
   left: ${({ element }) => element.left}px;
   width: ${({ element }) => element.width}px;
   height: ${({ element }) => element.height}px;
-  border: ${({ selected }) => (selected ? "1px solid black" : "none")};
+  outline: ${({ selected }) => (selected ? "1px solid black" : "none")};
   background-color: ${({ selected }) => (selected ? "#EAEAEA" : "transparent")};
   overflow: hidden;
 `;
