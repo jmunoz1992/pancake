@@ -8,11 +8,26 @@ class Properties extends Component {
   render() {
     return (
       <div>
-        <h3>Properties</h3>
-        <p>Size: {`H${this.props.element.height} W${this.props.element.width}`}</p>
+        <h2>Properties</h2>
+        {this.props.element ? this.renderElementProperties() : <p>Nothing selected.</p>}
       </div>
+    );
+  }
+
+  renderElementProperties() {
+    return (
+      <p style={{ wordWrap: "break-word" }}>
+        Selected Element:<br />
+        {JSON.stringify(this.props.element)}
+      </p>
     );
   }
 }
 
-export default connect(null, null)(Properties);
+const mapState = state => {
+  const { selectedElement, elements } = state.designerState;
+  const selectedElementObj = elements.find(e => e.id === selectedElement);
+  return { element: selectedElementObj };
+};
+
+export default connect(mapState, null)(Properties);

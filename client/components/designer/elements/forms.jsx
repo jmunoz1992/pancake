@@ -18,12 +18,12 @@ export class Textbox extends BaseElement {
   constructor() {
     super();
     this.placeholder = "Placeholder";
-    this.height = 20;
-    this.width = 100;
+    this.height = 45;
+    this.width = 150;
   }
 
   static COMPONENT = TextboxComponent;
-  static MAX_HEIGHT = 40;
+  static MAX_HEIGHT = 45;
   static MAX_WIDTH = 1000;
 }
 

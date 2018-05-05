@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Navbar, Sidebar, DesignerCanvas } from "./index";
+import { Navbar, Sidebar, DesignerCanvas, DesignerProperties } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
 import { fetchIssues } from "../store";
@@ -36,8 +36,16 @@ class App extends Component {
               </Switch>
             </Grid.Column>
             <Grid.Column id="sidebar">
-              <h2>Sidebar</h2>
-              <p>Render the appropriate Sidebar component here.</p>
+              <Switch>
+                <Route path="/wireframes" component={DesignerProperties} />
+                <Route
+                  render={() => (
+                    <div>
+                      <h2>No matching route</h2>
+                    </div>
+                  )}
+                />
+              </Switch>
             </Grid.Column>
           </Grid.Row>
         </Grid>

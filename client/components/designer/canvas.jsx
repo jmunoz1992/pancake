@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { default as DesignerElement } from "./element";
 import { Textbox } from "./elements";
+import { designerOperations } from "../../store";
+import { connect } from "react-redux";
 
 class DesignerCanvas extends Component {
   constructor(props) {
@@ -9,22 +11,39 @@ class DesignerCanvas extends Component {
     this.state = {
       elements: []
     };
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 1; i++) {
       const textbox = this.makeRandomElement();
       textbox.top = getRandomIntInclusive(0, 500);
       textbox.left = getRandomIntInclusive(0, 500);
-      this.state.elements.push(textbox);
+      this.props.addElement(textbox);
     }
+    this.canvasRef = React.createRef();
   }
 
   makeRandomElement() {
     return new Textbox();
   }
 
+  onCanvasClicked = event => {
+    // Click events can bubble up from child components, so only call deselect() if it was actually
+    // the canvas itself that was clicked.
+    if (this.canvasRef.current === event.target && this.props.selectedElementId !== 0) this.props.deselect();
+  };
+
   render() {
     return (
-      <div className={this.props.className}>
-        {this.state.elements.map((element, index) => <DesignerElement key={index} element={element} />)}
+      <div
+        ref={this.canvasRef}
+        className={`noselect ${this.props.className}`}
+        style={{ position: "relative" }}
+        onClick={this.onCanvasClicked}>
+        {this.props.elements.map(element => (
+          <DesignerElement
+            key={element.id}
+            element={element}
+            selected={element.id === this.props.selectedElementId}
+          />
+        ))}
       </div>
     );
   }
@@ -42,4 +61,18 @@ const StyledCanvas = styled(DesignerCanvas)`
   height: 100%;
 `;
 
-export default StyledCanvas;
+const mapState = state => {
+  return { elements: state.designerState.elements, selectedElementId: state.designerState.selectedElement };
+};
+
+const mapDispatch = dispatch => {
+  return {
+    addElement: element => dispatch(designerOperations.createNewElement(element)),
+    deselect: () => {
+      console.log("Canvas: onclick");
+      dispatch(designerOperations.selectElement({ id: 0 }));
+    }
+  };
+};
+
+export default connect(mapState, mapDispatch)(StyledCanvas);
