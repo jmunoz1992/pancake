@@ -11,7 +11,7 @@ class WireframeElement extends Component {
   }
 
   onDragStop = (_, positionInfo) => {
-    this.props.doMoveElement(positionInfo.x, positionInfo.y);
+    this.props.doMoveElement(positionInfo.x - this.props.offset.x, positionInfo.y - this.props.offset.y);
   };
 
   onResizeStop = (...eventArgs) => {
@@ -36,8 +36,8 @@ class WireframeElement extends Component {
       <Rnd
         className={this.props.className}
         default={{
-          x: this.props.element.left,
-          y: this.props.element.top,
+          x: this.props.element.left + this.props.offset.x,
+          y: this.props.element.top + this.props.offset.y,
           width: this.props.element.width,
           height: this.props.element.height
         }}
@@ -55,7 +55,7 @@ class WireframeElement extends Component {
 
   renderUnselected() {
     return (
-      <div className={this.props.className} onClick={this.onElementClicked}>
+      <div className={this.props.className} style={this.props.style} onClick={this.onElementClicked}>
         {this.renderElement()}
       </div>
     );
@@ -86,12 +86,14 @@ const ClickInterceptor = styled.div`
   background: transparent;
 `;
 
-const StyledWireframeElement = styled(WireframeElement)`
+const StyledWireframeElement = styled(WireframeElement).attrs({
+  style: ({ element, offset }) => ({
+    transform: `translate(${element.left + offset.x}px, ${element.top + offset.y}px)`,
+    width: `${element.width}px`,
+    height: `${element.height}px`
+  })
+})`
   position: absolute;
-  top: ${({ element }) => element.top}px;
-  left: ${({ element }) => element.left}px;
-  width: ${({ element }) => element.width}px;
-  height: ${({ element }) => element.height}px;
   outline: ${({ selected }) => (selected ? "1px solid black" : "none")};
   background-color: ${({ selected }) => (selected ? "#EAEAEA" : "transparent")};
   overflow: hidden;

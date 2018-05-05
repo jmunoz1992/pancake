@@ -9,42 +9,87 @@ class DesignerCanvas extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      elements: []
+      panOffsetX: 0,
+      panOffsetY: 0,
+      dragging: false
     };
-    for (let i = 0; i < 1; i++) {
+    for (let i = 0; i < 100; i++) {
       const textbox = this.makeRandomElement();
       textbox.top = getRandomIntInclusive(0, 500);
       textbox.left = getRandomIntInclusive(0, 500);
       this.props.addElement(textbox);
     }
-    this.canvasRef = React.createRef();
   }
 
   makeRandomElement() {
     return new Textbox();
   }
 
+  componentDidMount() {
+    document.addEventListener("mousedown", this.onMouseDown);
+    document.addEventListener("mousemove", this.onMouseMove);
+    document.addEventListener("mouseup", this.onMouseUp);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener("mousedown", this.onMouseDown);
+    document.removeEventListener("mousemove", this.onMouseMove);
+    document.removeEventListener("mouseup", this.onMouseUp);
+  }
+
   onCanvasClicked = event => {
     // Click events can bubble up from child components, so only call deselect() if it was actually
     // the canvas itself that was clicked.
-    if (this.canvasRef.current === event.target && this.props.selectedElementId !== 0) this.props.deselect();
+    if (event.target.id === "wireframe-canvas" && this.props.selectedElementId !== 0) this.props.deselect();
+  };
+
+  onMouseDown = event => {
+    if (event.target.id === "wireframe-canvas" && this.props.selectedElementId === 0) {
+      this.setState({
+        dragging: true,
+        dragStartX: event.pageX,
+        dragStartY: event.pageY,
+        dragLastX: event.pageX,
+        dragLastY: event.pageY
+      });
+    }
+  };
+
+  onMouseMove = event => {
+    if (this.state.dragging) {
+      const deltaX = event.pageX - this.state.dragLastX;
+      const deltaY = event.pageY - this.state.dragLastY;
+      this.setState({
+        panOffsetX: this.state.panOffsetX + deltaX,
+        panOffsetY: this.state.panOffsetY + deltaY,
+        dragLastX: event.pageX,
+        dragLastY: event.pageY
+      });
+    }
+  };
+
+  onMouseUp = _ => {
+    if (this.state.dragging) {
+      this.setState({ dragging: false, dragLastX: 0, dragLastY: 0 });
+    }
   };
 
   render() {
     return (
-      <div
-        ref={this.canvasRef}
-        className={`noselect ${this.props.className}`}
-        style={{ position: "relative" }}
-        onClick={this.onCanvasClicked}>
+      <StyledCanvas
+        id="wireframe-canvas"
+        className={"noselect"}
+        onClick={this.onCanvasClicked}
+        gridOffset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}>
         {this.props.elements.map(element => (
           <DesignerElement
             key={element.id}
             element={element}
             selected={element.id === this.props.selectedElementId}
+            offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}
           />
         ))}
-      </div>
+      </StyledCanvas>
     );
   }
 }
@@ -55,7 +100,14 @@ function getRandomIntInclusive(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const StyledCanvas = styled(DesignerCanvas)`
+const StyledCanvas = styled.div.attrs({
+  style: ({ gridOffset }) => ({
+    backgroundPosition: `${gridOffset.x}px ${gridOffset.y}px`
+  })
+})`
+  background-size: 40px 40px;
+  background-image: linear-gradient(to right, silver 1px, transparent 1px),
+    linear-gradient(to bottom, silver 1px, transparent 1px);
   background-color: whitesmoke;
   width: 100%;
   height: 100%;
@@ -74,4 +126,4 @@ const mapDispatch = dispatch => {
   };
 };
 
-export default connect(mapState, mapDispatch)(StyledCanvas);
+export default connect(mapState, mapDispatch)(DesignerCanvas);
