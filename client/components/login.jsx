@@ -6,7 +6,9 @@ import React from "react";
 const Login = _ => {
   return (
     <div>
-      <a href="/auth/github">Login with Github</a>
+      <h1>
+        <a href="/auth/github">Login with Github</a>
+      </h1>
     </div>
   );
 };

@@ -1,10 +1,26 @@
-import React, { Component } from "react";
-import { Navbar, Sidebar } from "./index";
-import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
-import { fetchIssues } from "../store";
-import { Grid } from "semantic-ui-react";
-import { default as styled } from "styled-components";
+import React, {
+  Component
+} from "react";
+import {
+  Navbar,
+  Sidebar,
+  Schema
+} from "./index";
+import {
+  connect
+} from "react-redux";
+import {
+  withRouter
+} from "react-router-dom";
+import {
+  fetchIssues
+} from "../store";
+import {
+  Grid
+} from "semantic-ui-react";
+import {
+  default as styled
+} from "styled-components";
 
 class App extends Component {
   constructor(props) {
@@ -17,17 +33,17 @@ class App extends Component {
 
   render() {
     return (
-      <StyledAppWrapper>
+    <StyledAppWrapper >
         <Navbar />
-        <Grid>
-          <Grid.Row>
-            <Grid.Column id="main">
-              <h2>Main Content</h2>
-              <p>Render the appropriate Main component here.</p>
+        <Grid >
+          <Grid.Row >
+            <Grid.Column id = "main" >
+              <Schema />
             </Grid.Column>
-            <Grid.Column id="sidebar">
-              <h2>Sidebar</h2>
-              <p>Render the appropriate Sidebar component here.</p>
+            <Grid.Column id = "sidebar" >
+              <scroll-container>
+                <Sidebar />
+              </scroll-container>
             </Grid.Column>
           </Grid.Row>
         </Grid>
@@ -36,7 +52,7 @@ class App extends Component {
   }
 }
 
-const StyledAppWrapper = styled.div`
+const StyledAppWrapper = styled.div `
   #main {
     width: 80%;
   }
@@ -46,6 +62,14 @@ const StyledAppWrapper = styled.div`
     top: 3em;
     right: 0;
     width: 20%;
+  }
+
+  scroll-container {
+    display: block;
+    width: 400px;
+    height: 600px;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
   }
 `;
 

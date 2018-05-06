@@ -1,9 +1,24 @@
-import React, { Component } from "react";
-import { connect } from "react-redux";
-import { withRouter, Route, Switch } from "react-router-dom";
+import React, {
+  Component
+} from "react";
+import {
+  connect
+} from "react-redux";
+import {
+  withRouter,
+  Route,
+  Switch
+} from "react-router-dom";
 import PropTypes from "prop-types";
-import { App, Login, Welcome } from "./components";
-import { me } from "./store";
+import {
+  App,
+  Login,
+  Welcome,
+  Schema
+} from "./components";
+import {
+  me
+} from "./store";
 
 /**
  * COMPONENT
@@ -14,16 +29,32 @@ class Routes extends Component {
   }
 
   render() {
-    const { isLoggedIn, hasActiveProject } = this.props;
+    const {
+      isLoggedIn,
+      hasActiveProject
+    } = this.props;
 
     return (
       <Switch>
-        {/* Routes placed here are available to all visitors */}
-        {isLoggedIn && (
-          <Switch>{hasActiveProject ? <Route component={App} /> : <Route component={Welcome} />}</Switch>
+        {isLoggedIn && ( <Switch > {
+            hasActiveProject ?
+            <Switch>
+              <Route
+                exact path= "/app"
+                component = {App}
+              />
+              <Route
+              exact path= "/schema"
+              component = {Schema}
+            />
+            </Switch>
+            :
+            <Route
+              exact path="/"
+              component={Welcome} />
+          } </Switch>
         )}
-        <Route component={Login} />
-        {/* Displays our Login component as a fallback */}
+        <Route component = {Login} />
       </Switch>
     );
   }
