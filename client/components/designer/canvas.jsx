@@ -14,6 +14,8 @@ class DesignerCanvas extends Component {
     };
   }
 
+  // Event listeners for canvas panning.  They're added to the document because if we add them to
+  // the canvas itself, we stop receiving mouse events if the mouse moves outside of the canvas
   componentDidMount() {
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
@@ -26,18 +28,10 @@ class DesignerCanvas extends Component {
     document.removeEventListener("mouseup", this.onMouseUp);
   }
 
-  onCanvasClicked = event => {
-    // Click events can bubble up from child components, so only call deselect() if it was actually
-    // the canvas itself that was clicked.
-    if (event.target.id === "wireframe-canvas" && this.props.selectedElementId !== 0) this.props.deselect();
-  };
-
   onMouseDown = event => {
     if (event.target.id === "wireframe-canvas" && this.props.selectedElementId === 0) {
       this.setState({
         dragging: true,
-        dragStartX: event.pageX,
-        dragStartY: event.pageY,
         dragLastX: event.pageX,
         dragLastY: event.pageY
       });
@@ -63,6 +57,12 @@ class DesignerCanvas extends Component {
     }
   };
 
+  onCanvasClicked = event => {
+    // Click events can bubble up from child components, so only call deselect() if it was actually
+    // the canvas itself that was clicked.
+    if (event.target.id === "wireframe-canvas" && this.props.selectedElementId !== 0) this.props.deselect();
+  };
+
   render() {
     return (
       <StyledCanvas
@@ -83,6 +83,8 @@ class DesignerCanvas extends Component {
   }
 }
 
+// StyledComponents suggests using `attrs` for properties that are updated many times per second,
+// such as when we're animating the canvas grid lines while the user drags the canvas around
 const StyledCanvas = styled.div.attrs({
   style: ({ gridOffset }) => ({
     backgroundPosition: `${gridOffset.x}px ${gridOffset.y}px`

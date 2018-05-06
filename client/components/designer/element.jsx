@@ -10,7 +10,10 @@ class WireframeElement extends Component {
     this.state = {};
   }
 
-  onDragStop = (_, positionInfo) => {
+  // We only update the Redux store with the new size or position of an element when the user
+  // finishes dragging. React-RnD takes care of keeping track of the element's size and position in
+  // the meantime.
+  onDragStop = (event, positionInfo) => {
     this.props.doMoveElement(positionInfo.x - this.props.offset.x, positionInfo.y - this.props.offset.y);
   };
 
@@ -21,7 +24,7 @@ class WireframeElement extends Component {
     this.props.doResizeElement(height, width);
   };
 
-  onElementClicked = event => {
+  onElementClicked = _ => {
     if (!this.props.selected) {
       !this.props.selected && this.props.doSelectElement();
     }
@@ -31,6 +34,10 @@ class WireframeElement extends Component {
     return this.props.selected ? this.renderSelected() : this.renderUnselected();
   }
 
+  // If the element is selected, we wrap the mockup component in a <Rnd> component. Rnd makes
+  // whatever component it wraps draggable and resizeable.  After the user stops dragging, we
+  // update the Redux store in our event handlers, and we receive new props from our parent, which
+  // Rnd uses to set the new default position of the component.
   renderSelected() {
     return (
       <Rnd
@@ -53,6 +60,8 @@ class WireframeElement extends Component {
     );
   }
 
+  // If the element isn't selected, we wrap it with a div and pass in style/CSS props received
+  // from the StyledComponents wrapper
   renderUnselected() {
     return (
       <div className={this.props.className} style={this.props.style} onClick={this.onElementClicked}>
@@ -61,15 +70,23 @@ class WireframeElement extends Component {
     );
   }
 
+  // this.props.element contains the mockup `Element` we need to render, which is defined in the
+  // ./elements folder.  There's a static property on each Element object called `COMPONENT`,
+  // which is the actual React component the Element represents.  Static methods are located on the
+  // prototype's constructor, so we need to use Object.getPrototypeOf().constructor to access them.
   renderElement() {
     const ElementToRender = Object.getPrototypeOf(this.props.element).constructor.COMPONENT;
     return (
+      // ClickInterceptor is an invisible overlay that stops mouse events, so the user doesn't
+      // accidentally click on textboxes or buttons while trying to drag a mockup element around
       <ClickInterceptor>
         <ElementToRender />
       </ClickInterceptor>
     );
   }
 
+  // This is a helper function to grab the min/max size constants for an element, which are static
+  // properties defined on their constructor.
   getElementConstraints() {
     const { MIN_HEIGHT, MAX_HEIGHT, MIN_WIDTH, MAX_WIDTH } = Object.getPrototypeOf(
       this.props.element
@@ -86,6 +103,8 @@ const ClickInterceptor = styled.div`
   background: transparent;
 `;
 
+// StyledComponents warns against putting frequently modified styles (like position while the user
+// is dragging an element around) inside of the template string and instead suggests using `attrs`.
 const StyledWireframeElement = styled(WireframeElement).attrs({
   style: ({ element, offset }) => ({
     transform: `translate(${element.left + offset.x}px, ${element.top + offset.y}px)`,
