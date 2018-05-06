@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import Rnd from "react-rnd";
+import { default as ElementLibrary } from "./elements";
 import { designerOperations } from "../../store";
 
 class WireframeElement extends Component {
@@ -39,6 +40,7 @@ class WireframeElement extends Component {
   // update the Redux store in our event handlers, and we receive new props from our parent, which
   // Rnd uses to set the new default position of the component.
   renderSelected() {
+    const { MIN_HEIGHT, MAX_HEIGHT, MIN_WIDTH, MAX_WIDTH } = this.getElementConstraints();
     return (
       <Rnd
         className={this.props.className}
@@ -49,10 +51,10 @@ class WireframeElement extends Component {
           height: this.props.element.height
         }}
         bounds={"parent"}
-        minHeight={this.getElementConstraints().MIN_HEIGHT}
-        maxHeight={this.getElementConstraints().MAX_HEIGHT}
-        minWidth={this.getElementConstraints().MIN_WIDTH}
-        maxWidth={this.getElementConstraints().MAX_WIDTH}
+        minHeight={MIN_HEIGHT}
+        maxHeight={MAX_HEIGHT}
+        minWidth={MIN_WIDTH}
+        maxWidth={MAX_WIDTH}
         onDragStop={this.onDragStop}
         onResizeStop={this.onResizeStop}>
         {this.renderElement()}
@@ -70,12 +72,14 @@ class WireframeElement extends Component {
     );
   }
 
-  // this.props.element contains the mockup `Element` we need to render, which is defined in the
-  // ./elements folder.  There's a static property on each Element object called `COMPONENT`,
-  // which is the actual React component the Element represents.  Static methods are located on the
-  // prototype's constructor, so we need to use Object.getPrototypeOf().constructor to access them.
+  // We need to associate an Element with an actual React Component, which we can do by looking at
+  // its type property.  We use that property to find the Element's class within the ElementLibrary
+  // map, and then from there we can retrieve the COMPONENT static property to determine which
+  // component should be rendered.
+  // We have to go through the process of mapping string Element types to objects because we can
+  // only send primitives over socket.io, not classes.
   renderElement() {
-    const ElementToRender = Object.getPrototypeOf(this.props.element).constructor.COMPONENT;
+    const ElementToRender = ElementLibrary[this.props.element.type].COMPONENT;
     return (
       // ClickInterceptor is an invisible overlay that stops mouse events, so the user doesn't
       // accidentally click on textboxes or buttons while trying to drag a mockup element around
@@ -86,12 +90,15 @@ class WireframeElement extends Component {
   }
 
   // This is a helper function to grab the min/max size constants for an element, which are static
-  // properties defined on their constructor.
+  // properties defined on their class
   getElementConstraints() {
-    const { MIN_HEIGHT, MAX_HEIGHT, MIN_WIDTH, MAX_WIDTH } = Object.getPrototypeOf(
-      this.props.element
-    ).constructor;
-    return { MIN_HEIGHT, MAX_HEIGHT, MIN_WIDTH, MAX_WIDTH };
+    const elementClass = ElementLibrary[this.props.element.type];
+    return {
+      MIN_HEIGHT: elementClass.MIN_HEIGHT,
+      MAX_HEIGHT: elementClass.MAX_HEIGHT,
+      MIN_WIDTH: elementClass.MIN_WIDTH,
+      MAX_WIDTH: elementClass.MAX_WIDTH
+    };
   }
 }
 

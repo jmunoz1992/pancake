@@ -1,54 +1,43 @@
-// Each mockup diagram may have an entry in the sessions map.  When a user opens a diagram on the
-// front-end, they'll send a message to the server requesting to join a session for that diagram.
-// If a session already exists, the server will add that user to the array of connected users in
-// that session.
-// If one doesn't exist, the server will start a new session for that diagram, creating a Socket.IO
-// room and a Redux store for the user (and any subsequent ones) to work with.
-// If a user disconnects, we'll check if there are any more users in that mockup's session.  If not,
-// we'll clean it up by closing the Socket.IO room, persisting the mockup to the disk, and removing
-// the session from the map.
+// OVERVIEW
+// Each mockup diagram can have an abritrary number of users viewing and interacting with it.  When
+// a new user opens a diagram on the front-end, they send a message over Socket.IO requesting to
+// join a "session" for that diagram.
+
+// A session consists of a Redux store (the authoritative state of the diagram, which each user has
+// a copy of) and an array of users who are part of that session.
+
+// When a user joins the session, the server looks for the session in the `sessions` Map.  If it
+// doesn't find one, it creates a new session and initializes it with the contents of the persisted
+// diagram on the disk.  The contents of the session's Redux store are sent to the newly connected
+// user, so they have an initial state to work with.
+
+// Any time a user makes a change to the diagram on the front-end, they send an action to the
+// server.  The server dispatches the action to its Redux reducer, and then sends the action back
+// to all connected clients, so they can update their copies of the state.
+
+// Each session is also mapped to a Socket.IO "room".  A room acts as a separate channel, so that
+// multiple users can work across multiple different diagrams and only receive actions relevant
+// to the diagram they're currently working on.
+
 const createMockupStore = require("./mockups/store");
 const sessions = new Map();
+const uuidv4 = require("uuid/v4");
 
-/*
-session = {
-  users: array of sockets,
-  mockup: sequelize model
-  store: redux store for current mockup,
-}
-*/
+const findOrCreateSession = sessionName => {
+  const existingSession = sessions.get(sessionName);
+  if (existingSession) return existingSession;
 
-const createNewSession = mockupId => {
-  // const mockup = await Mockup.findById(mockupId);
-  console.log(`Session ${mockupId} is being created.`);
+  console.log(`Session ${sessionName} is being created.`);
   const newSession = {
     clients: [],
-    mockup: mockupId,
+    mockup: sessionName,
     store: createMockupStore()
   };
-  sessions.set(mockupId, newSession);
+  sessions.set(sessionName, newSession);
+  return newSession;
 };
 
-const clientJoinedSession = (sessionName, socket) => {
-  console.log(`Client ${socket.id} is joining session ${sessionName}`);
-  if (!sessions.get(sessionName)) createNewSession(sessionName);
-  socket.join(sessionName);
-  sessions.get(sessionName).clients.push(socket.id);
-};
-
-const clientLeftSession = (sessionName, socket) => {
-  console.log(`Client ${socket.id} is leaving session ${sessionName}`);
-  socket.leave(sessionName);
-  const session = sessions.get(sessionName);
-  session.clients = session.clients.filter(client => client !== socket.id);
-};
-
-const clientDispatchedAction = (action, socket) => {
-  console.log("received action", action.type);
-  socket.emit("update-mockup-state", action);
-};
-
-// Loops through the session map and tries to find which session a socket belongs to.
+// Searches the `sessions` map to find which session a given client is currently a part of
 const findSessionForSocket = socket => {
   for (const [sessionName, session] of sessions) {
     if (session.clients.find(client => client === socket.id)) return sessionName;
@@ -56,8 +45,37 @@ const findSessionForSocket = socket => {
   return null;
 };
 
-const mockupServer = io => {
-  return io.of("/mockups").on("connection", socket => {
+const clientJoinedSession = (sessionName, socket) => {
+  console.log(`Client ${socket.id} is joining session ${sessionName}`);
+  const session = findOrCreateSession(sessionName);
+  session.clients.push(socket.id);
+  socket.join(sessionName);
+  socket.emit("load-initial-state", session.store.getState().designerState);
+};
+
+const clientLeftSession = (sessionName, socket) => {
+  console.log(`Client ${socket.id} is leaving session ${sessionName}`);
+  const session = sessions.get(sessionName);
+  session.clients = session.clients.filter(client => client !== socket.id);
+  socket.leave(sessionName);
+};
+
+const clientDispatchedAction = (action, socket) => {
+  console.log("Action:", action.type);
+  const sessionName = findSessionForSocket(socket);
+  const store = sessions.get(sessionName).store;
+
+  if (action.type === "designer/CREATE_ELEMENT") {
+    // Generates a pseudo-unique ID for the new element.
+    action.payload.id = uuidv4();
+  }
+  store.dispatch(action);
+  io.to(sessionName).emit("update-mockup-state", action);
+};
+
+let io;
+const startSocketListener = socketIo => {
+  io = socketIo.of("/mockups").on("connection", socket => {
     console.log(`Client has connected to mockups server. (${socket.id})`);
 
     socket.on("join-session", payload => clientJoinedSession(payload.mockupId, socket));
@@ -75,4 +93,4 @@ const mockupServer = io => {
   });
 };
 
-module.exports = mockupServer;
+module.exports = startSocketListener;

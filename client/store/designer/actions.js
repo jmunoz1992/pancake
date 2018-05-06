@@ -4,6 +4,6 @@ const setSelectedElement = element => ({ type: types.SET_SELECTED_ELEMENT, paylo
 const createElement = element => ({ type: types.CREATE_ELEMENT, payload: element });
 const updateElement = element => ({ type: types.UPDATE_ELEMENT, payload: element });
 const removeElement = element => ({ type: types.REMOVE_ELEMENT, payload: element });
-const loadElements = () => ({ type: types.LOAD_ELEMENTS });
+const loadElements = elements => ({ type: types.LOAD_ELEMENTS, payload: elements });
 
 export { setSelectedElement, createElement, updateElement, removeElement, loadElements };

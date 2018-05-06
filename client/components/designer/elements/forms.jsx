@@ -17,6 +17,7 @@ export const TextboxComponent = props => {
 export class Textbox extends BaseElement {
   constructor() {
     super();
+    this.type = "Textbox";
     this.placeholder = "Placeholder";
     this.height = 45;
     this.width = 150;

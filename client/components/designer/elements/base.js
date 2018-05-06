@@ -1,6 +1,7 @@
 export class BaseElement {
   constructor() {
     this.id = 0;
+    this.type = "BaseElement";
     this.name = "Element";
     this.zIndex = 0;
     this.top = 0;

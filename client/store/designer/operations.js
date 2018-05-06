@@ -29,4 +29,6 @@ const resizeElement = (element, newSize) => (dispatch, getState) => {
   // dispatch(action);
 };
 
-export { selectElement, createNewElement, moveElement, resizeElement };
+const loadElements = actions.loadElements;
+
+export { selectElement, createNewElement, moveElement, resizeElement, loadElements };
