@@ -87,7 +87,7 @@ const mapDispatch = dispatch => {
       dispatch(fetchIssues());
     },
     addDemoTextboxes() {
-      for (let i = 0; i < 100; i++) {
+      for (let i = 0; i < 10; i++) {
         const textbox = new Textbox();
         textbox.top = getRandomIntInclusive(0, 1000);
         textbox.left = getRandomIntInclusive(0, 1000);

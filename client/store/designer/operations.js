@@ -1,24 +1,32 @@
 import * as actions from "./actions";
+import { default as socket } from "../../socket";
 
 const selectElement = element => dispatch => {
   dispatch(actions.setSelectedElement(element));
 };
 
 const createNewElement = element => (dispatch, getState) => {
+  console.log("creating element");
   element.id = getState().designerState.elements.length + 1;
-  dispatch(actions.createElement(element));
+  const action = actions.createElement(element);
+  socket.emit("dispatch-action", action);
+  // dispatch(action);
 };
 
 const moveElement = (element, newPosition) => (dispatch, getState) => {
   element.top = newPosition.y;
   element.left = newPosition.x;
-  dispatch(actions.updateElement(element));
+  const action = actions.updateElement(element);
+  socket.emit("dispatch-action", action);
+  // dispatch(action);
 };
 
 const resizeElement = (element, newSize) => (dispatch, getState) => {
   element.width = newSize.width;
   element.height = newSize.height;
-  dispatch(actions.updateElement(element));
+  const action = actions.updateElement(element);
+  socket.emit("dispatch-action", action);
+  // dispatch(action);
 };
 
 export { selectElement, createNewElement, moveElement, resizeElement };

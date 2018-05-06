@@ -1,9 +1,22 @@
 import io from "socket.io-client";
+import { default as store } from "./store";
 
-const socket = io(window.location.origin);
+const mockupSocket = io(`${window.location.origin}/mockups`);
 
-socket.on("connect", () => {
-  console.log("Connected!");
+mockupSocket.on("connect", () => {
+  console.log("Connected to mockups server.");
+  mockupSocket.emit("join-session", { mockupId: 1 });
 });
 
-export default socket;
+mockupSocket.on("update-mockup-state", action => {
+  console.log("Received mockup action", action);
+  store.dispatch(action);
+});
+mockupSocket.on("error", error => {
+  console.log("Socket error: ", error);
+});
+mockupSocket.on("disconnect", () => {
+  console.log("Disconnected from mockups server.");
+});
+
+export default mockupSocket;
