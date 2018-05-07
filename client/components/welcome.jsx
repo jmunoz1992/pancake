@@ -55,7 +55,7 @@ class Welcome extends Component {
   onCreateProjectClick = () => {
     axios
       .post("/api/project/", { owner: this.state.selectedOrg, repository: this.state.selectedRepo })
-      .then(() => this.props.history.push("/"));
+      .then(() => this.props.history.push("/app"));
   };
 
   onChange = (evt, { name, value }) => {

@@ -10,7 +10,7 @@ const Project = db.define("project", {
     type: Sequelize.STRING,
     allowNull: false,
     unique: true
-  }
+  },
 });
 
 module.exports = Project;

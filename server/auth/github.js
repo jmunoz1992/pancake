@@ -34,7 +34,7 @@ passport.use(new GitHubStrategy(githubCredentials, verificationCallback));
 router.get("/", passport.authenticate("github", { scope: ["repo", "admin:repo_hook", "gist"] }));
 
 router.get("/verify", passport.authenticate("github", { failureRedirect: "/login" }), (req, res) => {
-  res.redirect(`/users/${req.user.id}`);
+  res.redirect("/app");
 });
 
 module.exports = router;

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Navbar, Sidebar, DesignerCanvas, DesignerProperties } from "./index";
+import { Navbar, Sidebar, DesignerCanvas, DesignerProperties, Schema } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
 import { fetchIssues, designerOperations } from "../store";
@@ -20,13 +20,14 @@ class App extends Component {
     return (
       <StyledAppWrapper>
         <Grid style={{ paddingTop: "0px" }}>
-          <Grid.Row style={{ height: "60px" }}>
+          <Grid.Row>
             <Navbar />
           </Grid.Row>
           <Grid.Row>
             <Grid.Column id="main">
               <Switch>
                 <Route path="/wireframes" component={DesignerCanvas} />
+                <Route path="/schema" component={Schema} />
                 <Route
                   render={() => (
                     <div>
@@ -39,13 +40,6 @@ class App extends Component {
             <Grid.Column id="sidebar">
               <Switch>
                 <Route path="/wireframes" component={DesignerProperties} />
-                <Route
-                  render={() => (
-                    <div>
-                      <h2>No matching route</h2>
-                    </div>
-                  )}
-                />
               </Switch>
             </Grid.Column>
           </Grid.Row>
@@ -70,6 +64,14 @@ const StyledAppWrapper = styled.div`
     min-height: 100%;
     box-shadow: 0px 0px 30px 4px rgba(0, 0, 0, 0.3);
     z-index: 1;
+  }
+
+  scroll-container {
+    display: block;
+    width: 400px;
+    height: 600px;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
   }
 `;
 
