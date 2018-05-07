@@ -50,10 +50,15 @@ export class BodyWidget extends React.Component {
             <TrayItemWidget model={{ type: "in" }} name="In Node" color="rgb(192,255,0)" />
             <form onSubmit={(event) => { this.handleSubmit(event); }} >
               <label style={{'color': 'white'}}>In Node Title: </label>
+              <br />
               <input onChange={this.handleTitleChange} name="title" value={this.state.title} />
+              <br />
               <label style={{'color': 'white'}}>In Node Port Name: </label>
+              <br />
               <input onChange={this.handlePortNameChange} name="portName" value={this.state.portName} />
+              <br />
               <label style={{'color': 'white'}}>{`Node Color (format must be rgb())`} </label>
+              <br />
               <input onChange={this.handleNodeColorChange} name="nodeColor" value={this.state.nodeColor} />
               <br />
               <br />
