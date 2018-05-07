@@ -12,7 +12,7 @@ const Schema = () => {
 	var app = new Application();
   return (<StyledAppWrapper>
     <Grid style={{ paddingTop: "0px" }}>
-      <Grid.Row style={{ height: "60px" }}>
+      <Grid.Row>
         <Navbar />
       </Grid.Row>
       <Grid.Row>
@@ -20,7 +20,9 @@ const Schema = () => {
           <BodyWidget app={app} />;
         </Grid.Column>
         <Grid.Column id="sidebar">
-          <Sidebar />
+          <scrollcontainer>
+            <Sidebar />
+          </scrollcontainer>
         </Grid.Column>
       </Grid.Row>
     </Grid>
@@ -30,7 +32,7 @@ const Schema = () => {
 
 const StyledAppWrapper = styled.div `
   #main {
-    width: calc(100% - 275px);
+    width: calc(100%);
     height: 2000px;
     overflow: hidden;
   }

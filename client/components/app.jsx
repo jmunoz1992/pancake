@@ -21,7 +21,7 @@ class App extends Component {
     return (
       <StyledAppWrapper>
         <Grid style={{ paddingTop: "0px" }}>
-          <Grid.Row style={{ height: "60px" }}>
+          <Grid.Row>
             <Navbar />
           </Grid.Row>
           <Grid.Row>
@@ -41,13 +41,6 @@ class App extends Component {
             <Grid.Column id="sidebar">
               <Switch>
                 <Route path="/wireframes" component={DesignerProperties} />
-                <Route
-                  render={() => (
-                    <div>
-                      <h2>No matching route</h2>
-                    </div>
-                  )}
-                />
               </Switch>
             </Grid.Column>
           </Grid.Row>
