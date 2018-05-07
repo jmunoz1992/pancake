@@ -7,16 +7,43 @@ import { AssigneeLabel } from "./index";
 class EditIssue extends Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            selectedAssignee: {},
+        };
     }
 
     componentDidMount = () => {
         this.setState({ issue: this.props.issue });
     }
 
+    onChange = (evt, { name, value }) => {
+        this.setState({ [name]: value });
+    }
+
+    findUnassignedCollabs = (assignedCollabs, allCollabs) => {
+        let result = [];
+        let found = false;
+        for (let i = 0; i < allCollabs.length; i++) {
+            found = false;
+            for (let j = 0; j < assignedCollabs.length; j++) {
+                if (allCollabs[i].login === assignedCollabs[j].login) found = true;
+            }
+            if (!found) result.push(allCollabs[i]);
+        }
+        return result;
+    }
+
     render() {
-        const { issue } = this.state;
         console.log("state", this.state);
+        console.log("props", this.props);
+        const { issue } = this.state;
+        const collabOptions = this.findUnassignedCollabs(this.props.issue.assignees, this.props.collaborators)
+            .map(collab => ({
+                key: collab.id,
+                text: collab.login,
+                image: collab.avatar_url,
+                value: collab.login
+            }));
         if (!issue) return (<div />);
         return (
             <Modal.Content>
@@ -31,13 +58,19 @@ class EditIssue extends Component {
                     </Form.Field>
                     <Divider />
                     <Form.Field>
-                        <Form.Field control={Select} label="Add Assignee" placeholder="Select" />
-                        {issue.assignees.map(assignee =>
-                            (<AssigneeLabel
-                                key={assignee.id}
-                                assignee={assignee}
-                            />)
-                        )}
+                        <Form.Select
+                            label="Add Assignee"
+                            name="selectedAssignee"
+                            onChange={this.onChange}
+                            options={collabOptions}
+                            placeholder="Select" />
+                        {issue.assignees
+                            .map(assignee =>
+                                (<AssigneeLabel
+                                    key={assignee.id}
+                                    assignee={assignee}
+                                />)
+                            )}
                     </Form.Field>
                     <Divider />
                     <Button type="submit">Submit</Button>
@@ -47,9 +80,10 @@ class EditIssue extends Component {
     }
 }
 
-const mapState = ({ issues }, ownProps) => {
+const mapState = ({ issues, collaborators }, ownProps) => {
     return {
-        issue: issues.find(issue => issue.id === ownProps.issue.id)
+        issue: issues.find(issue => issue.id === ownProps.issue.id),
+        collaborators,
     };
 };
 
