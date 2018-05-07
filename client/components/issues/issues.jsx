@@ -7,7 +7,6 @@ import { IssueItem } from "../index";
 
 const Issues = props => {
   const { issues } = props;
-  console.log("issues ", issues);
   return (
     <div>
       <h1>Issues</h1>
