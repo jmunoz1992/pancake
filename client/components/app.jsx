@@ -28,6 +28,7 @@ class App extends Component {
             <Grid.Column id="main">
               <Switch>
                 <Route path="/wireframes" component={DesignerCanvas} />
+                <Route path="/schema" component={Schema} />
                 <Route
                   render={() => (
                     <div>

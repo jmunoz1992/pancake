@@ -39,14 +39,7 @@ class Routes extends Component {
         {isLoggedIn && ( <Switch > {
             hasActiveProject ?
             <Switch>
-              <Route
-                exact path= "/app"
-                component = {App}
-              />
-              <Route
-              exact path= "/schema"
-              component = {Schema}
-            />
+              <Route exact path="/app"component = {App} />
             </Switch>
             :
             <Route

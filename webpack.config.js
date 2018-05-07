@@ -1,10 +1,4 @@
 const isDev = process.env.NODE_ENV === "development";
-const ExtractTextPlugin = require("extract-text-webpack-plugin");
-
-const extractSass = new ExtractTextPlugin({
-    filename: "[name].[contenthash].css",
-    disable: process.env.NODE_ENV === "development"
-});
 
 module.exports = {
   mode: isDev ? "development" : "production",
@@ -38,18 +32,6 @@ module.exports = {
         test: /\.tsx?$/,
         loader: "ts-loader"
       },
-      {
-        test: /\.scss$/,
-        use: extractSass.extract({
-            use: [{
-                loader: "css-loader"
-            }, {
-                loader: "sass-loader"
-            }],
-            // use style-loader in development
-            fallback: "style-loader"
-        })
-      }
     ]
   }
 };
