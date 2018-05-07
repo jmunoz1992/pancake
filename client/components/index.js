@@ -9,7 +9,9 @@ export { default as Welcome } from "./welcome";
 export { default as Login } from "./login";
 export { default as App } from "./app";
 export { default as Sidebar } from "./sidebar";
-export { default as Issues } from "./issues";
+export { default as Issues } from "./issues/issues";
+export { default as IssueItem } from "./issues/issue-item";
+export { default as AssigneeLabel } from "./issues/assignee-label";
 export * from "./designer";
 export { default as Schema } from "./schema.jsx";
 
