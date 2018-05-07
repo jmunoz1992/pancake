@@ -6,7 +6,6 @@ import { fetchIssues, designerOperations } from "../store";
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
 
-
 class App extends Component {
   constructor(props) {
     super(props);
@@ -50,7 +49,7 @@ class App extends Component {
   }
 }
 
-const StyledAppWrapper = styled.div `
+const StyledAppWrapper = styled.div`
   #main {
     width: calc(100% - 275px);
     height: 2000px;
