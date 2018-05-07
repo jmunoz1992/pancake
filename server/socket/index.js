@@ -19,11 +19,11 @@
 // multiple users can work across multiple different diagrams and only receive actions relevant
 // to the diagram they're currently working on.
 
-const createMockupStore = require("./mockups/store");
+const createStoreForMockup = require("./mockups/store");
 const sessions = new Map();
 const uuidv4 = require("uuid/v4");
 
-const findOrCreateSession = sessionName => {
+const findOrCreateSession = async sessionName => {
   const existingSession = sessions.get(sessionName);
   if (existingSession) return existingSession;
 
@@ -31,7 +31,7 @@ const findOrCreateSession = sessionName => {
   const newSession = {
     clients: [],
     mockup: sessionName,
-    store: createMockupStore()
+    store: await createStoreForMockup(sessionName)
   };
   sessions.set(sessionName, newSession);
   return newSession;
@@ -45,50 +45,64 @@ const findSessionForSocket = socket => {
   return null;
 };
 
-const clientJoinedSession = (sessionName, socket) => {
+const onJoinSession = async (sessionName, socket) => {
   console.log(`Client ${socket.id} is joining session ${sessionName}`);
-  const session = findOrCreateSession(sessionName);
-  session.clients.push(socket.id);
-  socket.join(sessionName);
-  socket.emit("load-initial-state", session.store.getState().designerState);
+  try {
+    const session = await findOrCreateSession(sessionName);
+    session.clients.push(socket.id);
+    socket.join(sessionName);
+    socket.emit("load-initial-state", session.store.getState().designerState);
+  } catch (error) {
+    console.log(`Unable to join session. (Client=${socket.id}, Session=${sessionName})`);
+    sendClientError(socket, error);
+  }
 };
 
-const clientLeftSession = (sessionName, socket) => {
+const onLeaveSession = (sessionName, socket) => {
   console.log(`Client ${socket.id} is leaving session ${sessionName}`);
   const session = sessions.get(sessionName);
-  session.clients = session.clients.filter(client => client !== socket.id);
+  if (session) session.clients = session.clients.filter(client => client !== socket.id);
   socket.leave(sessionName);
 };
 
-const clientDispatchedAction = (action, socket) => {
-  console.log("Action:", action.type);
-  const sessionName = findSessionForSocket(socket);
-  const store = sessions.get(sessionName).store;
-
-  if (action.type === "designer/CREATE_ELEMENT") {
-    // Generates a pseudo-unique ID for the new element.
-    action.payload.id = uuidv4();
+const onActionReceived = (action, socket) => {
+  try {
+    const sessionName = findSessionForSocket(socket);
+    if (!sessionName) throw new Error("Socket is not part of any session.");
+    const store = sessions.get(sessionName).store;
+    if (action.type === "designer/CREATE_ELEMENT") {
+      // Generates a pseudo-unique ID for the new element.
+      action.payload.id = uuidv4();
+    }
+    store.dispatch(action);
+    io.to(sessionName).emit("update-mockup-state", action);
+  } catch (error) {
+    console.log(`Unable to dispatch action. (Action=${action}, Client=${socket.id}))`);
+    sendClientError(socket, error);
   }
-  store.dispatch(action);
-  io.to(sessionName).emit("update-mockup-state", action);
+};
+
+const sendClientError = (socket, error) => {
+  socket.emit("exception", String(error));
+  console.log("Mockup Socket Server:", error);
+  const sessionName = findSessionForSocket(socket);
+  if (sessionName) onLeaveSession(sessionName, socket);
+  socket.disconnect();
 };
 
 let io;
 const startSocketListener = socketIo => {
   io = socketIo.of("/mockups").on("connection", socket => {
-    console.log(`Client has connected to mockups server. (${socket.id})`);
-
-    socket.on("join-session", payload => clientJoinedSession(payload.mockupId, socket));
-    socket.on("leave-session", payload => clientLeftSession(payload.mockupId, socket));
-    socket.on("dispatch-action", action => clientDispatchedAction(action, socket));
-
+    console.log(`Client has connected. (${socket.id})`);
+    socket.on("join-session", payload => onJoinSession(payload.mockupId, socket));
+    socket.on("leave-session", payload => onLeaveSession(payload.mockupId, socket));
+    socket.on("dispatch-action", action => onActionReceived(action, socket));
     socket.on("disconnect", () => {
       // When a socket disconnects, iterate over the sessions map and remove them
       // from any sessions they might still be in.
       const sessionName = findSessionForSocket(socket);
-      if (sessionName) clientLeftSession(sessionName, socket);
-
-      console.log(`Client has disconnected from mockups server. (${socket.id})`);
+      if (sessionName) onLeaveSession(sessionName, socket);
+      console.log(`Client has disconnected. (${socket.id})`);
     });
   });
 };
