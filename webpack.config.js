@@ -12,7 +12,7 @@ module.exports = {
   },
   devtool: "cheap-source-map",
   resolve: {
-    extensions: [".js", ".jsx", ".tsx", ".ts"]
+    extensions: [".js", ".jsx"]
   },
   module: {
     rules: [
@@ -27,10 +27,6 @@ module.exports = {
           { loader: "style-loader" },
           { loader: "css-loader" }
         ]
-      },
-      {
-        test: /\.tsx?$/,
-        loader: "ts-loader"
       },
     ]
   }
