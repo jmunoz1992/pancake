@@ -27,6 +27,7 @@ class DesignerCanvas extends Component {
 
   componentWillUnmount() {
     console.log("Canvas unmounting.");
+    this.props.disconnect(2);
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
@@ -148,6 +149,7 @@ const mapState = state => {
 const mapDispatch = dispatch => {
   return {
     loadMockup: mockupId => dispatch(designerOperations.loadMockup(mockupId)),
+    disconnect: mockupId => dispatch(designerOperations.disconnect(mockupId)),
     addElement: element => dispatch(designerOperations.createNewElement(element)),
     deselect: () => dispatch(designerOperations.selectElement({ id: 0 }))
   };

@@ -15,6 +15,14 @@ export const connectToSession = mockupId => {
   store.dispatch(designerOperations.setConnecting());
 };
 
+export const disconnectFromSession = mockupId => {
+  if (mockupSocket.connected) {
+    mockupSocket.emit("leave-session", { mockupId });
+  }
+  console.log("Leaving mockup session", mockupId);
+  store.dispatch(designerOperations.setError("Not connected."));
+};
+
 export const dispatchNetworkAction = action => {
   if (store.getState().designerState.networkStatus.connected) mockupSocket.emit("dispatch-action", action);
   else console.log("Cannot dispatch action because we are not connected to a session.", action);
@@ -33,7 +41,7 @@ mockupSocket.on("update-mockup-state", action => {
 
 mockupSocket.on("exception", error => {
   console.error("Forcibly disconnected from server.", error);
-  store.dispatch(designerOperations.setError(`The server refused the connection. (${error})`));
+  store.dispatch(designerOperations.setError(`Disconnected by the server. (${error})`));
 });
 
 // Socket.IO Events

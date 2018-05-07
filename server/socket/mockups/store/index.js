@@ -5,14 +5,25 @@ const { Mockup, MockupElement } = require("../../../db/models");
 async function createStoreForMockup(mockupId) {
   const mockup = await Mockup.findById(mockupId);
   if (!mockup) throw new Error(`Mockup '${mockupId}' isn't valid.`);
-  const mockupElements = await MockupElement.find({ where: { mockupId: mockupId } });
-  console.log("Finished query", mockupElements && mockupElements.length);
+  const mockupElements = await MockupElement.findAll({ where: { mockupId: mockupId } });
+  const initialState = mockupElements.map(element => element.data);
+  console.log(`Restored ${initialState.length} mockup elements from database.`);
 
   const reducer = combineReducers({ designerState });
   const store = createStore(reducer);
+  store.designerState = initialState;
   return store;
 }
 
-async function serializeStore(mockup) {}
+async function serializeStore(store, mockupId) {
+  const elements = store.getState().designerState;
+  for (const element of elements) {
+    let model = await MockupElement.findOrCreate({ where: { id: element.id } });
+    model = model[0];
+    model.setMockup(mockupId, { save: false });
+    model.data = JSON.stringify(element);
+    await model.save();
+  }
+}
 
-module.exports = createStoreForMockup;
+module.exports = { createStoreForMockup, serializeStore };

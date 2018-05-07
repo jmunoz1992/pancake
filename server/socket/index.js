@@ -19,7 +19,7 @@
 // multiple users can work across multiple different diagrams and only receive actions relevant
 // to the diagram they're currently working on.
 
-const createStoreForMockup = require("./mockups/store");
+const { createStoreForMockup, serializeStore } = require("./mockups/store");
 const sessions = new Map();
 const uuidv4 = require("uuid/v4");
 
@@ -65,7 +65,7 @@ const onLeaveSession = (sessionName, socket) => {
   socket.leave(sessionName);
 };
 
-const onActionReceived = (action, socket) => {
+const onActionReceived = async (action, socket) => {
   try {
     const sessionName = findSessionForSocket(socket);
     if (!sessionName) throw new Error("Socket is not part of any session.");
@@ -75,6 +75,7 @@ const onActionReceived = (action, socket) => {
       action.payload.id = uuidv4();
     }
     store.dispatch(action);
+    await serializeStore(store, sessionName);
     io.to(sessionName).emit("update-mockup-state", action);
   } catch (error) {
     console.log(`Unable to dispatch action. (Action=${action}, Client=${socket.id}))`);

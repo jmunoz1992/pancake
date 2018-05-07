@@ -1,5 +1,5 @@
 import * as actions from "./actions";
-import { dispatchNetworkAction, connectToSession } from "../../socket";
+import { dispatchNetworkAction, connectToSession, disconnectFromSession } from "../../socket";
 
 // Element Selection
 const selectElement = element => dispatch => {
@@ -29,6 +29,11 @@ const resizeElement = (element, newSize) => (dispatch, getState) => {
 const loadMockup = mockupId => (dispatch, getState) => {
   dispatch(actions.loadElements([]));
   connectToSession(mockupId);
+};
+
+const disconnect = mockupId => (dispatch, getState) => {
+  dispatch(actions.loadElements([]));
+  disconnectFromSession(mockupId);
 };
 
 const setConnecting = () => (dispatch, getState) => {
@@ -76,6 +81,7 @@ export {
   resizeElement,
   loadElements,
   loadMockup,
+  disconnect,
   setConnecting,
   setReconnecting,
   setConnected,
