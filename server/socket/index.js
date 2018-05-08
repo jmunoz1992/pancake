@@ -82,7 +82,7 @@ const onActionReceived = async (action, socket) => {
       action.payload.id = uuidv4();
     }
     store.dispatch(action);
-    await serializeStore(store, sessionName);
+    store.serialize(store, sessionName);
     io.to(sessionName).emit("update-mockup-state", action);
   } catch (error) {
     console.log(`Unable to dispatch action. (Action=${action}, Client=${socket.id}))`);

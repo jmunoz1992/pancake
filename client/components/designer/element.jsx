@@ -21,7 +21,10 @@ class WireframeElement extends Component {
 
   componentWillReceiveProps = props => {
     if (props.selected && this.rnd.current) {
-      this.rnd.current.updatePosition({ x: props.element.left, y: props.element.top });
+      this.rnd.current.updatePosition({
+        x: this.props.element.left + this.props.offset.x,
+        y: this.props.element.top + this.props.offset.y
+      });
     }
   };
 

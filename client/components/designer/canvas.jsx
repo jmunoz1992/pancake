@@ -11,7 +11,8 @@ class DesignerCanvas extends Component {
     this.state = {
       panOffsetX: 0,
       panOffsetY: 0,
-      dragging: false
+      dragging: false,
+      ignoreNextClick: false
     };
   }
 
@@ -69,7 +70,7 @@ class DesignerCanvas extends Component {
   };
 
   onMouseDown = event => {
-    if (event.target.id === "wireframe-canvas" && event.button === 0 && this.props.selectedElementId === 0) {
+    if (event.target.id === "wireframe-canvas" && event.button === 0) {
       this.setState({
         dragging: true,
         dragLastX: event.pageX,
@@ -86,7 +87,8 @@ class DesignerCanvas extends Component {
         panOffsetX: this.state.panOffsetX + deltaX,
         panOffsetY: this.state.panOffsetY + deltaY,
         dragLastX: event.pageX,
-        dragLastY: event.pageY
+        dragLastY: event.pageY,
+        ignoreNextClick: true
       });
     }
   };
@@ -100,7 +102,12 @@ class DesignerCanvas extends Component {
   onCanvasClicked = event => {
     // Click events can bubble up from child components, so only call deselect() if it was actually
     // the canvas itself that was clicked.
-    if (event.target.id === "wireframe-canvas" && this.props.selectedElementId !== 0) this.props.deselect();
+    if (
+      event.target.id === "wireframe-canvas" &&
+      this.props.selectedElementId !== 0 &&
+      !this.state.ignoreNextClick
+    ) this.props.deselect();
+    this.setState({ ignoreNextClick: false });
   };
 
   renderDimmer() {

@@ -9,11 +9,13 @@ async function createStoreForMockup(mockupId) {
   const initialState = mockupElements.map(element => JSON.parse(element.data));
   console.log(`Restored ${initialState.length} mockup elements from database.`);
   const store = createStore(combineReducers({ designerState }));
+  store.serialize = debounce(serializeStore, 3000);
   store.dispatch({ type: "designer/LOAD_ELEMENTS", payload: initialState });
   return store;
 }
 
 async function serializeStore(store, mockupId) {
+  console.log("Serializing");
   const elements = store.getState().designerState;
   await MockupElement.destroy({ where: { mockupId } });
   for (const element of elements) {
@@ -26,3 +28,21 @@ async function serializeStore(store, mockupId) {
 }
 
 module.exports = { createStoreForMockup, serializeStore };
+
+// UTILITY
+//https://gist.github.com/steveosoule/8c98a41d20bb77ae62f7
+const debounce = function(func, wait, immediate) {
+  let timeout;
+  return function() {
+    const context = this,
+      args = arguments;
+    const later = function() {
+      timeout = null;
+      if (!immediate) func.apply(context, args);
+    };
+    const callNow = immediate && !timeout;
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+    if (callNow) func.apply(context, args);
+  };
+};
