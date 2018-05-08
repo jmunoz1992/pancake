@@ -1,25 +1,37 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import styled from "styled-components";
+import { Button } from "semantic-ui-react";
+import { designerOperations } from "../../store";
 
 class Properties extends Component {
   constructor(props) {
     super(props);
   }
   render() {
+    const StyledDiv = styled.div`
+      height: 50%;
+      overflow-y: scroll;
+    `;
     return (
-      <div>
-        <h2>Properties</h2>
+      <StyledDiv>
+        <h1>Properties</h1>
         {this.props.element ? this.renderElementProperties() : <p>Nothing selected.</p>}
-      </div>
+      </StyledDiv>
     );
   }
 
   renderElementProperties() {
     return (
-      <p style={{ wordWrap: "break-word" }}>
-        Selected Element:<br />
-        {JSON.stringify(this.props.element)}
-      </p>
+      <div>
+        <p style={{ wordWrap: "break-word" }}>
+          Selected Element:<br />
+          {JSON.stringify(this.props.element)}
+        </p>
+        <Button negative onClick={() => this.props.deleteElement(this.props.element)}>
+          Delete Element
+        </Button>
+      </div>
     );
   }
 }
@@ -30,4 +42,8 @@ const mapState = state => {
   return { element: selectedElementObj };
 };
 
-export default connect(mapState, null)(Properties);
+const mapDispatch = dispatch => ({
+  deleteElement: element => dispatch(designerOperations.deleteElement(element))
+});
+
+export default connect(mapState, mapDispatch)(Properties);

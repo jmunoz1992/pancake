@@ -1,57 +1,106 @@
 import React from "react";
+import {
+  Form,
+  Input,
+  Button as SemanticButton,
+  Dropdown as SemanticDropdown,
+  Checkbox as SemanticCheckbox
+} from "semantic-ui-react";
 import styled from "styled-components";
 import { BaseElement } from "./base";
 
-/*
-  TEXTBOX
-*/
-export const TextboxComponent = props => {
-  return (
-    <div>
-      <span>Textbox Label</span>
-      <input placeholder="Textbox" />
-    </div>
+export class TextboxWithLabel extends BaseElement {
+  constructor() {
+    super();
+    this.type = "TextboxWithLabel";
+    this.height = 65;
+    this.width = 200;
+    this.placeholder = "";
+    this.label = "";
+  }
+
+  static MAX_HEIGHT = 100;
+  static MAX_WIDTH = 1000;
+  static COMPONENT = props => (
+    <Form>
+      <Form.Field>
+        <label>{props.element.label}</label>
+        <Input placeholder={props.element.placeholder} />
+      </Form.Field>
+    </Form>
   );
-};
+}
 
 export class Textbox extends BaseElement {
   constructor() {
     super();
     this.type = "Textbox";
-    this.placeholder = "Placeholder";
-    this.height = 45;
-    this.width = 150;
+    this.height = 65;
+    this.width = 200;
+    this.placeholder = "";
   }
 
-  static COMPONENT = TextboxComponent;
-  static MAX_HEIGHT = 45;
+  static MAX_HEIGHT = 100;
   static MAX_WIDTH = 1000;
+  static COMPONENT = props => <Input placeholder={props.element.placeholder} />;
 }
 
-// export const CheckboxComponent = props => {
-//   return (
-//     <div>
-//       <input type="checkbox" />
-//       <label>Checkbox Label</label>
-//     </div>
-//   );
-// };
+export class Checkbox extends BaseElement {
+  constructor() {
+    super();
+    this.type = "Checkbox";
+    this.height = 25;
+    this.width = 150;
+    this.label = "";
+  }
 
-// export class Checkbox extends BaseElement {
-//   constructor() {
-//     super();
-//     this.placeholder = "Placeholder";
-//   }
+  static MAX_HEIGHT = 25;
+  static MAX_WIDTH = 1000;
+  static COMPONENT = props => <SemanticCheckbox label={props.element.label} />;
+}
 
-//   static COMPONENT = TextboxComponent;
-//   static MAX_HEIGHT = 40;
-//   static MAX_WIDTH = 1000;
-// }
+export class Radio extends BaseElement {
+  constructor() {
+    super();
+    this.type = "Radio";
+    this.height = 25;
+    this.width = 150;
+    this.label = "";
+  }
 
-// export const Button = props => {
-//   return (
-//     <div>
-//       <input type="button" value="Button" />
-//     </div>
-//   );
-// };
+  static MAX_HEIGHT = 25;
+  static MAX_WIDTH = 1000;
+  static COMPONENT = props => <Form.Field label={props.element.label} control="input" type="radio" />;
+}
+
+export class Dropdown extends BaseElement {
+  constructor() {
+    super();
+    this.type = "Dropdown";
+    this.height = 38;
+    this.width = 150;
+    this.text = "";
+  }
+
+  static MIN_HEIGHT = 38;
+  static MAX_HEIGHT = 38;
+  static MAX_WIDTH = 1000;
+  static COMPONENT = props => <SemanticDropdown placeholder={props.element.placeholder} fluid selection />;
+}
+export class Button extends BaseElement {
+  constructor() {
+    super();
+    this.type = "Button";
+    this.height = 40;
+    this.width = 150;
+    this.placeholder = "";
+  }
+
+  static MAX_HEIGHT = 100;
+  static MAX_WIDTH = 1000;
+  static COMPONENT = props => (
+    <SemanticButton fluid style={{ height: "100%" }}>
+      {props.element.text}
+    </SemanticButton>
+  );
+}

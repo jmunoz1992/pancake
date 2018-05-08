@@ -39,7 +39,15 @@ class App extends Component {
             <Grid.Column id="sidebar">
               <Switch>
                 {/* <Route path="/wireframes" component={DesignerProperties} /> */}
-                <Route path="/wireframes" component={DesignerToolbox} />
+                <Route
+                  path="/wireframes"
+                  render={() => (
+                    <div style={{ height: "100%" }}>
+                      <DesignerToolbox />
+                      <DesignerProperties />
+                    </div>
+                  )}
+                />
               </Switch>
             </Grid.Column>
           </Grid.Row>
@@ -60,8 +68,9 @@ const StyledAppWrapper = styled.div`
     position: fixed;
     top: 60px;
     right: 0;
+    bottom: 0;
     width: 275px;
-    min-height: 100%;
+    overflow-y: scroll;
     box-shadow: 0px 0px 30px 4px rgba(0, 0, 0, 0.3);
   }
 

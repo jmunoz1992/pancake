@@ -2,32 +2,38 @@ import React, { Component } from "react";
 import { default as Library } from "./elements";
 import { designerOperations } from "../../store";
 import { connect } from "react-redux";
-
+import styled from "styled-components";
 class Toolbox extends Component {
   constructor(props) {
     super(props);
   }
   render() {
+    const StyledDiv = styled.div`
+      height: 50%;
+      overflow-y: scroll;
+    `;
     return (
-      <div>
-        <h3>Toolbox</h3>
+      <StyledDiv>
+        <h1>Toolbox</h1>
         {this.renderLibraryComponents()}
-      </div>
+      </StyledDiv>
     );
   }
 
-  onToolboxElementClicked(element) {
-    this.props.addElement(element);
+  onToolboxElementClicked(libraryItem) {
+    this.props.addLibraryItem(libraryItem);
   }
 
   renderLibraryComponents() {
     const libraryArray = Object.values(Library);
 
-    return libraryArray.map(element => {
-      const ComponentToRender = element.COMPONENT;
+    return libraryArray.map(libraryItem => {
+      const ComponentToRender = libraryItem.element.COMPONENT;
+      console.log("Rendering library", libraryItem.title);
       return (
-        <div key={element.name} onClick={() => this.onToolboxElementClicked(element)}>
-          <ComponentToRender />
+        <div key={libraryItem.element.name} onClick={() => this.onToolboxElementClicked(libraryItem)}>
+          <h3>{libraryItem.title}</h3>
+          <ComponentToRender element={libraryItem.properties} />
         </div>
       );
     });
@@ -42,10 +48,17 @@ const getRandomIntInclusive = (min, max) => {
 
 const mapDispatch = dispatch => {
   return {
-    addElement: ElementClass => {
-      const element = new ElementClass();
-      element.top = getRandomIntInclusive(100, 1000);
-      element.left = getRandomIntInclusive(100, 1000);
+    addLibraryItem: item => {
+      console.log("toolbox addElement");
+      const element = new item.element();
+      element.top = getRandomIntInclusive(200, 600);
+      element.left = getRandomIntInclusive(200, 600);
+      for (const key in item.properties) {
+        if (item.properties.hasOwnProperty(key)) {
+          const value = item.properties[key];
+          element[key] = value;
+        }
+      }
       dispatch(designerOperations.createNewElement(element));
     }
   };

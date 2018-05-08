@@ -81,12 +81,12 @@ class WireframeElement extends Component {
   // We have to go through the process of mapping string Element types to objects because we can
   // only send primitives over socket.io, not classes.
   renderElement() {
-    const ElementToRender = ElementLibrary[this.props.element.type].COMPONENT;
+    const ElementToRender = ElementLibrary[this.props.element.type].element.COMPONENT;
     return (
       // ClickInterceptor is an invisible overlay that stops mouse events, so the user doesn't
       // accidentally click on textboxes or buttons while trying to drag a mockup element around
       <ClickInterceptor>
-        <ElementToRender />
+        <ElementToRender element={this.props.element} />
       </ClickInterceptor>
     );
   }
@@ -94,7 +94,7 @@ class WireframeElement extends Component {
   // This is a helper function to grab the min/max size constants for an element, which are static
   // properties defined on their class
   getElementConstraints() {
-    const elementClass = ElementLibrary[this.props.element.type];
+    const elementClass = ElementLibrary[this.props.element.type].element;
     return {
       MIN_HEIGHT: elementClass.MIN_HEIGHT,
       MAX_HEIGHT: elementClass.MAX_HEIGHT,

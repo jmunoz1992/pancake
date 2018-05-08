@@ -8,8 +8,7 @@ const selectElement = element => dispatch => {
 
 // Element manipulation
 const createNewElement = element => (dispatch, getState) => {
-  console.log("creating element");
-  element.id = getState().designerState.elements.length + 1;
+  element.id = "uninitialized";
   dispatchNetworkAction(actions.createElement(element));
 };
 
@@ -17,6 +16,10 @@ const moveElement = (element, newPosition) => (dispatch, getState) => {
   element.top = newPosition.y;
   element.left = newPosition.x;
   dispatchNetworkAction(actions.updateElement(element));
+};
+
+const deleteElement = element => {
+  dispatchNetworkAction(actions.removeElement(element));
 };
 
 const resizeElement = (element, newSize) => (dispatch, getState) => {
@@ -81,6 +84,7 @@ export {
   createNewElement,
   moveElement,
   resizeElement,
+  deleteElement,
   loadElements,
   loadMockup,
   disconnect,
