@@ -34,7 +34,6 @@ class EditIssue extends Component {
     }
 
     addAssignee = () => {
-        console.log("issue", this.props.issue);
         const newAssignees = [...this.state.assignees, this.state.selectedAssignee];
         this.setState({ assignees: newAssignees });
         this.props.addAssignee(this.props.issue.number, newAssignees);
@@ -92,6 +91,7 @@ class EditIssue extends Component {
                             (<AssigneeLabel
                                 key={assignee.id}
                                 assignee={assignee}
+                                issue={issue}
                             />)
                         )}
                 </Form>

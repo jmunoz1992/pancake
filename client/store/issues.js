@@ -48,20 +48,23 @@ export const fetchIssues = () => dispatch =>
     .then(res => dispatch(load(res.data)))
     .catch(err => console.error("Fetching issues unsuccessful", err));
 
-export const editIssue = (id, issue) => dispatch =>
+export const editIssue = (number, issue) => dispatch =>
   axios
-    .put(`/api/issues/${id}`, issue)
+    .put(`/api/issues/${number}`, issue)
     .then(res => dispatch(edit(res.data)))
-    .catch(err => console.error(`Updating issue ${id} unsuccessful`, err));
+    .catch(err => console.error(`Updating issue ${number} unsuccessful`, err));
 
-export const addAssignee = (id, assignees) => dispatch => {
-  console.log("assignees", assignees);
-  return axios
-    .post(`/api/issues/${id}/assignees`, assignees)
+export const addAssignee = (number, assignees) => dispatch =>
+  axios
+    .post(`/api/issues/${number}/assignees`, assignees)
+    .then(res => dispatch(edit(res.data)))
+    .catch(err => console.error(`Adding assignee to issue ${number} unsuccessful`, err));
+
+export const removeAssignee = (number, assignees) => dispatch =>
+  axios
+    .put(`/api/issues/${number}/assignees`, assignees)
     .then(res => {
-      dispatch(edit(res.data));
+      console.log("RES:", res);
+      return dispatch(edit(res.data));
     })
-    .catch(err => console.error(`Adding assignee to issue ${id} unsuccessful`, err));
-
-}
-  ;
+    .catch(err => console.error(`Removing assignee from issue ${number} unsuccessful`, err));

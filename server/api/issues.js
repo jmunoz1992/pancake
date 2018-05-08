@@ -67,20 +67,42 @@ router.put("/:number", async (req, res, next) => {
   }
 });
 
+/**
+ * Add assignee to issue
+ */
 router.post("/:number/assignees", async (req, res, next) => {
   try {
     const newAssignees = req.body.map(user => user.login);
-    console.log("newAssignees", newAssignees);
-    console.log("req.params.number", req.params.number);
     const response = await req.octokit.issues.addAssigneesToIssue({
       owner: req.repoOwner,
       repo: req.repoName,
       number: Number(req.params.number),
       assignees: newAssignees
     });
-    console.log("response", response);
     res.json(response.data);
   } catch (err) {
     next(err);
   }
 });
+
+/**
+ * Remove assigne from issue
+ */
+router.put("/:number/assignees", async (req, res, next) => {
+
+  console.log("REQ.BODY", req.body);
+  console.log("NUMBER: ", req.params.number);
+  // console.log("ASSIGNEES TO REMOVE", req.body.assignees);
+  try {
+    const response = await req.octokit.issues.removeAssigneesFromIssue({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      number: Number(req.params.number),
+      assignees: req.body,
+    });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+})
+  ;

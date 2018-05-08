@@ -1,15 +1,33 @@
-import React from "react";
+import React, { Component } from "react";
+import { connect } from "react-redux";
 import { Label, Icon } from "semantic-ui-react";
+import { removeAssignee } from "../../store/issues";
 
-const AssigneeLabel = (props) => {
-    const assignee = props.assignee;
-    return (
-        <Label as="a" image key={assignee.id} >
-            <img src={assignee.avatar_url} />
-            {assignee.login}
-            <Icon name="delete" />
-        </Label>
-    );
-};
+class AssigneeLabel extends Component {
+    removeAssignee = () => {
 
-export default AssigneeLabel;
+        this.props.removeAssignee(this.props.issue.number, [this.props.assignee.login]);
+    }
+
+    render() {
+        const assignee = this.props.assignee;
+        return (
+            <Label
+                as="a"
+                image
+                key={assignee.id}
+                onClick={this.removeAssignee}
+            >
+                <img src={assignee.avatar_url} />
+                {assignee.login}
+                <Icon name="delete" />
+            </Label>
+        );
+    }
+}
+
+const mapState = null;
+
+const mapDispatch = { removeAssignee };
+
+export default connect(mapState, mapDispatch)(AssigneeLabel);
