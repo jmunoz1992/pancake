@@ -9,6 +9,7 @@ class WireframeElement extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+    this.rnd = React.createRef();
   }
 
   // We only update the Redux store with the new size or position of an element when the user
@@ -16,6 +17,12 @@ class WireframeElement extends Component {
   // the meantime.
   onDragStop = (event, positionInfo) => {
     this.props.doMoveElement(positionInfo.x - this.props.offset.x, positionInfo.y - this.props.offset.y);
+  };
+
+  componentWillReceiveProps = props => {
+    if (props.selected && this.rnd.current) {
+      this.rnd.current.updatePosition({ x: props.element.left, y: props.element.top });
+    }
   };
 
   onResizeStop = (...eventArgs) => {
@@ -46,6 +53,7 @@ class WireframeElement extends Component {
     return (
       <Rnd
         className={this.props.className}
+        ref={this.rnd}
         default={{
           x: this.props.element.left + this.props.offset.x,
           y: this.props.element.top + this.props.offset.y,

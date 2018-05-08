@@ -3,6 +3,7 @@ import { default as Library } from "./elements";
 import { designerOperations } from "../../store";
 import { connect } from "react-redux";
 import styled from "styled-components";
+import ToolboxItem from "./toolboxitem";
 class Toolbox extends Component {
   constructor(props) {
     super(props);
@@ -27,14 +28,14 @@ class Toolbox extends Component {
   renderLibraryComponents() {
     const libraryArray = Object.values(Library);
 
-    return libraryArray.map(libraryItem => {
-      const ComponentToRender = libraryItem.element.COMPONENT;
-      console.log("Rendering library", libraryItem.title);
+    return libraryArray.map(item => {
+      const ComponentToRender = item.element.COMPONENT;
       return (
-        <div key={libraryItem.element.name} onClick={() => this.onToolboxElementClicked(libraryItem)}>
-          <h3>{libraryItem.title}</h3>
-          <ComponentToRender element={libraryItem.properties} />
-        </div>
+        <ToolboxItem
+          key={item.element.name}
+          handleClick={() => this.onToolboxElementClicked(item)}
+          item={item}
+        />
       );
     });
   }

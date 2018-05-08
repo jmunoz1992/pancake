@@ -18,7 +18,7 @@ const moveElement = (element, newPosition) => (dispatch, getState) => {
   dispatchNetworkAction(actions.updateElement(element));
 };
 
-const deleteElement = element => {
+const deleteElement = element => dispatch => {
   dispatchNetworkAction(actions.removeElement(element));
 };
 

@@ -15,7 +15,7 @@ async function createStoreForMockup(mockupId) {
 
 async function serializeStore(store, mockupId) {
   const elements = store.getState().designerState;
-  MockupElement.destroy({ where: { mockupId } });
+  await MockupElement.destroy({ where: { mockupId } });
   for (const element of elements) {
     let model = await MockupElement.findOrCreate({ where: { id: element.id } });
     model = model[0];

@@ -75,7 +75,7 @@ const onLeaveSession = async (sessionName, socket) => {
 const onActionReceived = async (action, socket) => {
   try {
     const sessionName = findSessionForSocket(socket);
-    if (!sessionName) throw new Error("Socket is not part of any session.");
+    if (!sessionName) throw new Error("Client isn't part of any session.");
     const store = sessions.get(sessionName).store;
     if (action.type === "designer/CREATE_ELEMENT") {
       // Generates a pseudo-unique ID for the new element.

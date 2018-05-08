@@ -23,6 +23,8 @@ class DesignerCanvas extends Component {
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
+    document.addEventListener("keydown", this.onKeyDown);
+    document.addEventListener("scroll", this.onScroll);
   }
 
   componentWillUnmount() {
@@ -31,10 +33,42 @@ class DesignerCanvas extends Component {
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
+    document.removeEventListener("keydown", this.onKeyDown);
+    document.removeEventListener("scroll", this.onScroll);
   }
 
+  onScroll = event => {
+    event.preventDefault();
+  };
+
+  onKeyDown = event => {
+    console.log("KeyCode", event.keyCode);
+    if (this.props.selectedElementId !== 0) {
+      const element = this.props.selectedElement;
+      switch (event.keyCode) {
+        case 8: // Backspace
+        case 46: // Delete
+          this.props.deleteElement(this.props.selectedElementId);
+          break;
+        case 37: //Left
+          this.props.doMoveElement(element, element.left - 1, element.top);
+          break;
+        case 38: //Up
+          this.props.doMoveElement(element, element.left, element.top - 1);
+          break;
+        case 39: //Right
+          this.props.doMoveElement(element, element.left + 1, element.top);
+          break;
+        case 40: // Down
+          this.props.doMoveElement(element, element.left, element.top + 1);
+          break;
+        default:
+          break;
+      }
+    }
+  };
+
   onMouseDown = event => {
-    console.log(event);
     if (event.target.id === "wireframe-canvas" && event.button === 0 && this.props.selectedElementId === 0) {
       this.setState({
         dragging: true,
@@ -140,8 +174,12 @@ const StyledCanvas = styled.div.attrs({
 `;
 
 const mapState = state => {
+  const selectedElement = state.designerState.elements.find(
+    element => element.id === state.designerState.selectedElement
+  );
   return {
     elements: state.designerState.elements,
+    selectedElement,
     selectedElementId: state.designerState.selectedElement,
     networkStatus: state.designerState.networkStatus
   };
@@ -151,7 +189,8 @@ const mapDispatch = dispatch => {
   return {
     loadMockup: mockupId => dispatch(designerOperations.loadMockup(mockupId)),
     disconnect: mockupId => dispatch(designerOperations.disconnect(mockupId)),
-    addElement: element => dispatch(designerOperations.createNewElement(element)),
+    doMoveElement: (element, x, y) => dispatch(designerOperations.moveElement(element, { x, y })),
+    deleteElement: elementId => dispatch(designerOperations.deleteElement({ id: elementId })),
     deselect: () => dispatch(designerOperations.selectElement({ id: 0 }))
   };
 };

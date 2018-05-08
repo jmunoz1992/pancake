@@ -70,7 +70,7 @@ export class Radio extends BaseElement {
 
   static MAX_HEIGHT = 25;
   static MAX_WIDTH = 1000;
-  static COMPONENT = props => <Form.Field label={props.element.label} control="input" type="radio" />;
+  static COMPONENT = props => <SemanticCheckbox radio label={props.element.label} />;
 }
 
 export class Dropdown extends BaseElement {
@@ -85,7 +85,9 @@ export class Dropdown extends BaseElement {
   static MIN_HEIGHT = 38;
   static MAX_HEIGHT = 38;
   static MAX_WIDTH = 1000;
-  static COMPONENT = props => <SemanticDropdown placeholder={props.element.placeholder} fluid selection />;
+  static COMPONENT = props => (
+    <SemanticDropdown placeholder={props.element.placeholder} fluid selection options={[]} />
+  );
 }
 export class Button extends BaseElement {
   constructor() {
