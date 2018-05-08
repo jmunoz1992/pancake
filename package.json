@@ -21,7 +21,7 @@
   "author": "Fullstack Academy of Code",
   "license": "MIT",
   "dependencies": {
-    "@octokit/rest": "^15.2.7",
+    "@octokit/rest": "^15.4.0",
     "@storybook/addon-actions": "^3.4.3",
     "@types/storybook__addon-actions": "^3.0.3",
     "axios": "^0.15.3",
