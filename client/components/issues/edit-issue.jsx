@@ -1,23 +1,43 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button, Divider, Form, Modal, Select } from "semantic-ui-react";
+import { Button, Divider, Form, Modal } from "semantic-ui-react";
 
 import { AssigneeLabel } from "./index";
+import { addAssignee, editIssue } from "../../store/issues";
 
 class EditIssue extends Component {
     constructor(props) {
         super(props);
         this.state = {
             selectedAssignee: {},
+            assignees: [],
         };
     }
 
+    componentWillReceiveProps = (newProps, oldProps) => {
+        if (newProps.issue.assignees !== oldProps.issue.assignees) {
+            this.setState({
+                assignees: newProps.issue.assignees
+            });
+        }
+    }
+
     componentDidMount = () => {
-        this.setState({ issue: this.props.issue });
+        this.setState({
+            issue: this.props.issue,
+            assignees: this.props.issue.assignees,
+        });
     }
 
     onChange = (evt, { name, value }) => {
         this.setState({ [name]: value });
+    }
+
+    addAssignee = () => {
+        console.log("issue", this.props.issue);
+        const newAssignees = [...this.state.assignees, this.state.selectedAssignee];
+        this.setState({ assignees: newAssignees });
+        this.props.addAssignee(this.props.issue.number, newAssignees);
     }
 
     findUnassignedCollabs = (assignedCollabs, allCollabs) => {
@@ -34,15 +54,13 @@ class EditIssue extends Component {
     }
 
     render() {
-        console.log("state", this.state);
-        console.log("props", this.props);
         const { issue } = this.state;
         const collabOptions = this.findUnassignedCollabs(this.props.issue.assignees, this.props.collaborators)
             .map(collab => ({
                 key: collab.id,
                 text: collab.login,
                 image: collab.avatar_url,
-                value: collab.login
+                value: collab
             }));
         if (!issue) return (<div />);
         return (
@@ -56,7 +74,10 @@ class EditIssue extends Component {
                         <label>Last Name</label>
                         <input placeholder="Last Name" />
                     </Form.Field>
-                    <Divider />
+                    <Button type="submit">Submit</Button>
+                </Form>
+                <Divider />
+                <Form onSubmit={this.addAssignee}>
                     <Form.Field>
                         <Form.Select
                             label="Add Assignee"
@@ -64,16 +85,15 @@ class EditIssue extends Component {
                             onChange={this.onChange}
                             options={collabOptions}
                             placeholder="Select" />
-                        {issue.assignees
-                            .map(assignee =>
-                                (<AssigneeLabel
-                                    key={assignee.id}
-                                    assignee={assignee}
-                                />)
-                            )}
+                        <Button type="submit">Add Assignee</Button>
                     </Form.Field>
-                    <Divider />
-                    <Button type="submit">Submit</Button>
+                    {issue.assignees
+                        .map(assignee =>
+                            (<AssigneeLabel
+                                key={assignee.id}
+                                assignee={assignee}
+                            />)
+                        )}
                 </Form>
             </Modal.Content>
         );
@@ -87,4 +107,6 @@ const mapState = ({ issues, collaborators }, ownProps) => {
     };
 };
 
-export default connect(mapState)(EditIssue);
+const mapDispatch = { editIssue, addAssignee };
+
+export default connect(mapState, mapDispatch)(EditIssue);

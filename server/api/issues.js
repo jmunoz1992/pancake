@@ -66,3 +66,21 @@ router.put("/:number", async (req, res, next) => {
     next(err);
   }
 });
+
+router.post("/:number/assignees", async (req, res, next) => {
+  try {
+    const newAssignees = req.body.map(user => user.login);
+    console.log("newAssignees", newAssignees);
+    console.log("req.params.number", req.params.number);
+    const response = await req.octokit.issues.addAssigneesToIssue({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      number: Number(req.params.number),
+      assignees: newAssignees
+    });
+    console.log("response", response);
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+});

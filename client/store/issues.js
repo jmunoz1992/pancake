@@ -12,10 +12,10 @@ const CREATE_ISSUE = "CREATE_ISSUE";
 /**
  * ACTION CREATORS
  */
-const loadIssues = issues => ({ type: GET_ISSUES, issues });
-const removeIssue = issueId => ({ type: REMOVE_ISSUE, id: issueId });
-const editIssue = issue => ({ type: EDIT_ISSUE, issue });
-const createIssue = issue => ({ type: CREATE_ISSUE, issue });
+const load = issues => ({ type: GET_ISSUES, issues });
+const remove = issueId => ({ type: REMOVE_ISSUE, id: issueId });
+const edit = issue => ({ type: EDIT_ISSUE, issue });
+const create = issue => ({ type: CREATE_ISSUE, issue });
 
 /**
  * REDUCER
@@ -45,5 +45,23 @@ export default function reducer(state = [], action) {
 export const fetchIssues = () => dispatch =>
   axios
     .get("/api/issues")
-    .then(res => dispatch(loadIssues(res.data)))
+    .then(res => dispatch(load(res.data)))
     .catch(err => console.error("Fetching issues unsuccessful", err));
+
+export const editIssue = (id, issue) => dispatch =>
+  axios
+    .put(`/api/issues/${id}`, issue)
+    .then(res => dispatch(edit(res.data)))
+    .catch(err => console.error(`Updating issue ${id} unsuccessful`, err));
+
+export const addAssignee = (id, assignees) => dispatch => {
+  console.log("assignees", assignees);
+  return axios
+    .post(`/api/issues/${id}/assignees`, assignees)
+    .then(res => {
+      dispatch(edit(res.data));
+    })
+    .catch(err => console.error(`Adding assignee to issue ${id} unsuccessful`, err));
+
+}
+  ;
