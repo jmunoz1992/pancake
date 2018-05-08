@@ -19,10 +19,12 @@ class WireframeElement extends Component {
   };
 
   onResizeStop = (...eventArgs) => {
+    console.log(eventArgs);
     const sizeDelta = eventArgs[3];
+    const coords = eventArgs[4];
     const width = this.props.element.width + sizeDelta.width;
     const height = this.props.element.height + sizeDelta.height;
-    this.props.doResizeElement(height, width);
+    this.props.doResizeElement(height, width, coords.x - this.props.offset.x, coords.y - this.props.offset.y);
   };
 
   onElementClicked = _ => {
@@ -128,8 +130,8 @@ const StyledWireframeElement = styled(WireframeElement).attrs({
 const mapDispatch = (dispatch, ownProps) => {
   return {
     doSelectElement: () => dispatch(designerOperations.selectElement(ownProps.element)),
-    doResizeElement: (height, width) =>
-      dispatch(designerOperations.resizeElement(ownProps.element, { height, width })),
+    doResizeElement: (height, width, x, y) =>
+      dispatch(designerOperations.resizeElement(ownProps.element, { height, width, x, y })),
     doMoveElement: (x, y) => dispatch(designerOperations.moveElement(ownProps.element, { x, y }))
   };
 };

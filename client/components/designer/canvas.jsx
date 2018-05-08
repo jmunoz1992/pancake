@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import styled from "styled-components";
+import { Header, Icon, Dimmer, Loader } from "semantic-ui-react";
 import { default as DesignerElement } from "./element";
 import { designerOperations } from "../../store";
 import { connect } from "react-redux";
@@ -17,19 +18,24 @@ class DesignerCanvas extends Component {
   // Event listeners for canvas panning.  They're added to the document because if we add them to
   // the canvas itself, we stop receiving mouse events if the mouse moves outside of the canvas
   componentDidMount() {
+    console.log("Canvas mounting.");
+    this.props.loadMockup(2);
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
   }
 
   componentWillUnmount() {
+    console.log("Canvas unmounting.");
+    this.props.disconnect(2);
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
   }
 
   onMouseDown = event => {
-    if (event.target.id === "wireframe-canvas" && this.props.selectedElementId === 0) {
+    console.log(event);
+    if (event.target.id === "wireframe-canvas" && event.button === 0 && this.props.selectedElementId === 0) {
       this.setState({
         dragging: true,
         dragLastX: event.pageX,
@@ -63,6 +69,40 @@ class DesignerCanvas extends Component {
     if (event.target.id === "wireframe-canvas" && this.props.selectedElementId !== 0) this.props.deselect();
   };
 
+  renderDimmer() {
+    const status = this.props.networkStatus;
+    if (status.connected) return null;
+    const StyledDimmer = styled(Dimmer)`
+      &&& {
+        z-index: 10;
+      }
+    `;
+    let renderFragment;
+    if (status.connecting) {
+      if (status.error) {
+        renderFragment = (
+          <Loader>
+            <Header as="h2" icon inverted>
+              Connection Lost
+              <Header.Subheader>Pancake is trying to reconnect...</Header.Subheader>
+            </Header>
+          </Loader>
+        );
+      } else {
+        renderFragment = <Loader>Connecting...</Loader>;
+      }
+    } else {
+      renderFragment = (
+        <Header as="h2" icon inverted>
+          <Icon name="warning sign" />
+          Unable to Connect
+          <Header.Subheader>{String(status.error)}</Header.Subheader>
+        </Header>
+      );
+    }
+    return <StyledDimmer active>{renderFragment}</StyledDimmer>;
+  }
+
   render() {
     return (
       <StyledCanvas
@@ -70,6 +110,7 @@ class DesignerCanvas extends Component {
         className={"noselect"}
         onClick={this.onCanvasClicked}
         gridOffset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}>
+        {this.renderDimmer()}
         {this.props.elements.map(element => (
           <DesignerElement
             key={element.id}
@@ -99,15 +140,19 @@ const StyledCanvas = styled.div.attrs({
 `;
 
 const mapState = state => {
-  return { elements: state.designerState.elements, selectedElementId: state.designerState.selectedElement };
+  return {
+    elements: state.designerState.elements,
+    selectedElementId: state.designerState.selectedElement,
+    networkStatus: state.designerState.networkStatus
+  };
 };
 
 const mapDispatch = dispatch => {
   return {
+    loadMockup: mockupId => dispatch(designerOperations.loadMockup(mockupId)),
+    disconnect: mockupId => dispatch(designerOperations.disconnect(mockupId)),
     addElement: element => dispatch(designerOperations.createNewElement(element)),
-    deselect: () => {
-      dispatch(designerOperations.selectElement({ id: 0 }));
-    }
+    deselect: () => dispatch(designerOperations.selectElement({ id: 0 }))
   };
 };
 
