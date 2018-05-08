@@ -34,7 +34,8 @@ class DesignerCanvas extends Component {
   }
 
   onMouseDown = event => {
-    if (event.target.id === "wireframe-canvas" && this.props.selectedElementId === 0) {
+    console.log(event);
+    if (event.target.id === "wireframe-canvas" && event.button === 0 && this.props.selectedElementId === 0) {
       this.setState({
         dragging: true,
         dragLastX: event.pageX,

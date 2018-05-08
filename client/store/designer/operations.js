@@ -22,6 +22,8 @@ const moveElement = (element, newPosition) => (dispatch, getState) => {
 const resizeElement = (element, newSize) => (dispatch, getState) => {
   element.width = newSize.width;
   element.height = newSize.height;
+  element.left = newSize.x;
+  element.top = newSize.y;
   dispatchNetworkAction(actions.updateElement(element));
 };
 

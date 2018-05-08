@@ -6,12 +6,10 @@ async function createStoreForMockup(mockupId) {
   const mockup = await Mockup.findById(mockupId);
   if (!mockup) throw new Error(`Mockup '${mockupId}' isn't valid.`);
   const mockupElements = await MockupElement.findAll({ where: { mockupId: mockupId } });
-  const initialState = mockupElements.map(element => element.data);
+  const initialState = mockupElements.map(element => JSON.parse(element.data));
   console.log(`Restored ${initialState.length} mockup elements from database.`);
-
-  const reducer = combineReducers({ designerState });
-  const store = createStore(reducer);
-  store.designerState = initialState;
+  const store = createStore(combineReducers({ designerState }));
+  store.dispatch({ type: "designer/LOAD_ELEMENTS", payload: initialState });
   return store;
 }
 

@@ -8,7 +8,7 @@ const MockupElement = db.define("mockupelement", {
     primaryKey: true
   },
   data: {
-    type: Sequelize.JSON
+    type: Sequelize.TEXT
   }
 });
 

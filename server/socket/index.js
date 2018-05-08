@@ -58,11 +58,18 @@ const onJoinSession = async (sessionName, socket) => {
   }
 };
 
-const onLeaveSession = (sessionName, socket) => {
+const onLeaveSession = async (sessionName, socket) => {
   console.log(`Client ${socket.id} is leaving session ${sessionName}`);
   const session = sessions.get(sessionName);
-  if (session) session.clients = session.clients.filter(client => client !== socket.id);
   socket.leave(sessionName);
+  if (!session) return;
+  session.clients = session.clients.filter(client => client !== socket.id);
+  if (session.clients.length === 0) {
+    console.log(`Tearing down session ${sessionName}.`);
+    await serializeStore(session.store, sessionName);
+    session.store = null;
+    sessions.delete(sessionName);
+  }
 };
 
 const onActionReceived = async (action, socket) => {
