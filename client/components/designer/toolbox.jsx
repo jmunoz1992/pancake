@@ -5,6 +5,7 @@ import { connect } from "react-redux";
 import { Accordion } from "semantic-ui-react";
 import styled from "styled-components";
 import ToolboxItem from "./toolboxitem";
+
 class Toolbox extends Component {
   constructor(props) {
     super(props);

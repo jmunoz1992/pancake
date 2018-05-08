@@ -65,7 +65,7 @@ class DesignerCanvas extends Component {
   };
 
   onMouseDown = event => {
-    if (event.target.id === "wireframe-canvas" && event.button === 0) {
+    if (event.target.id === "mockup-canvas" && event.button === 0) {
       this.setState({
         dragging: true,
         dragLastX: event.pageX,
@@ -99,7 +99,7 @@ class DesignerCanvas extends Component {
     // Click events can bubble up from child components, so only call deselect() if it was actually
     // the canvas itself that was clicked.
     if (
-      event.target.id === "wireframe-canvas" &&
+      event.target.id === "mockup-canvas" &&
       this.props.selectedElementId !== 0 &&
       !this.state.ignoreNextClick
     ) this.props.deselect();
@@ -109,7 +109,7 @@ class DesignerCanvas extends Component {
   render() {
     return (
       <StyledCanvas
-        id="wireframe-canvas"
+        id="mockup-canvas"
         onKeyDown={this.onKeyDown}
         tabIndex="0"
         className={"noselect"}
