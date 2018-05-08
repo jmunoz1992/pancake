@@ -11,6 +11,7 @@ class DesignerCanvas extends Component {
     this.state = {
       panOffsetX: 0,
       panOffsetY: 0,
+      zoomLevel: 1,
       dragging: false,
       ignoreNextClick: false
     };
@@ -24,8 +25,7 @@ class DesignerCanvas extends Component {
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
-    document.addEventListener("keydown", this.onKeyDown);
-    document.addEventListener("scroll", this.onScroll);
+    // document.addEventListener("keydown", this.onKeyDown);
   }
 
   componentWillUnmount() {
@@ -34,13 +34,8 @@ class DesignerCanvas extends Component {
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
-    document.removeEventListener("keydown", this.onKeyDown);
-    document.removeEventListener("scroll", this.onScroll);
+    // document.removeEventListener("keydown", this.onKeyDown);
   }
-
-  onScroll = event => {
-    event.preventDefault();
-  };
 
   onKeyDown = event => {
     console.log("KeyCode", event.keyCode);
@@ -81,8 +76,9 @@ class DesignerCanvas extends Component {
 
   onMouseMove = event => {
     if (this.state.dragging) {
-      const deltaX = event.pageX - this.state.dragLastX;
-      const deltaY = event.pageY - this.state.dragLastY;
+      const zoomAdjustment = 1 / this.state.zoomLevel;
+      const deltaX = (event.pageX - this.state.dragLastX) * zoomAdjustment;
+      const deltaY = (event.pageY - this.state.dragLastY) * zoomAdjustment;
       this.setState({
         panOffsetX: this.state.panOffsetX + deltaX,
         panOffsetY: this.state.panOffsetY + deltaY,
@@ -110,54 +106,23 @@ class DesignerCanvas extends Component {
     this.setState({ ignoreNextClick: false });
   };
 
-  renderDimmer() {
-    const status = this.props.networkStatus;
-    if (status.connected) return null;
-    const StyledDimmer = styled(Dimmer)`
-      &&& {
-        z-index: 10;
-      }
-    `;
-    let renderFragment;
-    if (status.connecting) {
-      if (status.error) {
-        renderFragment = (
-          <Loader>
-            <Header as="h2" icon inverted>
-              Connection Lost
-              <Header.Subheader>Pancake is trying to reconnect...</Header.Subheader>
-            </Header>
-          </Loader>
-        );
-      } else {
-        renderFragment = <Loader>Connecting...</Loader>;
-      }
-    } else {
-      renderFragment = (
-        <Header as="h2" icon inverted>
-          <Icon name="warning sign" />
-          Unable to Connect
-          <Header.Subheader>{String(status.error)}</Header.Subheader>
-        </Header>
-      );
-    }
-    return <StyledDimmer active>{renderFragment}</StyledDimmer>;
-  }
-
   render() {
     return (
       <StyledCanvas
         id="wireframe-canvas"
+        onKeyDown={this.onKeyDown}
+        tabIndex="0"
         className={"noselect"}
         onClick={this.onCanvasClicked}
+        zoomLevel={this.state.zoomLevel}
         gridOffset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}>
-        {this.renderDimmer()}
         {this.props.elements.map(element => (
           <DesignerElement
             key={element.id}
             element={element}
             selected={element.id === this.props.selectedElementId}
             offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}
+            zoom={{}}
           />
         ))}
       </StyledCanvas>
@@ -178,6 +143,7 @@ const StyledCanvas = styled.div.attrs({
   background-color: whitesmoke;
   width: 100%;
   height: 100%;
+  transform: scale(${props => props.zoomLevel});
 `;
 
 const mapState = state => {
@@ -187,8 +153,7 @@ const mapState = state => {
   return {
     elements: state.designerState.elements,
     selectedElement,
-    selectedElementId: state.designerState.selectedElement,
-    networkStatus: state.designerState.networkStatus
+    selectedElementId: state.designerState.selectedElement
   };
 };
 

@@ -1,15 +1,10 @@
-import { Textbox, TextboxWithLabel, Checkbox, Radio, Dropdown, Button } from "./forms";
+import { Textbox, Checkbox, Radio, Dropdown, Button } from "./forms";
+import { Title, Header, Paragraph } from "./text";
 
 const ElementLibrary = {
   Textbox: {
     element: Textbox,
     title: "Textbox",
-    category: "Forms",
-    properties: { placeholder: "Placeholder" }
-  },
-  TextboxWithLabel: {
-    element: TextboxWithLabel,
-    title: "Textbox with Label",
     category: "Forms",
     properties: { placeholder: "Placeholder", label: "Textbox" }
   },
@@ -36,6 +31,24 @@ const ElementLibrary = {
     title: "Button",
     category: "Forms",
     properties: { text: "Button" }
+  },
+  Title: {
+    element: Title,
+    title: "Title",
+    category: "Text",
+    properties: { text: "Title Text" }
+  },
+  Header: {
+    element: Header,
+    title: "Header",
+    category: "Text",
+    properties: { text: "Header Text" }
+  },
+  Paragraph: {
+    element: Paragraph,
+    title: "Paragraph",
+    category: "Text",
+    properties: { text: "Paragraph Text" }
   }
 };
 

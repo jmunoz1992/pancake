@@ -15,8 +15,13 @@ class WireframeElement extends Component {
   // We only update the Redux store with the new size or position of an element when the user
   // finishes dragging. React-RnD takes care of keeping track of the element's size and position in
   // the meantime.
-  onDragStop = (event, positionInfo) => {
-    this.props.doMoveElement(positionInfo.x - this.props.offset.x, positionInfo.y - this.props.offset.y);
+  onDragStop = (...args) => {
+    const positionInfo = args[1];
+    let x = positionInfo.x - this.props.offset.x;
+    x = x - x % 5 + 1;
+    let y = positionInfo.y - this.props.offset.y;
+    y = y - y % 5 + 1;
+    this.props.doMoveElement(x, y);
   };
 
   componentWillReceiveProps = props => {
@@ -64,6 +69,7 @@ class WireframeElement extends Component {
           height: this.props.element.height
         }}
         bounds={"parent"}
+        dragGrid={[5, 5]}
         minHeight={MIN_HEIGHT}
         maxHeight={MAX_HEIGHT}
         minWidth={MIN_WIDTH}

@@ -9,10 +9,10 @@ import {
 import styled from "styled-components";
 import { BaseElement } from "./base";
 
-export class TextboxWithLabel extends BaseElement {
+export class Textbox extends BaseElement {
   constructor() {
     super();
-    this.type = "TextboxWithLabel";
+    this.type = "Textbox";
     this.height = 65;
     this.width = 200;
     this.placeholder = "";
@@ -29,20 +29,6 @@ export class TextboxWithLabel extends BaseElement {
       </Form.Field>
     </Form>
   );
-}
-
-export class Textbox extends BaseElement {
-  constructor() {
-    super();
-    this.type = "Textbox";
-    this.height = 65;
-    this.width = 200;
-    this.placeholder = "";
-  }
-
-  static MAX_HEIGHT = 100;
-  static MAX_WIDTH = 1000;
-  static COMPONENT = props => <Input placeholder={props.element.placeholder} />;
 }
 
 export class Checkbox extends BaseElement {

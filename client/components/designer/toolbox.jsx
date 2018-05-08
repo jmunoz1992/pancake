@@ -2,22 +2,31 @@ import React, { Component } from "react";
 import { default as Library } from "./elements";
 import { designerOperations } from "../../store";
 import { connect } from "react-redux";
+import { Accordion } from "semantic-ui-react";
 import styled from "styled-components";
 import ToolboxItem from "./toolboxitem";
 class Toolbox extends Component {
   constructor(props) {
     super(props);
   }
+
   render() {
-    const StyledDiv = styled.div`
-      height: 50%;
-      overflow-y: scroll;
-    `;
+    let categories = new Set();
+    Object.values(Library).forEach(item => categories.add(item.category));
+    categories = [...categories].map(category => ({
+      title: category,
+      content: {
+        content: this.renderComponentsForCategory(category),
+        key: `content-${category}`
+      }
+    }));
+
     return (
-      <StyledDiv>
-        <h1>Toolbox</h1>
-        {this.renderLibraryComponents()}
-      </StyledDiv>
+      <div style={{ height: "50%", overflowY: "scroll", paddingRight: "10px" }}>
+        <h2>Toolbox</h2>
+        <Accordion defaultActiveIndex={-1} panels={categories} />
+        {this.renderComponentsForCategory()}
+      </div>
     );
   }
 
@@ -25,8 +34,8 @@ class Toolbox extends Component {
     this.props.addLibraryItem(libraryItem);
   }
 
-  renderLibraryComponents() {
-    const libraryArray = Object.values(Library);
+  renderComponentsForCategory(category) {
+    const libraryArray = Object.values(Library).filter(item => item.category === category);
 
     return libraryArray.map(item => {
       const ComponentToRender = item.element.COMPONENT;

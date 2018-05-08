@@ -18,6 +18,11 @@ const moveElement = (element, newPosition) => (dispatch, getState) => {
   dispatchNetworkAction(actions.updateElement(element));
 };
 
+const updateElementProperty = (element, property, newValue) => (dispatch, getState) => {
+  element[property] = newValue;
+  dispatchNetworkAction(actions.updateElement(element));
+};
+
 const deleteElement = element => dispatch => {
   dispatchNetworkAction(actions.removeElement(element));
 };
@@ -84,6 +89,7 @@ export {
   createNewElement,
   moveElement,
   resizeElement,
+  updateElementProperty,
   deleteElement,
   loadElements,
   loadMockup,
