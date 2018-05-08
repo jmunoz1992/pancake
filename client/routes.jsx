@@ -20,13 +20,7 @@ class Routes extends Component {
       <Switch>
         {isLoggedIn && (
           <Switch>
-            {hasActiveProject ? (
-              <Switch>
-                <Route component={App} />
-              </Switch>
-            ) : (
-              <Route component={Welcome} />
-            )}
+            {hasActiveProject ? <Route path="/" component={App} /> : <Route path="/" component={Welcome} />}
           </Switch>
         )}
         <Route component={Login} />

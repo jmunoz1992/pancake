@@ -1,7 +1,5 @@
 const router = require("express").Router();
-const {
-  Issue
-} = require("../db/models");
+const { Issue } = require("../db/models");
 module.exports = router;
 
 /**
