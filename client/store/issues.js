@@ -27,7 +27,11 @@ export default function reducer(state = [], action) {
       return action.issues;
 
     case EDIT_ISSUE:
-      return state.map(issue => (action.issue.id === issue.id ? action.issue : issue));
+      console.log("ACTION", action);
+      return state.map(issue => {
+        if (action.issue.id === issue.id) return action.issue;
+        return issue;
+      });
 
     case ADD_LABEL_TO_ISSUE:
       return state.map(issue => {
@@ -55,11 +59,11 @@ export const fetchIssues = () => dispatch =>
     .then(res => dispatch(load(res.data)))
     .catch(err => console.error("Fetching issues unsuccessful", err));
 
-export const editIssue = (number, issue) => dispatch =>
+export const editIssue = issue => dispatch =>
   axios
-    .put(`/api/issues/${number}`, issue)
+    .put(`/api/issues/${issue.number}`, issue)
     .then(res => dispatch(edit(res.data)))
-    .catch(err => console.error(`Updating issue ${number} unsuccessful`, err));
+    .catch(err => console.error(`Updating issue ${issue.number} unsuccessful`, err));
 
 export const addAssignee = (number, assignees) => dispatch =>
   axios

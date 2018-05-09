@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button, Divider, Form, Modal } from "semantic-ui-react";
+import { Button, Divider, Form, Icon, Modal } from "semantic-ui-react";
 
 import { AssigneeLabel, LabelLabel } from "./index";
 import { addAssignee, editIssue, addLabel } from "../../store/issues";
@@ -34,6 +34,29 @@ class EditIssue extends Component {
 
     onChange = (evt, { name, value }) => {
         this.setState({ [name]: value });
+    }
+
+    onChangeTitle = event => {
+        const { issue } = this.state;
+        issue.title = event.target.value;
+        this.setState({ issue });
+    }
+
+    onChangeBody = event => {
+        const { issue } = this.state;
+        issue.body = event.target.value;
+        this.setState({ issue });
+    }
+
+    submitEditIssue = () => {
+        this.props.editIssue(this.state.issue);
+    }
+
+    toggleState = () => {
+        const { issue } = this.state;
+        (issue.state === "open") ? issue.state = "closed" : issue.state = "open";
+        this.setState({ issue });
+        this.props.editIssue(this.state.issue);
     }
 
     addAssignee = () => {
@@ -75,7 +98,7 @@ class EditIssue extends Component {
     }
 
     render() {
-        const { issue } = this.props;
+        const { issue } = this.state;
         const collabOptions = this.findUnassignedCollabs(this.props.issue.assignees, this.props.collaborators)
             .map(collab => ({
                 key: collab.id,
@@ -92,28 +115,45 @@ class EditIssue extends Component {
         if (!issue) return (<div />);
         return (
             <Modal.Content>
-                <Form>
-                    <Form.Field>
-                        <label>Title</label>
-                        <input placeholder="First Name" />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Body</label>
-                        <input placeholder="Last Name" />
-                    </Form.Field>
+                <h1 style={{ width: "100px", display: "inline" }}>ISSUE #{issue.number}</h1>
+                <Button
+                    floated="right"
+                    color={(issue.state === "open") ? "green" : "red"}
+                    onClick={this.toggleState}
+                >
+                    {issue.state}
+                </Button>
+                <Divider />
+                <Form onSubmit={this.submitEditIssue}>
+                    <Form.Input
+                        name="title"
+                        label="Title"
+                        onChange={this.onChangeTitle}
+                        value={issue.title}
+                    />
+                    <Form.Input
+                        name="body"
+                        label="Body"
+                        onChange={this.onChangeBody}
+                        value={issue.body}
+                    />
                     <Button type="submit">Submit</Button>
                 </Form>
                 <Divider />
                 <Form onSubmit={this.addAssignee}>
-                    <Form.Field>
+                    <Form.Group widths="equal">
                         <Form.Select
-                            label="Add Assignee"
                             name="selectedAssignee"
                             onChange={this.onChange}
                             options={collabOptions}
-                            placeholder="Select" />
-                        <Button type="submit">Add Assignee</Button>
-                    </Form.Field>
+                            placeholder="Add Assignee" />
+                        <Button
+                            icon
+                            type="submit"
+                        >
+                            <Icon name="add" />
+                        </Button>
+                    </Form.Group>
                     {issue.assignees
                         .map(assignee =>
                             (<AssigneeLabel
@@ -125,23 +165,27 @@ class EditIssue extends Component {
                 </Form>
                 <Divider />
                 <Form onSubmit={this.addLabel}>
-                    <Form.Field>
+                    <Form.Group widths="equal">
                         <Form.Select
-                            label="Add Label"
                             name="selectedLabel"
                             onChange={this.onChange}
                             options={labelOptions}
-                            placeholder="Select" />
-                        <Button type="submit">Add Label</Button>
-                        {issue.labels
-                            .map(label => {
-                                return (<LabelLabel
-                                    key={label.id}
-                                    label={label}
-                                    issue={issue}
-                                />);
-                            })}
-                    </Form.Field>
+                            placeholder="Add Label" />
+                        <Button
+                            icon
+                            type="submit"
+                        >
+                            <Icon name="add" />
+                        </Button>
+                    </Form.Group>
+                    {issue.labels
+                        .map(label => {
+                            return (<LabelLabel
+                                key={label.id}
+                                label={label}
+                                issue={issue}
+                            />);
+                        })}
                 </Form>
             </Modal.Content>
         );

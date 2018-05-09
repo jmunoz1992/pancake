@@ -55,9 +55,7 @@ router.put("/:number", async (req, res, next) => {
       number: req.params.number,
       title: req.body.title,
       body: req.body.body,
-      assignees: req.body.assignees,
-      labels: req.body.labels,
-      state: req.body.state
+      state: req.body.state,
     });
     res.json(response.data);
   } catch (err) {
