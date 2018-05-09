@@ -14,7 +14,7 @@ const { Project, Mockup } = require("../server/db/models");
 
 async function seed() {
   await db.sync({ force: true });
-  const project = await Project.create({ owner: "flapstackjack", repository: "demo" });
+  const project = await Project.create({ owner: "flapjackstack", repository: "demo" });
   const mockup = await Mockup.create({ id: 2, name: "My Test Mockup", projectId: 1 });
   console.log("db synced!");
 }
