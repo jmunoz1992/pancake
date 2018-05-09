@@ -1,8 +1,9 @@
 import React, { Component } from "react";
-import { Navbar, Sidebar, DesignerCanvas, DesignerProperties, Schema } from "./index";
+import { Navbar, Sidebar, DesignerCanvas, DesignerProperties, DesignerToolbox, Schema } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
 import { fetchIssues, designerOperations, fetchCollaborators, fetchLabels } from "../store";
+
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
 
@@ -12,8 +13,6 @@ class App extends Component {
     this.props.loadCollaborators();
     this.props.loadIssues();
     this.props.loadLabels();
-    console.log("COMPONENTDIDMOUNT", this.props);
-    this.props.addDemoTextboxes();
   }
 
   render() {
@@ -39,7 +38,8 @@ class App extends Component {
             </Grid.Column>
             <Grid.Column id="sidebar">
               <Switch>
-                <Route path="/wireframes" component={DesignerProperties} />
+                {/* <Route path="/wireframes" component={DesignerProperties} /> */}
+                <Route path="/wireframes" component={DesignerToolbox} />
               </Switch>
             </Grid.Column>
           </Grid.Row>
@@ -52,7 +52,7 @@ class App extends Component {
 const StyledAppWrapper = styled.div`
   #main {
     width: calc(100% - 275px);
-    height: 2000px;
+    height: 100vh;
     overflow: hidden;
   }
 
@@ -74,14 +74,6 @@ const StyledAppWrapper = styled.div`
   }
 `;
 
-// TODO: remove textbox demo code
-import { Textbox } from "./designer/elements";
-function getRandomIntInclusive(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
 const mapDispatch = dispatch => {
   return {
     loadCollaborators() {
@@ -93,13 +85,7 @@ const mapDispatch = dispatch => {
     loadLabels() {
       dispatch(fetchLabels());
     },
-    addDemoTextboxes() {
-      for (let i = 0; i < 10; i++) {
-        const textbox = new Textbox();
-        textbox.top = getRandomIntInclusive(0, 1000);
-        textbox.left = getRandomIntInclusive(0, 1000);
-        dispatch(designerOperations.createNewElement(textbox));
-      }
+
     }
   };
 };

@@ -25,9 +25,19 @@ const elementReducer = (state = [], action) => {
   }
 };
 
+const networkStatusReducer = (state = { connecting: false, connected: false, error: "" }, action) => {
+  switch (action.type) {
+    case types.SET_CONNECTION_STATUS:
+      return action.payload;
+    default:
+      return state;
+  }
+};
+
 const reducer = combineReducers({
   selectedElement: selectedElementReducer,
-  elements: elementReducer
+  elements: elementReducer,
+  networkStatus: networkStatusReducer
 });
 
 export default reducer;
