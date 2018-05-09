@@ -66,3 +66,59 @@ router.put("/:number", async (req, res, next) => {
     next(err);
   }
 });
+
+/**
+ * Add assignee to issue
+ */
+router.post("/:number/assignees", async (req, res, next) => {
+  try {
+    const newAssignees = req.body.map(user => user.login);
+    const response = await req.octokit.issues.addAssigneesToIssue({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      number: Number(req.params.number),
+      assignees: newAssignees
+    });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * Remove assigne from issue
+ */
+router.put("/:number/assignees", async (req, res, next) => {
+
+  console.log("REQ.BODY", req.body);
+  console.log("NUMBER: ", req.params.number);
+  // console.log("ASSIGNEES TO REMOVE", req.body.assignees);
+  try {
+    const response = await req.octokit.issues.removeAssigneesFromIssue({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      number: Number(req.params.number),
+      assignees: req.body,
+    });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+
+/**
+ * Get all labels from this repository
+ */
+router.get("/labels", async (req, res, next) => {
+  try {
+    const response = await req.octokit.issues.getLabels({
+      owner: req.repoOwner,
+      repo: req.repoName,
+    });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+})
+  ;

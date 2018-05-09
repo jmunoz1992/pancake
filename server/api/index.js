@@ -28,6 +28,7 @@ router.use("/users", require("./users"));
 router.use("/repos", require("./repos"));
 router.use("/project", authenticateGithub, require("./project"));
 router.use("/issues", authenticateGithub, setupProject, require("./issues"));
+router.use("/collaborators", authenticateGithub, setupProject, require("./collaborators"));
 
 router.use((req, res, next) => {
   const error = new Error("Not Found");
