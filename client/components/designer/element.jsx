@@ -18,9 +18,9 @@ class WireframeElement extends Component {
   onDragStop = (...args) => {
     const positionInfo = args[1];
     let x = positionInfo.x - this.props.offset.x;
-    x = x - x % 5 + 1;
+    x = Math.round(x / 5) * 5;
     let y = positionInfo.y - this.props.offset.y;
-    y = y - y % 5 + 1;
+    y = Math.round(y / 5) * 5;
     this.props.doMoveElement(x, y);
   };
 
@@ -68,6 +68,7 @@ class WireframeElement extends Component {
           width: this.props.element.width,
           height: this.props.element.height
         }}
+        z={this.props.element.zIndex}
         bounds={"parent"}
         dragGrid={[5, 5]}
         minHeight={MIN_HEIGHT}
@@ -135,7 +136,8 @@ const StyledWireframeElement = styled(WireframeElement).attrs({
   style: ({ element, offset }) => ({
     transform: `translate(${element.left + offset.x}px, ${element.top + offset.y}px)`,
     width: `${element.width}px`,
-    height: `${element.height}px`
+    height: `${element.height}px`,
+    zIndex: `${element.zIndex}`
   })
 })`
   position: absolute;

@@ -54,7 +54,7 @@ const StyledAppWrapper = styled.div`
   #main {
     position: fixed;
     height: 100%;
-    width: calc(100% - 275px);
+    width: calc(100% - 260px);
     overflow: hidden;
   }
 

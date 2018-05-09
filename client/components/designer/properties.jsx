@@ -22,23 +22,32 @@ class Properties extends Component {
 
   componentWillReceiveProps(props) {
     if (props.element) {
-      const properties = ElementLibrary[props.element.type].properties;
-      Object.keys(properties).forEach(property => {
+      const properties = this.getProperties.call({ props });
+      properties.forEach(property => {
         this.setState({ [property]: props.element[property] });
       });
     }
   }
 
   onChange = event => {
-    console.log("Test", event);
     this.props.updateProperty(this.props.element, event.target.name, event.target.value);
     this.setState({ [event.target.name]: event.target.value });
   };
 
-  renderElementProperties() {
+  getProperties() {
     const properties = Object.keys(ElementLibrary[this.props.element.type].properties);
+    properties.push("name", "zIndex");
+    return properties;
+  }
+
+  renderElementProperties() {
+    const properties = this.getProperties();
+
     return (
       <div>
+        <p>{`ID: ${this.props.element.id}`}</p>
+        <p>{`Position: ${this.props.element.left}, ${this.props.element.top}`}</p>
+        <p>{`Height: ${this.props.element.height}x${this.props.element.width}`}</p>
         <Form>
           {properties.map(property => (
             <Form.Input

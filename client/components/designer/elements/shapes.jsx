@@ -10,35 +10,33 @@ export class Rectangle extends BaseElement {
     this.width = 200;
   }
 
+  static MIN_WIDTH = 2;
+  static MIN_HEIGHT = 2;
   static MAX_HEIGHT = 1000;
   static MAX_WIDTH = 1000;
-  static COMPONENT = props => <h1>{props.element.text}</h1>;
+  static COMPONENT = styled.div`
+    height: 100%;
+    width: 100%;
+    background-color: white;
+    border: 1px solid grey;
+  `;
 }
 
-export class Header extends BaseElement {
+export class Circle extends BaseElement {
   constructor() {
     super();
-    this.type = "Header";
-    this.height = 30;
-    this.width = 150;
-    this.text = "";
-  }
-
-  static MAX_HEIGHT = 500;
-  static MAX_WIDTH = 1000;
-  static COMPONENT = props => <h3>{props.element.text}</h3>;
-}
-
-export class Paragraph extends BaseElement {
-  constructor() {
-    super();
-    this.type = "Paragraph";
-    this.height = 20;
+    this.type = "Circle";
+    this.height = 200;
     this.width = 200;
-    this.text = "";
   }
 
-  static MAX_HEIGHT = 500;
+  static MAX_HEIGHT = 1000;
   static MAX_WIDTH = 1000;
-  static COMPONENT = props => <p>{props.element.text}</p>;
+  static COMPONENT = styled.div`
+    height: 100%;
+    width: 100%;
+    border-radius: 50%;
+    background-color: white;
+    border: 1px solid grey;
+  `;
 }

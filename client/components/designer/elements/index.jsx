@@ -1,5 +1,6 @@
 import { Textbox, Checkbox, Radio, Dropdown, Button } from "./forms";
 import { Title, Header, Paragraph } from "./text";
+import { Rectangle, Circle } from "./shapes";
 
 const ElementLibrary = {
   Textbox: {
@@ -49,6 +50,18 @@ const ElementLibrary = {
     title: "Paragraph",
     category: "Text",
     properties: { text: "Paragraph Text" }
+  },
+  Rectangle: {
+    element: Rectangle,
+    title: "Rectangle",
+    category: "Shapes",
+    properties: {}
+  },
+  Circle: {
+    element: Circle,
+    title: "Circle",
+    category: "Shapes",
+    properties: {}
   }
 };
 

@@ -15,6 +15,7 @@ class DesignerCanvas extends Component {
       dragging: false,
       ignoreNextClick: false
     };
+    this.canvasRef = React.createRef();
   }
 
   // Event listeners for canvas panning.  They're added to the document because if we add them to
@@ -25,7 +26,7 @@ class DesignerCanvas extends Component {
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
-    // document.addEventListener("keydown", this.onKeyDown);
+    // this.canvasRef.current.addEventListener("wheel", this.onScroll);
   }
 
   componentWillUnmount() {
@@ -34,8 +35,16 @@ class DesignerCanvas extends Component {
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
-    // document.removeEventListener("keydown", this.onKeyDown);
+    // this.canvasRef.current.removeEventListener("wheel", this.onScroll);
   }
+
+  onScroll = event => {
+    event.preventDefault();
+    this.setState({
+      panOffsetX: this.state.panOffsetX - event.deltaX,
+      panOffsetY: this.state.panOffsetY - event.deltaY
+    });
+  };
 
   onKeyDown = event => {
     console.log("KeyCode", event.keyCode);
@@ -110,7 +119,9 @@ class DesignerCanvas extends Component {
     return (
       <StyledCanvas
         id="mockup-canvas"
+        ref={this.canvasRef}
         onKeyDown={this.onKeyDown}
+        onWheel={this.onScroll}
         tabIndex="0"
         className={"noselect"}
         onClick={this.onCanvasClicked}
@@ -134,7 +145,7 @@ class DesignerCanvas extends Component {
 // such as when we're animating the canvas grid lines while the user drags the canvas around
 const StyledCanvas = styled.div.attrs({
   style: ({ gridOffset }) => ({
-    backgroundPosition: `${gridOffset.x}px ${gridOffset.y}px`
+    backgroundPosition: `${gridOffset.x - 1}px ${gridOffset.y - 1}px`
   })
 })`
   background-size: 40px 40px;
@@ -143,6 +154,7 @@ const StyledCanvas = styled.div.attrs({
   background-color: whitesmoke;
   width: 100%;
   height: 100%;
+  touch-action: none;
   transform: scale(${props => props.zoomLevel});
 `;
 
