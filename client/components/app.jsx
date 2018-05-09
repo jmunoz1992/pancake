@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { Navbar, Sidebar, DesignerCanvas, DesignerSidebar, Schema, SocketModal, MockupList } from "./index";
+import {
+  Navbar,
+  Sidebar,
+  DesignerCanvas,
+  DesignerSidebar,
+  Schema,
+  SocketModal,
+  MockupList,
+  Issues
+} from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
 import { fetchIssues, designerOperations, fetchCollaborators, fetchLabels } from "../store";
@@ -8,7 +17,6 @@ import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
 
 class App extends Component {
-
   componentDidMount() {
     this.props.loadCollaborators();
     this.props.loadIssues();
@@ -40,6 +48,7 @@ class App extends Component {
             <Grid.Column id="sidebar">
               <Switch>
                 <Route path="/mockups" component={DesignerSidebar} />
+                <Route component={Issues} />
               </Switch>
             </Grid.Column>
           </Grid.Row>
@@ -88,8 +97,6 @@ const mapDispatch = dispatch => {
     },
     loadLabels() {
       dispatch(fetchLabels());
-    },
-
     }
   };
 };

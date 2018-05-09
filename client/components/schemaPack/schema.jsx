@@ -8,25 +8,10 @@ import { Navbar, Sidebar } from "../index";
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
 
-const Schema = () => {
+console.log("Schema render");
+const Schema = props => {
   var app = new Application();
-  return (
-    <StyledAppWrapper>
-      <Grid style={{ paddingTop: "0px" }}>
-        <Grid.Row>
-          <Navbar />
-        </Grid.Row>
-        <Grid.Row>
-          <Grid.Column id="main">
-            <BodyWidget app={app} />;
-          </Grid.Column>
-          <Grid.Column id="sidebar">
-            <Sidebar />
-          </Grid.Column>
-        </Grid.Row>
-      </Grid>
-    </StyledAppWrapper>
-  );
+  return <BodyWidget app={app} />;
 };
 
 const StyledAppWrapper = styled.div`
