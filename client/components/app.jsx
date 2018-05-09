@@ -2,17 +2,17 @@ import React, { Component } from "react";
 import { Navbar, Sidebar, DesignerCanvas, DesignerProperties, DesignerToolbox, Schema } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
-import { fetchIssues } from "../store";
+import { fetchIssues, designerOperations, fetchCollaborators, fetchLabels } from "../store";
+
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
 
 class App extends Component {
-  constructor(props) {
-    super(props);
-  }
 
   componentDidMount() {
+    this.props.loadCollaborators();
     this.props.loadIssues();
+    this.props.loadLabels();
   }
 
   render() {
@@ -76,8 +76,16 @@ const StyledAppWrapper = styled.div`
 
 const mapDispatch = dispatch => {
   return {
+    loadCollaborators() {
+      dispatch(fetchCollaborators());
+    },
     loadIssues() {
       dispatch(fetchIssues());
+    },
+    loadLabels() {
+      dispatch(fetchLabels());
+    },
+
     }
   };
 };
