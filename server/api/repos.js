@@ -59,5 +59,4 @@ router.get("/orgs/:id/repos", async (req, res, next) => {
     } catch (err) {
         next(err);
     }
-})
-    ;
+});

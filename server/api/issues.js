@@ -104,5 +104,21 @@ router.put("/:number/assignees", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
+});
+
+
+/**
+ * Get all labels from this repository
+ */
+router.get("/labels", async (req, res, next) => {
+  try {
+    const response = await req.octokit.issues.getLabels({
+      owner: req.repoOwner,
+      repo: req.repoName,
+    });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
 })
   ;

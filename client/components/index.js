@@ -12,6 +12,7 @@ export { default as Sidebar } from "./sidebar";
 export { default as Issues } from "./issues/issues";
 export { default as IssueItem } from "./issues/issue-item";
 export { default as AssigneeLabel } from "./issues/assignee-label";
+export { default as LabelLabel } from "./issues/label-label";
 export * from "./designer";
 export { default as Schema } from "./schema.jsx";
 

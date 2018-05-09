@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Navbar, Sidebar, DesignerCanvas, DesignerProperties, Schema } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
-import { fetchIssues, designerOperations, fetchCollaborators } from "../store";
+import { fetchIssues, designerOperations, fetchCollaborators, fetchLabels } from "../store";
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
 
@@ -11,6 +11,8 @@ class App extends Component {
   componentDidMount() {
     this.props.loadCollaborators();
     this.props.loadIssues();
+    this.props.loadLabels();
+    console.log("COMPONENTDIDMOUNT", this.props);
     this.props.addDemoTextboxes();
   }
 
@@ -87,6 +89,9 @@ const mapDispatch = dispatch => {
     },
     loadIssues() {
       dispatch(fetchIssues());
+    },
+    loadLabels() {
+      dispatch(fetchLabels());
     },
     addDemoTextboxes() {
       for (let i = 0; i < 10; i++) {

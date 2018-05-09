@@ -5,7 +5,6 @@ import { removeAssignee } from "../../store/issues";
 
 class AssigneeLabel extends Component {
     removeAssignee = () => {
-
         this.props.removeAssignee(this.props.issue.number, [this.props.assignee.login]);
     }
 
