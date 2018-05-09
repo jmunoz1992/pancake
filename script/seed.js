@@ -10,10 +10,12 @@
  * Now that you've got the main idea, check it out in practice below!
  */
 const db = require("../server/db");
-const {User} = require("../server/db/models");
+const { Project, Mockup } = require("../server/db/models");
 
-async function seed () {
-  await db.sync({force: true});
+async function seed() {
+  await db.sync({ force: true });
+  const project = await Project.create({ owner: "flapstackjack", repository: "demo" });
+  const mockup = await Mockup.create({ id: 2, name: "My Test Mockup", projectId: 1 });
   console.log("db synced!");
 }
 
