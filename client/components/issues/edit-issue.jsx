@@ -135,7 +135,6 @@ class EditIssue extends Component {
                         <Button type="submit">Add Label</Button>
                         {issue.labels
                             .map(label => {
-                                console.log("hi");
                                 return (<LabelLabel
                                     key={label.id}
                                     label={label}
