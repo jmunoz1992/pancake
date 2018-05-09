@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Navbar, Sidebar, DesignerCanvas, DesignerProperties, DesignerToolbox, Schema } from "./index";
+import { Navbar, Sidebar, DesignerCanvas, DesignerSidebar, Schema, SocketModal, MockupList } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
 import { fetchIssues, designerOperations, fetchCollaborators, fetchLabels } from "../store";
@@ -22,10 +22,11 @@ class App extends Component {
           <Grid.Row>
             <Navbar />
           </Grid.Row>
+          <Route path="/mockups" component={SocketModal} />
           <Grid.Row>
             <Grid.Column id="main">
               <Switch>
-                <Route path="/wireframes" component={DesignerCanvas} />
+                <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route
                   render={() => (
@@ -38,8 +39,7 @@ class App extends Component {
             </Grid.Column>
             <Grid.Column id="sidebar">
               <Switch>
-                {/* <Route path="/wireframes" component={DesignerProperties} /> */}
-                <Route path="/wireframes" component={DesignerToolbox} />
+                <Route path="/mockups" component={DesignerSidebar} />
               </Switch>
             </Grid.Column>
           </Grid.Row>
@@ -51,18 +51,22 @@ class App extends Component {
 
 const StyledAppWrapper = styled.div`
   #main {
-    width: calc(100% - 275px);
-    height: 100vh;
+    position: fixed;
+    top: 60px;
+    height: 100%;
+    width: calc(100% - 260px);
     overflow: hidden;
   }
 
   #sidebar {
     position: fixed;
+    background: white;
     top: 60px;
     right: 0;
-    width: 275px;
-    min-height: 100%;
+    bottom: 0;
+    width: 300px;
     box-shadow: 0px 0px 30px 4px rgba(0, 0, 0, 0.3);
+    padding-right: 0px;
   }
 
   scroll-container {

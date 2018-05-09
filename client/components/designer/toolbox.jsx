@@ -2,33 +2,50 @@ import React, { Component } from "react";
 import { default as Library } from "./elements";
 import { designerOperations } from "../../store";
 import { connect } from "react-redux";
+import { Accordion } from "semantic-ui-react";
+import styled from "styled-components";
+import ToolboxItem from "./toolboxitem";
 
 class Toolbox extends Component {
   constructor(props) {
     super(props);
   }
+
   render() {
+    let categories = new Set();
+    Object.values(Library).forEach(item => categories.add(item.category));
+    categories = [...categories].map(category => ({
+      title: category,
+      content: {
+        content: this.renderComponentsForCategory(category),
+        key: `content-${category}`
+      }
+    }));
+
     return (
-      <div>
-        <h3>Toolbox</h3>
-        {this.renderLibraryComponents()}
+      <div style={{ height: "50%", overflowY: "scroll", paddingRight: "10px" }}>
+        <h2>Components</h2>
+        <Accordion defaultActiveIndex={-1} panels={categories} />
+        {this.renderComponentsForCategory()}
       </div>
     );
   }
 
-  onToolboxElementClicked(element) {
-    this.props.addElement(element);
+  onToolboxElementClicked(libraryItem) {
+    this.props.addLibraryItem(libraryItem);
   }
 
-  renderLibraryComponents() {
-    const libraryArray = Object.values(Library);
+  renderComponentsForCategory(category) {
+    const libraryArray = Object.values(Library).filter(item => item.category === category);
 
-    return libraryArray.map(element => {
-      const ComponentToRender = element.COMPONENT;
+    return libraryArray.map(item => {
+      const ComponentToRender = item.element.COMPONENT;
       return (
-        <div key={element.name} onClick={() => this.onToolboxElementClicked(element)}>
-          <ComponentToRender />
-        </div>
+        <ToolboxItem
+          key={item.element.name}
+          handleClick={() => this.onToolboxElementClicked(item)}
+          item={item}
+        />
       );
     });
   }
@@ -42,10 +59,19 @@ const getRandomIntInclusive = (min, max) => {
 
 const mapDispatch = dispatch => {
   return {
-    addElement: ElementClass => {
-      const element = new ElementClass();
-      element.top = getRandomIntInclusive(100, 1000);
-      element.left = getRandomIntInclusive(100, 1000);
+    addLibraryItem: item => {
+      const element = new item.element();
+      element.top = getRandomIntInclusive(200, 600);
+      element.left = getRandomIntInclusive(200, 600);
+
+      // Gets some default property values from the ElementLibrary item and assigns them to the new
+      // component we're creating.
+      for (const key in item.properties) {
+        if (item.properties.hasOwnProperty(key)) {
+          const value = item.properties[key];
+          element[key] = value;
+        }
+      }
       dispatch(designerOperations.createNewElement(element));
     }
   };

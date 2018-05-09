@@ -17,7 +17,7 @@ module.exports = (state = [], action) => {
     case UPDATE_ELEMENT:
       return state.map(element => (action.payload.id === element.id ? action.payload : element));
     case REMOVE_ELEMENT:
-      return state.filter(element => element.id === action.payload.id);
+      return state.filter(element => element.id !== action.payload.id);
     case LOAD_ELEMENTS:
       return action.payload;
     default:

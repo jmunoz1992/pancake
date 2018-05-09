@@ -8,8 +8,7 @@ const selectElement = element => dispatch => {
 
 // Element manipulation
 const createNewElement = element => (dispatch, getState) => {
-  console.log("creating element");
-  element.id = getState().designerState.elements.length + 1;
+  element.id = "uninitialized";
   dispatchNetworkAction(actions.createElement(element));
 };
 
@@ -17,6 +16,15 @@ const moveElement = (element, newPosition) => (dispatch, getState) => {
   element.top = newPosition.y;
   element.left = newPosition.x;
   dispatchNetworkAction(actions.updateElement(element));
+};
+
+const updateElementProperty = (element, property, newValue) => (dispatch, getState) => {
+  element[property] = newValue;
+  dispatchNetworkAction(actions.updateElement(element));
+};
+
+const deleteElement = element => dispatch => {
+  dispatchNetworkAction(actions.removeElement(element));
 };
 
 const resizeElement = (element, newSize) => (dispatch, getState) => {
@@ -28,14 +36,14 @@ const resizeElement = (element, newSize) => (dispatch, getState) => {
 };
 
 // Network/Session
-const loadMockup = mockupId => (dispatch, getState) => {
+const loadMockup = () => (dispatch, getState) => {
   dispatch(actions.loadElements([]));
-  connectToSession(mockupId);
+  connectToSession(getState().mockups.selectedMockup);
 };
 
-const disconnect = mockupId => (dispatch, getState) => {
+const disconnect = () => (dispatch, getState) => {
   dispatch(actions.loadElements([]));
-  disconnectFromSession(mockupId);
+  disconnectFromSession(getState().mockups.selectedMockup);
 };
 
 const setConnecting = () => (dispatch, getState) => {
@@ -81,6 +89,8 @@ export {
   createNewElement,
   moveElement,
   resizeElement,
+  updateElementProperty,
+  deleteElement,
   loadElements,
   loadMockup,
   disconnect,
