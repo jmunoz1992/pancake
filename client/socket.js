@@ -25,7 +25,7 @@ export const disconnectFromSession = mockupId => {
 
 export const dispatchNetworkAction = action => {
   console.log("Sending action to server", action);
-  if (store.getState().designerState.networkStatus.connected) mockupSocket.emit("dispatch-action", action);
+  if (store.getState().designer.networkStatus.connected) mockupSocket.emit("dispatch-action", action);
   else console.log("Cannot dispatch action because we are not connected to a session.", action);
 };
 

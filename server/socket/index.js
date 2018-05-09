@@ -51,7 +51,7 @@ const onJoinSession = async (sessionName, socket) => {
     const session = await findOrCreateSession(sessionName);
     session.clients.push(socket.id);
     socket.join(sessionName);
-    socket.emit("load-initial-state", session.store.getState().designerState);
+    socket.emit("load-initial-state", session.store.getState().designer);
   } catch (error) {
     console.log(`Unable to join session. (Client=${socket.id}, Session=${sessionName})`);
     sendClientError(socket, error);

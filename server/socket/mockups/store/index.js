@@ -1,5 +1,5 @@
 const { createStore, combineReducers } = require("redux");
-const designerState = require("./designer");
+const designer = require("./designer");
 const { Mockup, MockupElement } = require("../../../db/models");
 
 async function createStoreForMockup(mockupId) {
@@ -8,7 +8,7 @@ async function createStoreForMockup(mockupId) {
   const mockupElements = await MockupElement.findAll({ where: { mockupId: mockupId } });
   const initialState = mockupElements.map(element => JSON.parse(element.data));
   console.log(`Restored ${initialState.length} mockup elements from database.`);
-  const store = createStore(combineReducers({ designerState }));
+  const store = createStore(combineReducers({ designer }));
   store.serialize = debounce(serializeStore, 3000);
   store.dispatch({ type: "designer/LOAD_ELEMENTS", payload: initialState });
   return store;
@@ -16,7 +16,7 @@ async function createStoreForMockup(mockupId) {
 
 async function serializeStore(store, mockupId) {
   console.log("Serializing");
-  const elements = store.getState().designerState;
+  const elements = store.getState().designer;
   await MockupElement.destroy({ where: { mockupId } });
   for (const element of elements) {
     let model = await MockupElement.findOrCreate({ where: { id: element.id } });

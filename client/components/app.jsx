@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Navbar, Sidebar, DesignerCanvas, DesignerSidebar, Schema, SocketModal } from "./index";
+import { Navbar, Sidebar, DesignerCanvas, DesignerSidebar, Schema, SocketModal, MockupList } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
 import { fetchIssues } from "../store";
@@ -26,6 +26,7 @@ class App extends Component {
           <Grid.Row>
             <Grid.Column id="main">
               <Switch>
+                <Route path="/mockups" component={MockupList} />
                 <Route path="/wireframes" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route
@@ -53,6 +54,7 @@ class App extends Component {
 const StyledAppWrapper = styled.div`
   #main {
     position: fixed;
+    top: 60px;
     height: 100%;
     width: calc(100% - 260px);
     overflow: hidden;

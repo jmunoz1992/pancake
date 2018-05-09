@@ -84,7 +84,7 @@ const debounce = function(func, wait, immediate) {
 };
 
 const mapState = state => {
-  const { selectedElement, elements } = state.designerState;
+  const { selectedElement, elements } = state.designer;
   const selectedElementObj = elements.find(e => e.id === selectedElement);
   return { element: selectedElementObj };
 };

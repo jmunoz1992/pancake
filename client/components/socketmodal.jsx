@@ -39,7 +39,7 @@ const SocketModal = props => {
 
 const mapState = state => {
   return {
-    networkStatus: state.designerState.networkStatus
+    networkStatus: state.designer.networkStatus
   };
 };
 

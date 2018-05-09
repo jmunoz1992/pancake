@@ -12,17 +12,9 @@ const Navbar = props => {
       <Menu.Item>
         <img src="/logo.png" />
       </Menu.Item>
-      <Dropdown item text="Mockups">
-        <Dropdown.Menu>
-          <Dropdown.Item as="a" name="wireframes.1" onClick={() => props.history.push("/wireframes")}>
-            Mockup 1
-          </Dropdown.Item>
-          <Dropdown.Divider />
-          <Dropdown.Item as="a" name="wireframe.new" onClick={() => props.history.push("/wireframes")}>
-            Create New
-          </Dropdown.Item>
-        </Dropdown.Menu>
-      </Dropdown>
+      <Menu.Item as="a" name="mockup" onClick={() => props.history.push("/mockups")}>
+        Mockups
+      </Menu.Item>
       <Menu.Item as="a" name="schema" onClick={() => props.history.push("/schema")}>
         Schema Designer
       </Menu.Item>

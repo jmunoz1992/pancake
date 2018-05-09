@@ -3,3 +3,4 @@ export { default as DesignerElement } from "./element";
 export { default as DesignerToolbox } from "./toolbox";
 export { default as DesignerProperties } from "./properties";
 export { default as DesignerSidebar } from "./sidebar";
+export { default as MockupList } from "./mockuplist";

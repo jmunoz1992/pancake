@@ -26,7 +26,6 @@ class DesignerCanvas extends Component {
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
-    // this.canvasRef.current.addEventListener("wheel", this.onScroll);
   }
 
   componentWillUnmount() {
@@ -35,7 +34,6 @@ class DesignerCanvas extends Component {
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
-    // this.canvasRef.current.removeEventListener("wheel", this.onScroll);
   }
 
   onScroll = event => {
@@ -159,13 +157,13 @@ const StyledCanvas = styled.div.attrs({
 `;
 
 const mapState = state => {
-  const selectedElement = state.designerState.elements.find(
-    element => element.id === state.designerState.selectedElement
+  const selectedElement = state.designer.elements.find(
+    element => element.id === state.designer.selectedElement
   );
   return {
-    elements: state.designerState.elements,
+    elements: state.designer.elements,
     selectedElement,
-    selectedElementId: state.designerState.selectedElement
+    selectedElementId: state.designer.selectedElement
   };
 };
 
