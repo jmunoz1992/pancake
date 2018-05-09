@@ -8,33 +8,31 @@ import {
   DiagramWidget
 } from "storm-react-diagrams";
 import axios from "axios";
+import { sendSchemaUpdate } from "../../socket/schema";
 // import { action } from "@storybook/addon-actions";
 
 export class Application {
-  constructor() {
+  constructor(json) {
     this.diagramEngine = new SRD.DiagramEngine();
+    this.diagramEngine.addListener({ repaintCanvas: () => console.log("repaint") });
     this.diagramEngine.installDefaultFactories();
-    this.fetchModels();
+    this.loadDiagram(json);
     this.state = {
       linksStr: [],
       linksModels: []
     };
   }
 
-  fetchModels() {
+  loadDiagram(json) {
     this.activeModel = new SRD.DiagramModel();
+    this.activeModel.addListener({ nodesUpdated: (...args) => console.log("nodesUpdated", args) });
+    this.json = json;
     this.diagramEngine.setDiagramModel(this.activeModel);
-    axios
-      .get("/api/schemas")
-      .then(result => {
-        if (result) {
-          this.deserializer(result.data);
-        }
-      })
-      .catch(err => console.log(err));
+    if (json) this.deserializer(json);
   }
 
   deserializer(data) {
+    console.log("deserializer", data);
     const deserializedData = JSON.parse(data);
     const nodes = deserializedData.nodes;
     const links = deserializedData.links;
@@ -49,23 +47,25 @@ export class Application {
         nodeToAdd = this.addPort(nodeDetails.inPort, nodeToAdd, "inNode");
         if (nodeToAdd) allPorts = allPorts.concat(nodeToAdd.getInPorts());
       }
+      // debugger; //eslint-disable-line
       if (nodeToAdd) {
         nodeToAdd.setPosition(nodeDetails.posX, nodeDetails.posY);
         this.addListenersOnNode(nodeToAdd, node);
         this.activeModel.addNode(nodeToAdd);
       }
+      console.log("Deserializer: activeModel", this.activeModel);
       this.addLinks(links, allPorts);
     }
   }
 
   addListenersOnNode(nodeToAdd, node) {
-    let self = this;
     nodeToAdd.addListener({
-      selectionChanged: function() {
-        self.updateNodePosition(nodeToAdd.x, nodeToAdd.y, node);
+      selectionChanged: () => {
+        console.log("selectionChanged");
+        setTimeout(this.updateSchema.bind(this), 0);
       },
-      entityRemoved: function() {
-        self.findNodeToDelete(node);
+      entityRemoved: () => {
+        setTimeout(this.updateSchema.bind(this), 0);
       }
     });
   }
@@ -88,59 +88,8 @@ export class Application {
     }
   }
 
-  updateNodePosition(posX, posY, nodeId) {
-    axios
-      .get("/api/schemas")
-      .then(result => {
-        const deserializedData = JSON.parse(result.data);
-        const nodes = deserializedData.nodes;
-        let newNodes = {};
-        for (let node in nodes) {
-          if (node === nodeId) {
-            nodes[node].x = posX;
-            nodes[node].y = posY;
-          }
-          newNodes[node] = nodes[node];
-        }
-        const serializedData = JSON.stringify(newNodes);
-        axios
-          .put("/api/schemas/", {
-            properties: serializedData
-          })
-          .then(() => {
-            this.updateSchema();
-          })
-          .catch(err => console.log("err ", err));
-      })
-      .catch(err => console.log(err));
-  }
-
-  findNodeToDelete(nodeId) {
-    axios
-      .get("/api/schemas")
-      .then(result => {
-        const deserializedData = JSON.parse(result.data);
-        const nodes = deserializedData.nodes;
-        let newNodes = {};
-        for (let node in nodes) {
-          if (node !== nodeId) {
-            newNodes[node] = nodes[node];
-          }
-        }
-        const serializedData = JSON.stringify(newNodes);
-        axios
-          .put("/api/schemas/", {
-            properties: serializedData
-          })
-          .then(() => {
-            this.updateSchema();
-          })
-          .catch(err => console.log("err ", err));
-      })
-      .catch(err => console.log(err));
-  }
-
   updateSchema() {
+    console.log("updateSchema");
     const allNodes = this.activeModel.getNodes();
     let serializedObject = {
       nodes: {},
@@ -184,12 +133,13 @@ export class Application {
     }
     const serializedData = JSON.stringify(serializedObject);
     console.log("serialized data", serializedData);
-    axios
-      .put("/api/schemas/", {
-        properties: serializedData
-      })
-      .then(() => {})
-      .catch(err => console.log("err in line 190", err));
+    sendSchemaUpdate(serializedData);
+    // axios
+    //   .put("/api/schemas/", {
+    //     properties: serializedData
+    //   })
+    //   .then(() => {})
+    //   .catch(err => console.log("err in line 190", err));
   }
 
   addPort(portArr, nodeToAdd, typePort) {

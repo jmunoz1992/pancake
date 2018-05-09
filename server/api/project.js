@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const octokit = require("@octokit/rest")();
-const { User, Project, Mockup } = require("../db/models");
+const { User, Project, Mockup, Schema } = require("../db/models");
 module.exports = router;
 
 router.post("/", async (req, res, next) => {
@@ -23,6 +23,10 @@ router.post("/", async (req, res, next) => {
         projectId: project[0]
       });
     }
+    await Schema.upsert(
+      { projectId: req.user.activeProjectId },
+      { where: { projectId: req.user.activeProjectId } }
+    );
 
     res.json(project[0]);
   } catch (error) {
