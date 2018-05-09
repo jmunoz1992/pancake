@@ -23,7 +23,7 @@ const SocketModal = props => {
         </Loader>
       );
     } else {
-      renderFragment = <Loader>Connecting...</Loader>;
+      renderFragment = <Loader>Loading...</Loader>;
     }
   } else {
     renderFragment = (
@@ -39,6 +39,7 @@ const SocketModal = props => {
 
 const mapState = state => {
   return {
+    selectedMockupId: state.mockups.selectedMockup,
     networkStatus: state.designer.networkStatus
   };
 };

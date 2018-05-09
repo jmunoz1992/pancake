@@ -13,13 +13,14 @@ export class Textbox extends BaseElement {
   constructor() {
     super();
     this.type = "Textbox";
-    this.height = 65;
+    this.height = 62;
     this.width = 200;
     this.placeholder = "";
     this.label = "";
   }
 
-  static MAX_HEIGHT = 100;
+  static MIN_HEIGHT = 62;
+  static MAX_HEIGHT = 62;
   static MAX_WIDTH = 1000;
   static COMPONENT = props => (
     <Form>

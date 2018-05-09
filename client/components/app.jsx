@@ -22,12 +22,11 @@ class App extends Component {
           <Grid.Row>
             <Navbar />
           </Grid.Row>
-          <Route path="/wireframes" component={SocketModal} />
+          <Route path="/mockups" component={SocketModal} />
           <Grid.Row>
             <Grid.Column id="main">
               <Switch>
-                <Route path="/mockups" component={MockupList} />
-                <Route path="/wireframes" component={DesignerCanvas} />
+                <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route
                   render={() => (
@@ -40,8 +39,7 @@ class App extends Component {
             </Grid.Column>
             <Grid.Column id="sidebar">
               <Switch>
-                {/* <Route path="/wireframes" component={DesignerProperties} /> */}
-                <Route path="/wireframes" component={DesignerSidebar} />
+                <Route path="/mockups" component={DesignerSidebar} />
               </Switch>
             </Grid.Column>
           </Grid.Row>

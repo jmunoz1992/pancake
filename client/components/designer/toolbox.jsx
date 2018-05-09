@@ -24,7 +24,7 @@ class Toolbox extends Component {
 
     return (
       <div style={{ height: "50%", overflowY: "scroll", paddingRight: "10px" }}>
-        <h2>Toolbox</h2>
+        <h2>Components</h2>
         <Accordion defaultActiveIndex={-1} panels={categories} />
         {this.renderComponentsForCategory()}
       </div>

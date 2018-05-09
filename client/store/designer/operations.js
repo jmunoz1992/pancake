@@ -36,14 +36,14 @@ const resizeElement = (element, newSize) => (dispatch, getState) => {
 };
 
 // Network/Session
-const loadMockup = mockupId => (dispatch, getState) => {
+const loadMockup = () => (dispatch, getState) => {
   dispatch(actions.loadElements([]));
-  connectToSession(mockupId);
+  connectToSession(getState().mockups.selectedMockup);
 };
 
-const disconnect = mockupId => (dispatch, getState) => {
+const disconnect = () => (dispatch, getState) => {
   dispatch(actions.loadElements([]));
-  disconnectFromSession(mockupId);
+  disconnectFromSession(getState().mockups.selectedMockup);
 };
 
 const setConnecting = () => (dispatch, getState) => {

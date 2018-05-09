@@ -4,6 +4,7 @@ import { Header, Icon, Dimmer, Loader } from "semantic-ui-react";
 import { default as DesignerElement } from "./element";
 import { designerOperations } from "../../store";
 import { connect } from "react-redux";
+import Toolbar from "./toolbar";
 
 class DesignerCanvas extends Component {
   constructor(props) {
@@ -22,7 +23,6 @@ class DesignerCanvas extends Component {
   // the canvas itself, we stop receiving mouse events if the mouse moves outside of the canvas
   componentDidMount() {
     console.log("Canvas mounting.");
-    this.props.loadMockup(2);
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
@@ -30,7 +30,7 @@ class DesignerCanvas extends Component {
 
   componentWillUnmount() {
     console.log("Canvas unmounting.");
-    this.props.disconnect(2);
+    this.props.disconnect();
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
@@ -134,6 +134,7 @@ class DesignerCanvas extends Component {
             zoom={{}}
           />
         ))}
+        <Toolbar />
       </StyledCanvas>
     );
   }
@@ -161,6 +162,7 @@ const mapState = state => {
     element => element.id === state.designer.selectedElement
   );
   return {
+    selectedMockupId: state.mockups.selectedMockup,
     elements: state.designer.elements,
     selectedElement,
     selectedElementId: state.designer.selectedElement
@@ -169,8 +171,8 @@ const mapState = state => {
 
 const mapDispatch = dispatch => {
   return {
-    loadMockup: mockupId => dispatch(designerOperations.loadMockup(mockupId)),
-    disconnect: mockupId => dispatch(designerOperations.disconnect(mockupId)),
+    loadMockup: () => dispatch(designerOperations.loadMockup()),
+    disconnect: () => dispatch(designerOperations.disconnect()),
     doMoveElement: (element, x, y) => dispatch(designerOperations.moveElement(element, { x, y })),
     deleteElement: elementId => dispatch(designerOperations.deleteElement({ id: elementId })),
     deselect: () => dispatch(designerOperations.selectElement({ id: 0 }))

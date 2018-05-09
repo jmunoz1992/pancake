@@ -61,7 +61,7 @@ mockupSocket.on("connect_timeout", error => {
 
 mockupSocket.on("reconnect", attempt => {
   console.log("reconnect", attempt);
-  store.dispatch(designerOperations.setConnected());
+  store.dispatch(designerOperations.loadMockup());
 });
 
 mockupSocket.on("reconnecting", attempt => {
