@@ -1,6 +1,7 @@
 const User = require("./user");
 const Project = require("./project");
 const Issue = require("./issue");
+const Schema = require("./schema");
 const Mockup = require("./mockup");
 const MockupElement = require("./mockupelement");
 
@@ -17,6 +18,9 @@ Project.belongsToMany(User, {
 Project.hasMany(Issue);
 Issue.belongsTo(Project);
 
+Schema.belongsTo(Project);
+Project.hasMany(Schema);
+
 Project.hasMany(Mockup);
 Mockup.belongsTo(Project);
 
@@ -27,6 +31,7 @@ module.exports = {
   User,
   Project,
   Issue,
+  Schema,
   Mockup,
   MockupElement
 };
