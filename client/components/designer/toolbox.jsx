@@ -60,10 +60,12 @@ const getRandomIntInclusive = (min, max) => {
 const mapDispatch = dispatch => {
   return {
     addLibraryItem: item => {
-      console.log("toolbox addElement");
       const element = new item.element();
       element.top = getRandomIntInclusive(200, 600);
       element.left = getRandomIntInclusive(200, 600);
+
+      // Gets some default property values from the ElementLibrary item and assigns them to the new
+      // component we're creating.
       for (const key in item.properties) {
         if (item.properties.hasOwnProperty(key)) {
           const value = item.properties[key];

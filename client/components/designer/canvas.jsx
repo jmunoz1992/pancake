@@ -12,30 +12,27 @@ class DesignerCanvas extends Component {
     this.state = {
       panOffsetX: 0,
       panOffsetY: 0,
-      zoomLevel: 1,
       dragging: false,
       ignoreNextClick: false
     };
-    this.canvasRef = React.createRef();
   }
 
   // Event listeners for canvas panning.  They're added to the document because if we add them to
   // the canvas itself, we stop receiving mouse events if the mouse moves outside of the canvas
   componentDidMount() {
-    console.log("Canvas mounting.");
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
   }
 
   componentWillUnmount() {
-    console.log("Canvas unmounting.");
     this.props.disconnect();
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
   }
 
+  // Hook scrollwheel event to move the canvas around
   onScroll = event => {
     event.preventDefault();
     this.setState({
@@ -44,6 +41,7 @@ class DesignerCanvas extends Component {
     });
   };
 
+  // Keyboard shortcuts
   onKeyDown = event => {
     console.log("KeyCode", event.keyCode);
     if (this.props.selectedElementId !== 0) {
@@ -83,9 +81,8 @@ class DesignerCanvas extends Component {
 
   onMouseMove = event => {
     if (this.state.dragging) {
-      const zoomAdjustment = 1 / this.state.zoomLevel;
-      const deltaX = (event.pageX - this.state.dragLastX) * zoomAdjustment;
-      const deltaY = (event.pageY - this.state.dragLastY) * zoomAdjustment;
+      const deltaX = event.pageX - this.state.dragLastX;
+      const deltaY = event.pageY - this.state.dragLastY;
       this.setState({
         panOffsetX: this.state.panOffsetX + deltaX,
         panOffsetY: this.state.panOffsetY + deltaY,
@@ -102,9 +99,8 @@ class DesignerCanvas extends Component {
     }
   };
 
+  // ignoreNextClick is set after a drag event, since drag events fire unwanted onClicks.
   onCanvasClicked = event => {
-    // Click events can bubble up from child components, so only call deselect() if it was actually
-    // the canvas itself that was clicked.
     if (
       event.target.id === "mockup-canvas" &&
       this.props.selectedElementId !== 0 &&
@@ -117,13 +113,11 @@ class DesignerCanvas extends Component {
     return (
       <StyledCanvas
         id="mockup-canvas"
-        ref={this.canvasRef}
         onKeyDown={this.onKeyDown}
         onWheel={this.onScroll}
+        onClick={this.onCanvasClicked}
         tabIndex="0"
         className={"noselect"}
-        onClick={this.onCanvasClicked}
-        zoomLevel={this.state.zoomLevel}
         gridOffset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}>
         {this.props.elements.map(element => (
           <DesignerElement
@@ -131,7 +125,6 @@ class DesignerCanvas extends Component {
             element={element}
             selected={element.id === this.props.selectedElementId}
             offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}
-            zoom={{}}
           />
         ))}
         <Toolbar />
@@ -141,7 +134,7 @@ class DesignerCanvas extends Component {
 }
 
 // StyledComponents suggests using `attrs` for properties that are updated many times per second,
-// such as when we're animating the canvas grid lines while the user drags the canvas around
+// such as when we're animating the background grid lines while the user drags the canvas around
 const StyledCanvas = styled.div.attrs({
   style: ({ gridOffset }) => ({
     backgroundPosition: `${gridOffset.x - 1}px ${gridOffset.y - 1}px`
@@ -154,7 +147,6 @@ const StyledCanvas = styled.div.attrs({
   width: 100%;
   height: 100%;
   touch-action: none;
-  transform: scale(${props => props.zoomLevel});
 `;
 
 const mapState = state => {

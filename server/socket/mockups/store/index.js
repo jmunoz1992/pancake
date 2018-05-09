@@ -5,9 +5,13 @@ const { Mockup, MockupElement } = require("../../../db/models");
 async function createStoreForMockup(mockupId) {
   const mockup = await Mockup.findById(mockupId);
   if (!mockup) throw new Error(`Mockup '${mockupId}' isn't valid.`);
+
+  // Deserialize JSON from PostgreSQL
   const mockupElements = await MockupElement.findAll({ where: { mockupId: mockupId } });
   const initialState = mockupElements.map(element => JSON.parse(element.data));
   console.log(`Restored ${initialState.length} mockup elements from database.`);
+
+  // Initialize the server-side Redux store with the deserialized JSON
   const store = createStore(combineReducers({ designer }));
   store.serialize = debounce(serializeStore, 3000);
   store.dispatch({ type: "designer/LOAD_ELEMENTS", payload: initialState });
@@ -15,8 +19,10 @@ async function createStoreForMockup(mockupId) {
 }
 
 async function serializeStore(store, mockupId) {
-  console.log("Serializing");
+  console.log(`Saving mockup ${mockupId} to database.`);
   const elements = store.getState().designer;
+
+  // TODO: Replace with Sequelize upsert
   await MockupElement.destroy({ where: { mockupId } });
   for (const element of elements) {
     let model = await MockupElement.findOrCreate({ where: { id: element.id } });
@@ -29,8 +35,8 @@ async function serializeStore(store, mockupId) {
 
 module.exports = { createStoreForMockup, serializeStore };
 
-// UTILITY
-//https://gist.github.com/steveosoule/8c98a41d20bb77ae62f7
+// Debounce utility method
+// https://gist.github.com/steveosoule/8c98a41d20bb77ae62f7
 const debounce = function(func, wait, immediate) {
   let timeout;
   return function() {

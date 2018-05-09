@@ -20,7 +20,7 @@ export const disconnectFromSession = mockupId => {
     mockupSocket.emit("leave-session", { mockupId });
   }
   console.log("Leaving mockup session", mockupId);
-  store.dispatch(designerOperations.setError("Not connected."));
+  store.dispatch(designerOperations.setError(""));
 };
 
 export const dispatchNetworkAction = action => {

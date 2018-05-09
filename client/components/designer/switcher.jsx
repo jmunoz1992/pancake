@@ -16,8 +16,10 @@ class MockupSwitcher extends React.Component {
   }
 
   componentWillReceiveProps(props) {
-    console.log(props);
-    if (!props.networkStatus.connecting && !props.networkStatus.connected && props.mockupList.length) this.props.switchMockup(props.selectedMockup.id || props.mockupList[0].id);
+    const status = props.networkStatus;
+    if (!status.connecting && !status.connected && !status.error && props.mockupList.length) {
+      this.props.switchMockup(props.selectedMockup.id || props.mockupList[0].id);
+    }
   }
 
   render() {

@@ -11,19 +11,7 @@ class WireframeElement extends Component {
     this.state = {};
     this.rnd = React.createRef();
   }
-
-  // We only update the Redux store with the new size or position of an element when the user
-  // finishes dragging. React-RnD takes care of keeping track of the element's size and position in
-  // the meantime.
-  onDragStop = (...args) => {
-    const positionInfo = args[1];
-    let x = positionInfo.x - this.props.offset.x;
-    x = Math.round(x / 5) * 5;
-    let y = positionInfo.y - this.props.offset.y;
-    y = Math.round(y / 5) * 5;
-    this.props.doMoveElement(x, y);
-  };
-
+  // Handles arrow key nudging events, which come from the parent
   componentWillReceiveProps = props => {
     if (props.selected && this.rnd.current) {
       this.rnd.current.updatePosition({
@@ -31,6 +19,18 @@ class WireframeElement extends Component {
         y: this.props.element.top + this.props.offset.y
       });
     }
+  };
+
+  // We only update the Redux store with the new size or position of an element when the user
+  // finishes dragging. React-RnD takes care of keeping track of the element's size and position in
+  // the meantime.
+  onDragStop = (...args) => {
+    const positionInfo = args[1];
+    let x = positionInfo.x - this.props.offset.x;
+    let y = positionInfo.y - this.props.offset.y;
+    x = Math.round(x / 5) * 5; // Round to the nearest 5 for grid snapping
+    y = Math.round(y / 5) * 5;
+    this.props.doMoveElement(x, y);
   };
 
   onResizeStop = (...eventArgs) => {
@@ -52,7 +52,7 @@ class WireframeElement extends Component {
     return this.props.selected ? this.renderSelected() : this.renderUnselected();
   }
 
-  // If the element is selected, we wrap the mockup component in a <Rnd> component. Rnd makes
+  // If the element is selected, we wrap the mockup component in a <Rnd> component, which makes
   // whatever component it wraps draggable and resizeable.  After the user stops dragging, we
   // update the Redux store in our event handlers, and we receive new props from our parent, which
   // Rnd uses to set the new default position of the component.
@@ -83,7 +83,7 @@ class WireframeElement extends Component {
   }
 
   // If the element isn't selected, we wrap it with a div and pass in style/CSS props received
-  // from the StyledComponents wrapper
+  // from StyledComponents
   renderUnselected() {
     return (
       <div className={this.props.className} style={this.props.style} onClick={this.onElementClicked}>
@@ -92,17 +92,22 @@ class WireframeElement extends Component {
     );
   }
 
-  // We need to associate an Element with an actual React Component, which we can do by looking at
-  // its type property.  We use that property to find the Element's class within the ElementLibrary
-  // map, and then from there we can retrieve the COMPONENT static property to determine which
-  // component should be rendered.
-  // We have to go through the process of mapping string Element types to objects because we can
-  // only send primitives over socket.io, not classes.
+  // We need to associate an Element with an actual React Component, which we can do by using its
+  // type property to look it up in the ElementLibrary.  ElementLibrary contains information about
+  // all of the different element types, and also has a reference to the appropriate React
+  // Component to render.
   renderElement() {
     const ElementToRender = ElementLibrary[this.props.element.type].element.COMPONENT;
+    const ClickInterceptor = styled.div`
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      background: transparent;
+    `;
     return (
       // ClickInterceptor is an invisible overlay that stops mouse events, so the user doesn't
-      // accidentally click on textboxes or buttons while trying to drag a mockup element around
+      // accidentally click on textboxes or buttons while trying to drag a mockup element around.
       <ClickInterceptor>
         <ElementToRender element={this.props.element} />
       </ClickInterceptor>
@@ -110,7 +115,7 @@ class WireframeElement extends Component {
   }
 
   // This is a helper function to grab the min/max size constants for an element, which are static
-  // properties defined on their class
+  // properties defined in the ElementLibrary.
   getElementConstraints() {
     const elementClass = ElementLibrary[this.props.element.type].element;
     return {
@@ -121,14 +126,6 @@ class WireframeElement extends Component {
     };
   }
 }
-
-const ClickInterceptor = styled.div`
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background: transparent;
-`;
 
 // StyledComponents warns against putting frequently modified styles (like position while the user
 // is dragging an element around) inside of the template string and instead suggests using `attrs`.

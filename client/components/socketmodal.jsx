@@ -25,7 +25,7 @@ const SocketModal = props => {
     } else {
       renderFragment = <Loader>Loading...</Loader>;
     }
-  } else {
+  } else if (status.error) {
     renderFragment = (
       <Header as="h2" icon inverted>
         <Icon name="warning sign" />
