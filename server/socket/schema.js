@@ -1,17 +1,30 @@
 const sessions = new Map();
 const { Schema } = require("../db/models");
 
-const findOrCreateSession = async schemaId => {
-  const existingSession = sessions.get(schemaId);
-  if (existingSession) return existingSession;
+const loadSchemaFromDatabase = async schemaId => {
+  try {
+    const schemaRow = await Schema.findById(schemaId);
+    return schemaRow.properties;
+  } catch (error) {
+    console.log("error in loadSchemaFromDatabase", error);
+  }
+};
 
-  const newSession = {
-    clients: [],
-    schema: schemaId,
-    state: await loadSchemaFromDatabase(schemaId)
-  };
-  sessions.set(schemaId, newSession);
-  return newSession;
+const findOrCreateSession = async schemaId => {
+  try {
+    const existingSession = sessions.get(schemaId);
+    if (existingSession) return existingSession;
+
+    const newSession = {
+      clients: [],
+      schema: schemaId,
+      state: await loadSchemaFromDatabase(schemaId)
+    };
+    sessions.set(schemaId, newSession);
+    return newSession;
+  } catch (error) {
+    console.log("error in findOrCreateSession", error);
+  }
 };
 
 const findSessionForSocket = socket => {
@@ -21,15 +34,14 @@ const findSessionForSocket = socket => {
   return null;
 };
 
-const loadSchemaFromDatabase = async schemaId => {
-  const schemaRow = await Schema.findById(schemaId);
-  return schemaRow.properties;
-};
-
 const writeStateToDatabase = async schemaId => {
-  const session = sessions.get(schemaId);
-  if (!session) throw new Error("No session exists.");
-  await Schema.update({ properties: session.state }, { where: { id: schemaId } });
+  try {
+    const session = sessions.get(schemaId);
+    if (!session) throw new Error("No session exists.");
+    await Schema.update({ properties: session.state }, { where: { id: schemaId } });
+  } catch (error) {
+    console.log("error in writeStateToDatabase", error);
+  }
 };
 
 const onJoinSession = async (projectId, socket) => {
@@ -48,25 +60,34 @@ const onJoinSession = async (projectId, socket) => {
 const onLeaveSession = async socket => {
   const schemaId = findSessionForSocket(socket);
   const session = sessions.get(schemaId);
+  console.log("socket in onLeaveSession ", socket);
   socket.leave(schemaId);
   if (!session) return;
   session.clients = session.clients.filter(client => client !== socket.id);
 
   if (!session.clients.length) {
-    console.log(`Tearing down session ${schemaId}.`);
-    await writeStateToDatabase(schemaId);
-    sessions.delete(schemaId);
+    try {
+      console.log(`Tearing down session ${schemaId}.`);
+      await writeStateToDatabase(schemaId);
+      sessions.delete(schemaId);
+    } catch (error) {
+      console.log("error in onLeaveSession", error);
+    }
   }
 };
 
 const onJsonReceived = async (json, socket) => {
-  console.log("onJsonReceived");
-  const schemaId = findSessionForSocket(socket);
-  if (!schemaId) throw new Error("Client isn't part of any session.");
-  const session = sessions.get(schemaId);
-  session.state = json;
-  await writeStateToDatabase(schemaId);
-  socket.to(schemaId).emit("notify-client-schema", session.state);
+  try {
+    console.log("onJsonReceived");
+    const schemaId = findSessionForSocket(socket);
+    if (!schemaId) throw new Error("Client isn't part of any session.");
+    const session = sessions.get(schemaId);
+    session.state = json;
+    await writeStateToDatabase(schemaId);
+    socket.to(schemaId).emit("notify-client-schema", session.state);
+  } catch (error) {
+    console.log("error in jsonRecieved ", error);
+  }
 };
 
 let io;
