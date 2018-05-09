@@ -67,7 +67,6 @@ class Welcome extends Component {
   };
 
   render() {
-    console.log("state", this.state);
     const { orgs, repos } = this.state;
     const { user } = this.props;
     let orgOptions = orgs.map(org => ({ key: org.login, text: org.login, value: org.login }));

@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { Button, Divider, Form, Modal } from "semantic-ui-react";
 
 import { AssigneeLabel, LabelLabel } from "./index";
-import { addAssignee, editIssue } from "../../store/issues";
+import { addAssignee, editIssue, addLabel } from "../../store/issues";
 
 class EditIssue extends Component {
     constructor(props) {
@@ -20,11 +20,6 @@ class EditIssue extends Component {
         if (newProps.issue.assignees !== oldProps.issue.assignees) {
             this.setState({
                 assignees: newProps.issue.assignees,
-            });
-        }
-        if (newProps.issue.labels !== oldProps.issue.labels) {
-            this.setState({
-                labels: newProps.issue.labels,
             });
         }
     }
@@ -47,8 +42,10 @@ class EditIssue extends Component {
         this.props.addAssignee(this.props.issue.number, newAssignees);
     }
 
-    addIssue = () => {
-        console.log("CLICKED");
+    addLabel = () => {
+        const newLabels = [...this.state.labels, this.state.selectedLabel];
+        this.setState({ labels: newLabels });
+        this.props.addLabel(this.props.issue.number, newLabels, this.props.issue.id);
     }
 
     findUnassignedCollabs = (assignedCollabs, allCollabs) => {
@@ -78,7 +75,7 @@ class EditIssue extends Component {
     }
 
     render() {
-        const { issue } = this.state;
+        const { issue } = this.props;
         const collabOptions = this.findUnassignedCollabs(this.props.issue.assignees, this.props.collaborators)
             .map(collab => ({
                 key: collab.id,
@@ -127,7 +124,7 @@ class EditIssue extends Component {
                         )}
                 </Form>
                 <Divider />
-                <Form onSubmit={this.addIssue}>
+                <Form onSubmit={this.addLabel}>
                     <Form.Field>
                         <Form.Select
                             label="Add Label"
@@ -137,12 +134,14 @@ class EditIssue extends Component {
                             placeholder="Select" />
                         <Button type="submit">Add Label</Button>
                         {issue.labels
-                            .map(label =>
-                                (<LabelLabel
+                            .map(label => {
+                                console.log("hi");
+                                return (<LabelLabel
                                     key={label.id}
                                     label={label}
                                     issue={issue}
-                                />))}
+                                />);
+                            })}
                     </Form.Field>
                 </Form>
             </Modal.Content>
@@ -151,7 +150,6 @@ class EditIssue extends Component {
 }
 
 const mapState = ({ issues, collaborators, labels }, ownProps) => {
-    console.log("labels", labels);
     return {
         issue: issues.find(issue => issue.id === ownProps.issue.id),
         collaborators,
@@ -159,6 +157,6 @@ const mapState = ({ issues, collaborators, labels }, ownProps) => {
     };
 };
 
-const mapDispatch = { editIssue, addAssignee };
+const mapDispatch = { editIssue, addAssignee, addLabel };
 
 export default connect(mapState, mapDispatch)(EditIssue);

@@ -10,7 +10,6 @@ class LabelLabel extends Component {
 
     render() {
         const { label } = this.props;
-        console.log("props: ", this.props);
         return (
             <Label as="a" tag key={label.id} style={{ backgroundColor: `#${label.color}` }}>
                 {label.name}

@@ -87,10 +87,6 @@ router.post("/:number/assignees", async (req, res, next) => {
  * Remove assigne from issue
  */
 router.put("/:number/assignees", async (req, res, next) => {
-
-  console.log("REQ.BODY", req.body);
-  console.log("NUMBER: ", req.params.number);
-  // console.log("ASSIGNEES TO REMOVE", req.body.assignees);
   try {
     const response = await req.octokit.issues.removeAssigneesFromIssue({
       owner: req.repoOwner,
@@ -113,6 +109,23 @@ router.get("/labels", async (req, res, next) => {
     const response = await req.octokit.issues.getLabels({
       owner: req.repoOwner,
       repo: req.repoName,
+    });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+/**
+ * Add label to this issue
+ */
+router.post("/:number/labels", async (req, res, next) => {
+  try {
+    const response = await req.octokit.issues.addLabels({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      number: req.params.number,
+      labels: req.body,
     });
     res.json(response.data);
   } catch (err) {
