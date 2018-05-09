@@ -6,8 +6,10 @@ import user from "./user";
 import issues from "./issues";
 import mockups from "./mockups";
 import designer from "./designer";
+import collaborators from "./collaborators";
+import labels from "./labels";
 
-const reducer = combineReducers({ user, issues, designer, mockups });
+const reducer = combineReducers({ user, issues, designer, mockups, collaborators, labels });
 const middleware = composeWithDevTools(applyMiddleware(thunkMiddleware, createLogger({ collapsed: true })));
 const store = createStore(reducer, middleware);
 
@@ -16,3 +18,5 @@ export * from "./user";
 export * from "./issues";
 export * from "./designer";
 export * from "./mockups";
+export * from "./labels";
+export * from "./collaborators";

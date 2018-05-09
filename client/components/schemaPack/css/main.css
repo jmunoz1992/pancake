@@ -1,4 +1,4 @@
-.body{
+.body {
   flex-grow: 1;
   display: flex;
   flex-direction: column;
@@ -6,7 +6,7 @@
   background-color: grey;
 }
 
-.header{
+.header {
   display: flex;
   flex-grow: 0;
   flex-shrink: 0;
@@ -15,19 +15,19 @@
   padding: 10px;
 }
 
-.content{
+.content {
   display: flex;
   flex-grow: 1;
 }
 
-.diagram-layer{
+.diagram-layer {
   /* position: relative; */
   flex-grow: 1;
 }
 
-.tray{
+.tray {
   width: 200px;
-  background: rgb(20,20,20);
+  background: rgb(20, 20, 20);
   flex-grow: 0;
   flex-shrink: 0;
 }
@@ -36,7 +36,7 @@
   color: white;
   font-family: Helvetica, Arial;
   padding: 5px;
-  margin: 30px 10px;
+  margin: 10px;
   border: solid 1px;
   border-radius: 5px;
   margin-bottom: 2px;
