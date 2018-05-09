@@ -244,7 +244,8 @@ export class BodyWidget extends React.Component {
       .getDiagramModel()
       .addNode(node);
     this.forceUpdate();
-    this.updateSchema();
+    console.log("BodyWidget onDrop");
+    this.props.app.updateSchema();
   }
 
   updateSchema() {

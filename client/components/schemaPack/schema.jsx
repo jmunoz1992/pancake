@@ -7,12 +7,28 @@ import "./css/main.css";
 import { Navbar, Sidebar } from "../index";
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
+import { connectToSession } from "../../socket/schema";
 
-console.log("Schema render");
-const Schema = props => {
-  var app = new Application();
-  return <BodyWidget app={app} />;
-};
+class Schema extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      diagramJson: ""
+    };
+  }
+
+  componentDidMount() {
+    console.log("Schema componentDidMount");
+    connectToSession(newJson => {
+      this.setState({ diagramJson: newJson });
+    });
+  }
+
+  render() {
+    var app = new Application(this.state.diagramJson);
+    return <BodyWidget app={app} />;
+  }
+}
 
 const StyledAppWrapper = styled.div`
   #main {

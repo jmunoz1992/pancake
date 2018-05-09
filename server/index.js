@@ -94,6 +94,7 @@ const startListening = () => {
   // set up our socket control center
   const io = socketio(server);
   require("./socket")(io);
+  require("./socket/schema")(io);
 };
 
 const syncDb = () => db.sync();
