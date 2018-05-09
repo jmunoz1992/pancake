@@ -15,6 +15,10 @@ export class Application {
     this.diagramEngine = new SRD.DiagramEngine();
     this.diagramEngine.installDefaultFactories();
     this.fetchModels();
+    this.state = {
+      linksStr: [],
+      linksModels: []
+    };
   }
 
   fetchModels() {
@@ -33,31 +37,82 @@ export class Application {
   deserializer(data) {
     const deserializedData = JSON.parse(data);
     const nodes = deserializedData.nodes;
-    let nodeModels = [];
-
+    const links = deserializedData.links;
+    let allPorts = [];
     for (let node in nodes) {
       let nodeDetails = nodes[node];
       let nodeToAdd = new SRD.DefaultNodeModel(nodeDetails.title, nodeDetails.color);
       if (nodeDetails.type === "outNode") {
         nodeToAdd = this.addPort(nodeDetails.outPort, nodeToAdd, "outNode");
+        if (nodeToAdd) allPorts = allPorts.concat(nodeToAdd.getOutPorts());
       } else {
         nodeToAdd = this.addPort(nodeDetails.inPort, nodeToAdd, "inNode");
+        if (nodeToAdd) allPorts = allPorts.concat(nodeToAdd.getInPorts());
       }
-      nodeToAdd.setPosition(nodeDetails.posX, nodeDetails.posY);
-      let self = this;
-      nodeToAdd.addListener({
-        selectionChanged: function() {
-          console.log("I GOT CLICKED!");
-          console.log("x: ", nodeToAdd.x);
-          console.log("x: ", nodeToAdd.y);
-        },
-        entityRemoved: function() {
-          self.findNodeToDelete(node);
-        }
-      });
-      nodeModels.push(nodeToAdd);
-      this.activeModel.addNode(nodeToAdd);
+      if (nodeToAdd) {
+        nodeToAdd.setPosition(nodeDetails.posX, nodeDetails.posY);
+        this.addListenersOnNode(nodeToAdd, node);
+        this.activeModel.addNode(nodeToAdd);
+      }
+      this.addLinks(links, allPorts);
     }
+  }
+
+  addListenersOnNode(nodeToAdd, node) {
+    let self = this;
+    nodeToAdd.addListener({
+      selectionChanged: function() {
+        self.updateNodePosition(nodeToAdd.x, nodeToAdd.y, node);
+      },
+      entityRemoved: function() {
+        self.findNodeToDelete(node);
+      }
+    });
+  }
+
+  addLinks(links, allPorts) {
+    for (let link in links) {
+      let fromPort = "";
+      let toPort = "";
+      for (let i = 0; i < allPorts.length; i++) {
+        if (allPorts[i].label === links[link].from) {
+          fromPort = allPorts[i];
+        } else if (allPorts[i].label === links[link].to) {
+          toPort = allPorts[i];
+        }
+      }
+      if (fromPort && toPort) {
+        const link = fromPort.link(toPort);
+        this.activeModel.addLink(link);
+      }
+    }
+  }
+
+  updateNodePosition(posX, posY, nodeId) {
+    axios
+      .get("/api/schemas")
+      .then(result => {
+        const deserializedData = JSON.parse(result.data);
+        const nodes = deserializedData.nodes;
+        let newNodes = {};
+        for (let node in nodes) {
+          if (node === nodeId) {
+            nodes[node].x = posX;
+            nodes[node].y = posY;
+          }
+          newNodes[node] = nodes[node];
+        }
+        const serializedData = JSON.stringify(newNodes);
+        axios
+          .put("/api/schemas/", {
+            properties: serializedData
+          })
+          .then(() => {
+            this.updateSchema();
+          })
+          .catch(err => console.log("err ", err));
+      })
+      .catch(err => console.log(err));
   }
 
   findNodeToDelete(nodeId) {
@@ -88,7 +143,8 @@ export class Application {
   updateSchema() {
     const allNodes = this.activeModel.getNodes();
     let serializedObject = {
-      nodes: {}
+      nodes: {},
+      links: {}
     };
     for (let node in allNodes) {
       const id = allNodes[node].id;
@@ -112,24 +168,41 @@ export class Application {
         portsPushed.push(portDetails.label);
       }
     }
+    const linkModel = this.activeModel.getLinks();
+    for (let link in linkModel) {
+      const linkDetails = linkModel[link];
+      const sourcePortModel = linkDetails.sourcePort;
+      const targetPortModel = linkDetails.targetPort;
+      if (sourcePortModel && targetPortModel) {
+        const sourcePortModelName = sourcePortModel.parent.name;
+        const targetPortModelName = targetPortModel.parent.name;
+        serializedObject.links[link] = {
+          from: sourcePortModel.label,
+          to: targetPortModel.label
+        };
+      }
+    }
     const serializedData = JSON.stringify(serializedObject);
+    console.log("serialized data", serializedData);
     axios
       .put("/api/schemas/", {
         properties: serializedData
       })
       .then(() => {})
-      .catch(err => console.log("err ", err));
+      .catch(err => console.log("err in line 190", err));
   }
 
   addPort(portArr, nodeToAdd, typePort) {
-    for (let i = 0; i < portArr.length; i++) {
-      if (typePort === "outNode") {
-        nodeToAdd.addOutPort(portArr[i]);
-      } else {
-        nodeToAdd.addInPort(portArr[i]);
+    if (portArr) {
+      for (let i = 0; i < portArr.length; i++) {
+        if (typePort === "outNode") {
+          nodeToAdd.addOutPort(portArr[i]);
+        } else {
+          nodeToAdd.addInPort(portArr[i]);
+        }
       }
+      return nodeToAdd;
     }
-    return nodeToAdd;
   }
 
   getActiveDiagram() {
