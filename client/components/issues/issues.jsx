@@ -4,23 +4,35 @@ import { withRouter } from "react-router-dom";
 // import { } from "../store";
 import { List } from "semantic-ui-react";
 import { IssueItem } from "../index";
-import { fetchIssues } from "../../store/issues";
 
 const Issues = props => {
-  console.log("props in Issues ", props);
-  const { issues } = props;
+  const { issues, filter } = props;
+  console.log("these are the filtered issues ", filter);
   return (
     <div>
       <h1>Issues</h1>
-      <List>{issues.map(issue => <IssueItem key={issue.id} issue={issue} />)}</List>
+      {filter ? (
+        <List>
+          {issues.map(issue => {
+            return issue.labels.map(label => {
+              if (label.name === filter) {
+                console.log("inside issues map loop ", issue);
+                return <IssueItem key={issue.id} issue={issue} />;
+              }
+            });
+          })}
+        </List>
+      ) : (
+        <List>{issues.map(issue => <IssueItem key={issue.id} issue={issue} />)}</List>
+      )}
     </div>
   );
 };
 
 const mapState = ({ issues }) => {
-  console.log("issues in mapState", issues);
   return {
-    issues: issues.issueList
+    issues: issues.issueList,
+    filter: issues.filter
   };
 };
 

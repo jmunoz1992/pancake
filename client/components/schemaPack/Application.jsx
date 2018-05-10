@@ -9,7 +9,9 @@ import {
 } from "storm-react-diagrams";
 import axios from "axios";
 import { sendSchemaUpdate } from "../../socket/schema";
-// import { action } from "@storybook/addon-actions";
+import store from "../../store";
+import { setIssueFilter } from "../../store/issues";
+import { connect } from "react-redux";
 
 export class Application {
   constructor(json) {
@@ -56,9 +58,12 @@ export class Application {
   }
 
   addListenersOnNode(nodeToAdd) {
+    console.log("name in node to add in addListenersOnNode", nodeToAdd.name);
     nodeToAdd.addListener({
       selectionChanged: () => {
+        console.log("i am in the add listener");
         setTimeout(this.updateSchema.bind(this), 0);
+        store.dispatch(setIssueFilter(nodeToAdd.name));
       },
       entityRemoved: () => {
         setTimeout(this.updateSchema.bind(this), 0);

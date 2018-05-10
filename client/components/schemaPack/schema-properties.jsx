@@ -1,10 +1,15 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { setIssueFilter } from "../../store/issues";
 
 class SchemaProperties extends Component {
   constructor(props) {
     super(props);
     this.state = {};
+  }
+
+  componentDidMount() {
+    this.props.filterBackendIssues();
   }
 
   render() {
@@ -16,8 +21,14 @@ class SchemaProperties extends Component {
   }
 }
 
-const mapState = state => {};
+const mapState = state => {
+  return {};
+};
 
-const mapDispatch = dispatch => ({});
+const mapDispatch = dispatch => ({
+  filterBackendIssues() {
+    dispatch(setIssueFilter("backend"));
+  }
+});
 
 export default connect(mapState, mapDispatch)(SchemaProperties);

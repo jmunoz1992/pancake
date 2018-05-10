@@ -1,7 +1,7 @@
 import React from "react";
 import { SchemaProperties } from "./index";
 import { Tab } from "semantic-ui-react";
-import { IssuesSchema } from "../index";
+import { Issues } from "../index";
 
 const panes = [
   {
@@ -16,7 +16,7 @@ const panes = [
     menuItem: "Issues Schema",
     render: () => (
       <Tab.Pane>
-        <IssuesSchema />
+        <Issues />
       </Tab.Pane>
     )
   }
