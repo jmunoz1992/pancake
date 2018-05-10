@@ -1,4 +1,5 @@
 import axios from "axios";
+import { combineReducers } from "redux";
 
 /**
  * ACTION TYPES
@@ -10,6 +11,9 @@ const CREATE_ISSUE = "CREATE_ISSUE";
 const ADD_LABEL_TO_ISSUE = "ADD_LABEL_TO_ISSUE";
 const REMOVE_LABEL_FROM_ISSUE = "REMOVE_LABEL_FROM_ISSUE";
 
+// Filter
+const SET_ISSUE_FILTER = "SET_ISSUE_FILTER";
+
 /**
  * ACTION CREATORS
  */
@@ -18,10 +22,12 @@ const edit = issue => ({ type: EDIT_ISSUE, issue });
 const addLabelToIssue = (issueId, labels) => ({ type: ADD_LABEL_TO_ISSUE, issueId, labels });
 const removeLabelFromIssue = (issueId, newLabels) => ({ type: REMOVE_LABEL_FROM_ISSUE, issueId, newLabels });
 
+export const setIssueFilter = filter => ({ type: SET_ISSUE_FILTER, filter });
+
 /**
  * REDUCER
  */
-export default function reducer(state = [], action) {
+const issueListReducer = (state = [], action) => {
   switch (action.type) {
     case GET_ISSUES:
       return action.issues;
@@ -48,7 +54,21 @@ export default function reducer(state = [], action) {
     default:
       return state;
   }
-}
+};
+
+const issueFilterReducer = (state = "", action) => {
+  switch (action.type) {
+    case SET_ISSUE_FILTER:
+      return action.filter;
+    default:
+      return state;
+  }
+};
+
+export default combineReducers({
+  issueList: issueListReducer,
+  filter: issueFilterReducer
+});
 
 /**
  * THUNK CREATORS
@@ -89,4 +109,3 @@ export const removeLabel = (number, label, issueId) => dispatch => {
     .then(res => dispatch(removeLabelFromIssue(issueId, res.data)))
     .catch(err => console.error("Removing label unsuccessful", err));
 };
-
