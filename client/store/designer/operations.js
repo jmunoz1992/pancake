@@ -9,6 +9,7 @@ const selectElement = element => dispatch => {
 // Element manipulation
 const createNewElement = element => (dispatch, getState) => {
   element.id = "uninitialized";
+  element.zIndex = getState().designer.elements.length;
   dispatchNetworkAction(actions.createElement(element));
 };
 
