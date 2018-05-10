@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import styled from "styled-components";
 import { SelectedElement } from "./";
 import { default as ElementLibrary } from "./elements";
-import { designerOperations } from "../../store";
+import { designerOperations, setIssueFilter } from "../../store";
 
 class MockupElement extends Component {
   constructor(props) {
@@ -15,10 +15,11 @@ class MockupElement extends Component {
     if (!this.props.selected) {
       !this.props.selected && this.props.doSelectElement();
     }
+    if (!this.props.editMode) this.props.doSetFilter();
   };
 
   render() {
-    return this.props.selected ? this.renderSelected() : this.renderUnselected();
+    return this.props.selected && this.props.editMode ? this.renderSelected() : this.renderUnselected();
   }
 
   renderSelected() {
@@ -82,7 +83,8 @@ const StyledWireframeElement = styled(MockupElement).attrs({
 `;
 
 const mapDispatch = (dispatch, ownProps) => ({
-  doSelectElement: () => dispatch(designerOperations.selectElement(ownProps.element))
+  doSelectElement: () => dispatch(designerOperations.selectElement(ownProps.element)),
+  doSetFilter: () => dispatch(setIssueFilter(ownProps.element.name))
 });
 
 export default connect(null, mapDispatch)(StyledWireframeElement);

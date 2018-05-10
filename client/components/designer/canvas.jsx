@@ -43,29 +43,32 @@ class DesignerCanvas extends Component {
 
   // Keyboard shortcuts
   onKeyDown = event => {
-    console.log("KeyCode", event.keyCode);
-    if (this.props.selectedElementId !== 0) {
-      const element = this.props.selectedElement;
-      switch (event.keyCode) {
-        case 8: // Backspace
-        case 46: // Delete
-          this.props.deleteElement(this.props.selectedElementId);
-          break;
-        case 37: //Left
-          this.props.doMoveElement(element, element.left - 1, element.top);
-          break;
-        case 38: //Up
-          this.props.doMoveElement(element, element.left, element.top - 1);
-          break;
-        case 39: //Right
-          this.props.doMoveElement(element, element.left + 1, element.top);
-          break;
-        case 40: // Down
-          this.props.doMoveElement(element, element.left, element.top + 1);
-          break;
-        default:
-          break;
-      }
+    const { editMode, selectedElement } = this.props;
+    if (editMode && selectedElement) {
+      this.keycodeHandler(event.keyCode, selectedElement);
+    }
+  };
+
+  keycodeHandler = (code, element) => {
+    switch (code) {
+      case 8: // Backspace
+      case 46: // Delete
+        this.props.deleteElement(element.id);
+        break;
+      case 37: //Left
+        this.props.doMoveElement(element, element.left - 1, element.top);
+        break;
+      case 38: //Up
+        this.props.doMoveElement(element, element.left, element.top - 1);
+        break;
+      case 39: //Right
+        this.props.doMoveElement(element, element.left + 1, element.top);
+        break;
+      case 40: // Down
+        this.props.doMoveElement(element, element.left, element.top + 1);
+        break;
+      default:
+        break;
     }
   };
 
@@ -102,8 +105,9 @@ class DesignerCanvas extends Component {
   // ignoreNextClick is set after a drag event, since drag events fire unwanted onClicks.
   onCanvasClicked = event => {
     if (
+      this.props.editMode &&
       event.target.id === "mockup-canvas" &&
-      this.props.selectedElementId !== 0 &&
+      this.props.selectedElement &&
       !this.state.ignoreNextClick
     ) this.props.deselect();
     this.setState({ ignoreNextClick: false });
@@ -123,7 +127,8 @@ class DesignerCanvas extends Component {
           <DesignerElement
             key={element.id}
             element={element}
-            selected={element.id === this.props.selectedElementId}
+            editMode={this.props.editMode}
+            selected={element.id === (this.props.selectedElement && this.props.selectedElement.id)}
             offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}
           />
         ))}
@@ -154,10 +159,10 @@ const mapState = state => {
     element => element.id === state.designer.selectedElement
   );
   return {
+    editMode: state.designer.config.editMode,
     selectedMockupId: state.mockups.selectedMockup,
     elements: state.designer.elements,
-    selectedElement,
-    selectedElementId: state.designer.selectedElement
+    selectedElement
   };
 };
 
