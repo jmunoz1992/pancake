@@ -81,6 +81,7 @@ export class Application {
         if (fromPort && toPort) {
           const linkForModel = fromPort.link(toPort);
           this.activeModel.addLink(linkForModel);
+          console.log("current active model ", this.activeModel);
         }
       }
     }
@@ -105,6 +106,7 @@ export class Application {
       }
     }
     serializedObject = this.updateLinks(this.activeModel.getLinks(), serializedObject);
+    console.log("serialized object in deserializer", serializedObject);
     const serializedData = JSON.stringify(serializedObject);
     sendSchemaUpdate(serializedData);
   }
@@ -124,6 +126,7 @@ export class Application {
         portsPushed.push(portDetails.label);
       }
     }
+    return serializedObject;
   }
 
   updateLinks(linkModel, serializedObject) {

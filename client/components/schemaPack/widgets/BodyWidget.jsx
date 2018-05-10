@@ -1,11 +1,10 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { TrayWidget } from "./TrayWidget";
-import { Application } from "../Application";
 import { TrayItemWidget } from "./TrayItemWidget";
 import { DefaultNodeModel, DiagramWidget } from "storm-react-diagrams";
 require("storm-react-diagrams/dist/style.min.css");
-import axios from "axios";
+import { Button, Header, Input, Modal, Form, Dropdown } from "semantic-ui-react";
 
 export class BodyWidget extends React.Component {
   constructor(props) {
@@ -14,18 +13,32 @@ export class BodyWidget extends React.Component {
       inNodeTitle: "DefaultInNode",
       inNodeColor: "rgb(192,255,0)",
       inPorts: [],
+      inNodeMade: false,
+      openIn: false,
+      openOut: false,
+      testColor: "#FFFFFF",
       outNodeTitle: "DefaultOutNode",
       outNodeColor: "rgb(0,192, 255)",
-      outPorts: []
+      outPorts: [],
+      outNodeMade: false
     };
   }
 
   handleInNodeTitleChange = event => {
+    console.log("inside handleNodeTitle");
     this.setState({ inNodeTitle: event.target.value }, () => {});
   };
 
+  cutHex = hexNum => {
+    return hexNum.charAt(0) === "#" ? hexNum.substring(1, 7) : hexNum;
+  };
+
   handleInNodeColorChange = event => {
-    this.setState({ inNodeColor: event.target.value }, () => {});
+    const red = parseInt(this.cutHex(event.target.value).substring(0, 2), 16);
+    const green = parseInt(this.cutHex(event.target.value).substring(2, 4), 16);
+    const blue = parseInt(this.cutHex(event.target.value).substring(4, 6), 16);
+    const rgbColor = `rgb(${red}, ${green}, ${blue})`;
+    this.setState({ inNodeColor: rgbColor });
   };
 
   handleOutNodeTitleChange = event => {
@@ -33,10 +46,15 @@ export class BodyWidget extends React.Component {
   };
 
   handleOutNodeColorChange = event => {
+    const red = parseInt(this.cutHex(event.target.value).substring(0, 2), 16);
+    const green = parseInt(this.cutHex(event.target.value).substring(2, 4), 16);
+    const blue = parseInt(this.cutHex(event.target.value).substring(4, 6), 16);
+    const rgbColor = `rgb(${red}, ${green}, ${blue})`;
     this.setState({ outNodeColor: event.target.value }, () => {});
   };
 
   handlePortSelectChange = (event, typeOfPort) => {
+    console.log("event in handlePortSelectChange", event.target);
     const numPorts = event.target.value;
     let ports = [];
     for (let i = 1; i <= numPorts; i++) {
@@ -50,6 +68,7 @@ export class BodyWidget extends React.Component {
   };
 
   inPortsSubmit = event => {
+    console.log("inside inPortsSubmit");
     event.preventDefault();
     if (
       !this.state.inNodeTitle ||
@@ -68,7 +87,8 @@ export class BodyWidget extends React.Component {
         newPorts.push(event.target[portName].value);
       }
     }
-    this.setState({ inPorts: newPorts });
+    this.setState({ inPorts: newPorts, inNodeMade: true, open: false });
+    this.closeIn();
   };
 
   outPortsSubmit = event => {
@@ -90,113 +110,126 @@ export class BodyWidget extends React.Component {
         newPorts.push(event.target[portName].value);
       }
     }
-    this.setState({ outPorts: newPorts });
+    this.setState({ outPorts: newPorts, outNodeMade: true, open: false });
+    this.closeOut();
   };
 
+  openIn = () => this.setState({ openIn: true });
+  closeIn = () => this.setState({ openIn: false });
+
+  openOut = () => this.setState({ openOut: true });
+  closeOut = () => this.setState({ openOut: false });
+
   render() {
+    console.log("inNodeMade", this.state.inNodeMade);
+    const { openIn, openOut } = this.state;
     return (
       <div className="body">
-        <div className="header">
-          <div className="inNodeTitle">Build your schema below!</div>
-        </div>
         <div className="content">
           <TrayWidget>
-            <form onSubmit={this.inPortsSubmit} style={{ margin: "10px" }}>
-              <p style={{ color: "white", marginTop: "10px" }}>
-                Fill out the below form, submit, then drag the 'In Node' box onto the canvas
-              </p>
-              <label style={{ color: "white" }}>In Node Title: </label>
-              <br />
-              <input
-                onChange={this.handleInNodeTitleChange}
-                name="inNodeTitle"
-                value={this.state.inNodeTitle}
-              />
-              <br />
-              <br />
-              <label style={{ color: "white" }}>Amount of Ports: </label>
-              <select onChange={event => this.handlePortSelectChange(event, "inPort")}>
-                <option value="" />
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-              <br />
-              <br />
-              {this.state.inPorts.map(portNum => {
-                return (
-                  <div key={portNum}>
-                    <label style={{ color: "white" }}>In Node Port Name: </label>
-                    <br />
-                    <input name={`port${portNum}`} />
-                    <br />
-                    <br />
-                  </div>
-                );
-              })}
-              <label style={{ color: "white" }}>{"In Node Color (format must be rgb())"} </label>
-              <br />
-              <input
-                onChange={this.handleInNodeColorChange}
-                name="inNodeColor"
-                value={this.state.inNodeColor}
-              />
-              <br />
-              <br />
-              <input type="submit" />
-            </form>
-            <TrayItemWidget model={{ type: "in" }} name="In Node" color="rgb(192,255,0)" />
             <br />
-            <form onSubmit={this.outPortsSubmit} style={{ margin: "10px" }}>
-              <p style={{ color: "white", marginTop: "10px" }}>
-                Fill out the below form, submit, then drag the 'Out Node' box onto the canvas
-              </p>
-              <label style={{ color: "white" }}>Out Node Title: </label>
-              <br />
-              <input
-                onChange={this.handleOutNodeTitleChange}
-                name="outNodeTitle"
-                value={this.state.outNodeTitle}
-              />
-              <br />
-              <br />
-              <label style={{ color: "white" }}>Amount of Ports: </label>
-              <select onChange={event => this.handlePortSelectChange(event, "outPort")}>
-                <option value="" />
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-              <br />
-              <br />
-              {this.state.outPorts.map(portNum => {
-                return (
-                  <div key={portNum}>
-                    <label style={{ color: "white" }}>Out Node Port Name: </label>
-                    <br />
-                    <input name={`port${portNum}`} />
-                    <br />
-                    <br />
-                  </div>
-                );
-              })}
-              <br />
-              <label style={{ color: "white" }}>{"Out Node Color (format must be rgb())"} </label>
-              <br />
-              <input
-                onChange={this.handleOutNodeColorChange}
-                name="outNodeColor"
-                value={this.state.outNodeColor}
-              />
-              <br />
-              <br />
-              <input type="submit" />
-            </form>
-            <TrayItemWidget model={{ type: "out" }} name="Out Node" color="rgb(0,192,255)" />
+            <Modal
+              trigger={<Button>Add IN Node</Button>}
+              closeIcon
+              style={{ width: "400px" }}
+              open={openIn}
+              onOpen={this.openIn}
+              onClose={this.closeIn}>
+              <Header icon="block layout" content="Let's Make A Node!" />
+              <Modal.Content>
+                <Form onSubmit={this.inPortsSubmit} style={{ margin: "10px" }}>
+                  <Form.Group widths="equal">
+                    <Input
+                      label="Node Title"
+                      onChange={this.handleInNodeTitleChange}
+                      name="inNodeTitle"
+                      value={this.state.inNodeTitle}
+                    />
+                  </Form.Group>
+                  <Form.Group inline>
+                    <Form.Field>Node Ports</Form.Field>
+                    <Form.Field
+                      control="select"
+                      onChange={event => this.handlePortSelectChange(event, "inPort")}>
+                      <option value="" />
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </Form.Field>
+                  </Form.Group>
+                  {this.state.inPorts.map(portNum => {
+                    return <Input key={portNum} placeholder="Port Name Here" name={`port${portNum}`} />;
+                  })}
+                  <Form.Group>
+                    <Form.Field>Node Color</Form.Field>
+                    <Input
+                      type="color"
+                      onChange={this.handleInNodeColorChange}
+                      name="inNodeColor"
+                      value={this.state.testColor}
+                    />
+                  </Form.Group>
+                  <Form.Button>Submit</Form.Button>
+                </Form>
+              </Modal.Content>
+            </Modal>
+            <br />
+            {this.state.inNodeMade ? (
+              <TrayItemWidget model={{ type: "in" }} name="DRAG ME OVER!" color="rgb(192,255,0)" />
+            ) : null}
+            <br />
+            <Modal
+              trigger={<Button>Add OUT Node</Button>}
+              closeIcon
+              style={{ width: "400px" }}
+              open={openOut}
+              onOpen={this.openOut}
+              onClose={this.closeOut}>
+              <Header icon="block layout" content="Let's Make A Node!" />
+              <Modal.Content>
+                <Form onSubmit={this.outPortsSubmit} style={{ margin: "10px" }}>
+                  <Form.Group widths="equal">
+                    <Input
+                      label="Node Title"
+                      onChange={this.handleOutNodeTitleChange}
+                      name="outNodeTitle"
+                      value={this.state.outNodeTitle}
+                    />
+                  </Form.Group>
+                  <Form.Group inline>
+                    <Form.Field>Node Ports</Form.Field>
+                    <Form.Field
+                      control="select"
+                      onChange={event => this.handlePortSelectChange(event, "outPort")}>
+                      <option value="" />
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                    </Form.Field>
+                  </Form.Group>
+                  {this.state.outPorts.map(portNum => {
+                    return <Input key={portNum} placeholder="Port Name Here" name={`port${portNum}`} />;
+                  })}
+                  <Form.Group>
+                    <Form.Field>Node Color</Form.Field>
+                    <Input
+                      type="color"
+                      onChange={this.handleOutNodeColorChange}
+                      name="inNodeColor"
+                      value={this.state.testColor}
+                    />
+                  </Form.Group>
+                  <Form.Button>Submit</Form.Button>
+                </Form>
+              </Modal.Content>
+            </Modal>
+            {this.state.outNodeMade ? (
+              <TrayItemWidget model={{ type: "out" }} name="DRAG ME OVER!" color="rgb(0,192,255)" />
+            ) : null}
           </TrayWidget>
           <div
             className="diagram-layer"
@@ -228,13 +261,13 @@ export class BodyWidget extends React.Component {
       this.state.inPorts.map(inPort => {
         node.addInPort(inPort);
       });
-      this.setState({ inPorts: [], inNodeTitle: "", inNodeColor: "" });
+      this.setState({ inPorts: [], inNodeTitle: "", inNodeColor: "", inNodeMade: false, openIn: false });
     } else {
       node = new DefaultNodeModel(this.state.outNodeTitle, this.state.outNodeColor);
       this.state.outPorts.map(outPort => {
         node.addOutPort(outPort);
       });
-      this.setState({ outPorts: [], outNodeTitle: "", outNodeColor: "" });
+      this.setState({ outPorts: [], outNodeTitle: "", outNodeColor: "", outNodeMade: false, openOut: false });
     }
     const points = this.props.app.getDiagramEngine().getRelativeMousePoint(event);
     node.x = points.x;
