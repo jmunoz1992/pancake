@@ -12,14 +12,14 @@ export class BodyWidget extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      inNodeTitle: "DefaultInNode",
+      inNodeTitle: "Default Model Title",
       inNodeColor: "rgb(192,255,0)",
       inPorts: [],
       openIn: false,
       openOut: false,
       testInColor: "#ff0000",
       testOutColor: "#ff0000",
-      outNodeTitle: "DefaultOutNode",
+      outNodeTitle: "Default Model Title",
       outNodeColor: "rgb(0,192, 255)",
       outPorts: []
     };
@@ -133,26 +133,26 @@ export class BodyWidget extends React.Component {
             <br />
             <Modal
               trigger={
-                <Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>Add IN Node</Button>
+                <Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>Add IN Model</Button>
               }
               closeIcon
               style={{ width: "400px" }}
               open={openIn}
               onOpen={this.openIn}
               onClose={this.closeIn}>
-              <Header icon="block layout" content="Let's Make A Node!" />
+              <Header icon="block layout" content="Let's Make A Model!" />
               <Modal.Content>
                 <Form onSubmit={this.inPortsSubmit} style={{ margin: "10px" }}>
                   <Form.Group widths="equal">
                     <Input
-                      label="Node Title"
+                      label="Model Title"
                       onChange={this.handleInNodeTitleChange}
                       name="inNodeTitle"
                       value={this.state.inNodeTitle}
                     />
                   </Form.Group>
                   <Form.Group inline>
-                    <Form.Field>Node Ports</Form.Field>
+                    <Form.Field>Model Fields</Form.Field>
                     <Form.Field
                       control="select"
                       onChange={event => this.handlePortSelectChange(event, "inPort")}>
@@ -165,10 +165,10 @@ export class BodyWidget extends React.Component {
                     </Form.Field>
                   </Form.Group>
                   {this.state.inPorts.map(portNum => {
-                    return <Input key={portNum} placeholder="Port Name Here" name={`port${portNum}`} />;
+                    return <Input key={portNum} placeholder="Field Name Here" name={`port${portNum}`} />;
                   })}
                   <Form.Group>
-                    <Form.Field>Node Color</Form.Field>
+                    <Form.Field>Model Color</Form.Field>
                     <ColorPicker
                       color={this.state.testInColor}
                       alpha={30}
@@ -186,26 +186,26 @@ export class BodyWidget extends React.Component {
             <br />
             <Modal
               trigger={
-                <Button style={{ backgroundColor: "rgb(0,192,255)", color: "#000000" }}>Add OUT Node</Button>
+                <Button style={{ backgroundColor: "rgb(0,192,255)", color: "#000000" }}>Add OUT Model</Button>
               }
               closeIcon
               style={{ width: "400px" }}
               open={openOut}
               onOpen={this.openOut}
               onClose={this.closeOut}>
-              <Header icon="block layout" content="Let's Make A Node!" />
+              <Header icon="block layout" content="Let's Make A Model!" />
               <Modal.Content>
                 <Form onSubmit={this.outPortsSubmit} style={{ margin: "10px" }}>
                   <Form.Group widths="equal">
                     <Input
-                      label="Node Title"
+                      label="Model Title"
                       onChange={this.handleOutNodeTitleChange}
                       name="outNodeTitle"
                       value={this.state.outNodeTitle}
                     />
                   </Form.Group>
                   <Form.Group inline>
-                    <Form.Field>Node Ports</Form.Field>
+                    <Form.Field>Model Fields</Form.Field>
                     <Form.Field
                       control="select"
                       onChange={event => this.handlePortSelectChange(event, "outPort")}>
@@ -218,10 +218,10 @@ export class BodyWidget extends React.Component {
                     </Form.Field>
                   </Form.Group>
                   {this.state.outPorts.map(portNum => {
-                    return <Input key={portNum} placeholder="Port Name Here" name={`port${portNum}`} />;
+                    return <Input key={portNum} placeholder="Field Name Here" name={`port${portNum}`} />;
                   })}
                   <Form.Group>
-                    <Form.Field>Node Color</Form.Field>
+                    <Form.Field>Model Color</Form.Field>
                     <ColorPicker
                       color={this.state.testInColor}
                       alpha={30}
