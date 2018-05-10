@@ -13,7 +13,8 @@ class DesignerCanvas extends Component {
       panOffsetX: 0,
       panOffsetY: 0,
       dragging: false,
-      ignoreNextClick: false
+      ignoreNextClick: false,
+      editMode: false
     };
   }
 
