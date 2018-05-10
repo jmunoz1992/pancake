@@ -42,6 +42,7 @@
     "pg": "^6.1.2",
     "pg-hstore": "^2.3.2",
     "prop-types": "^15.5.8",
+    "rc-color-picker": "^1.2.6",
     "react": "^16.0.0",
     "react-bootstrap": "^0.32.1",
     "react-dnd": "^2.6.0",

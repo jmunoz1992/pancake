@@ -5,6 +5,8 @@ import { TrayItemWidget } from "./TrayItemWidget";
 import { DefaultNodeModel, DiagramWidget } from "storm-react-diagrams";
 require("storm-react-diagrams/dist/style.min.css");
 import { Button, Header, Input, Modal, Form, Dropdown } from "semantic-ui-react";
+import "rc-color-picker/assets/index.css";
+import ColorPicker from "rc-color-picker";
 
 export class BodyWidget extends React.Component {
   constructor(props) {
@@ -13,15 +15,13 @@ export class BodyWidget extends React.Component {
       inNodeTitle: "DefaultInNode",
       inNodeColor: "rgb(192,255,0)",
       inPorts: [],
-      inNodeMade: false,
       openIn: false,
       openOut: false,
       testInColor: "#ff0000",
       testOutColor: "#ff0000",
       outNodeTitle: "DefaultOutNode",
       outNodeColor: "rgb(0,192, 255)",
-      outPorts: [],
-      outNodeMade: false
+      outPorts: []
     };
   }
 
@@ -34,28 +34,24 @@ export class BodyWidget extends React.Component {
     return hexNum.charAt(0) === "#" ? hexNum.substring(1, 7) : hexNum;
   };
 
-  handleInNodeColorChange = event => {
-    console.log("color in handleInNodeColor ", event.target.value);
-    this.setState({ testInColor: event.target.value });
-    const red = parseInt(this.cutHex(event.target.value).substring(0, 2), 16);
-    const green = parseInt(this.cutHex(event.target.value).substring(2, 4), 16);
-    const blue = parseInt(this.cutHex(event.target.value).substring(4, 6), 16);
+  handleNodeColorChange = (event, typeOfPort) => {
+    const color = event.color;
+    this.setState({ testInColor: color });
+    const red = parseInt(this.cutHex(color).substring(0, 2), 16);
+    const green = parseInt(this.cutHex(color).substring(2, 4), 16);
+    const blue = parseInt(this.cutHex(color).substring(4, 6), 16);
     const rgbColor = `rgb(${red}, ${green}, ${blue})`;
-    this.setState({ inNodeColor: rgbColor });
+    if (typeOfPort === "inPort") {
+      this.setState({ inNodeColor: rgbColor });
+      this.setState({ testInColor: color });
+    } else {
+      this.setState({ outNodeColor: rgbColor });
+      this.setState({ testOutColor: color });
+    }
   };
 
   handleOutNodeTitleChange = event => {
     this.setState({ outNodeTitle: event.target.value });
-  };
-
-  handleOutNodeColorChange = event => {
-    console.log("collor in handleOutNodeColor ", event.target.value);
-    this.setState({ testOutColor: event.target.value });
-    const red = parseInt(this.cutHex(event.target.value).substring(0, 2), 16);
-    const green = parseInt(this.cutHex(event.target.value).substring(2, 4), 16);
-    const blue = parseInt(this.cutHex(event.target.value).substring(4, 6), 16);
-    const rgbColor = `rgb(${red}, ${green}, ${blue})`;
-    this.setState({ outNodeColor: rgbColor });
   };
 
   handlePortSelectChange = (event, typeOfPort) => {
@@ -92,8 +88,9 @@ export class BodyWidget extends React.Component {
         newPorts.push(event.target[portName].value);
       }
     }
-    this.setState({ inPorts: newPorts, inNodeMade: true, open: false });
+    this.setState({ inPorts: newPorts, open: false });
     this.closeIn();
+    this.addNodeToCanvas("inPort");
   };
 
   outPortsSubmit = event => {
@@ -115,8 +112,9 @@ export class BodyWidget extends React.Component {
         newPorts.push(event.target[portName].value);
       }
     }
-    this.setState({ outPorts: newPorts, outNodeMade: true, open: false });
+    this.setState({ outPorts: newPorts, open: false });
     this.closeOut();
+    this.addNodeToCanvas("outPort");
   };
 
   openIn = () => this.setState({ openIn: true });
@@ -171,21 +169,20 @@ export class BodyWidget extends React.Component {
                   })}
                   <Form.Group>
                     <Form.Field>Node Color</Form.Field>
-                    <input
-                      type="color"
-                      onChange={this.handleInNodeColorChange}
-                      name="inNodeColor"
-                      value={this.state.testInColor}
-                    />
+                    <ColorPicker
+                      color={this.state.testInColor}
+                      alpha={30}
+                      onChange={event => this.handleNodeColorChange(event, "inPort")}
+                      placement="topLeft"
+                      className="some-class">
+                      <span className="rc-color-picker-trigger" />
+                    </ColorPicker>
                   </Form.Group>
                   <Form.Button>Submit</Form.Button>
                 </Form>
               </Modal.Content>
             </Modal>
             <br />
-            {this.state.inNodeMade ? (
-              <TrayItemWidget model={{ type: "in" }} name="DRAG ME OVER!" color="rgb(192,255,0)" />
-            ) : null}
             <br />
             <Modal
               trigger={
@@ -225,29 +222,21 @@ export class BodyWidget extends React.Component {
                   })}
                   <Form.Group>
                     <Form.Field>Node Color</Form.Field>
-                    <input
-                      type="color"
-                      onChange={this.handleOutNodeColorChange}
-                      name="outNodeColor"
-                      value={this.state.testOutColor}
-                    />
+                    <ColorPicker
+                      color={this.state.testInColor}
+                      alpha={30}
+                      onChange={event => this.handleNodeColorChange(event, "outPort")}
+                      placement="topLeft"
+                      className="some-class">
+                      <span className="rc-color-picker-trigger" />
+                    </ColorPicker>
                   </Form.Group>
                   <Form.Button>Submit</Form.Button>
                 </Form>
               </Modal.Content>
             </Modal>
-            {this.state.outNodeMade ? (
-              <TrayItemWidget model={{ type: "out" }} name="DRAG ME OVER!" color="rgb(0,192,255)" />
-            ) : null}
           </TrayWidget>
-          <div
-            className="diagram-layer"
-            onDrop={event => {
-              this.onDrop(event);
-            }}
-            onDragOver={event => {
-              event.preventDefault();
-            }}>
+          <div className="diagram-layer">
             <DiagramWidget className="srd-demo-canvas" diagramEngine={this.props.app.getDiagramEngine()} />
           </div>
         </div>
@@ -255,17 +244,9 @@ export class BodyWidget extends React.Component {
     );
   }
 
-  onDrop(event) {
-    const data = JSON.parse(event.dataTransfer.getData("storm-diagram-node"));
-    const nodesCount = _.keys(
-      this.props.app
-        .getDiagramEngine()
-        .getDiagramModel()
-        .getNodes()
-    ).length;
-
+  addNodeToCanvas(typeOfPort) {
     let node = null;
-    if (data.type === "in") {
+    if (typeOfPort === "inPort") {
       node = new DefaultNodeModel(this.state.inNodeTitle, this.state.inNodeColor);
       this.state.inPorts.map(inPort => {
         node.addInPort(inPort);
@@ -274,7 +255,6 @@ export class BodyWidget extends React.Component {
         inPorts: [],
         inNodeTitle: "",
         inNodeColor: "",
-        inNodeMade: false,
         openIn: false,
         testInColor: "#ff0000"
       });
@@ -287,14 +267,10 @@ export class BodyWidget extends React.Component {
         outPorts: [],
         outNodeTitle: "",
         outNodeColor: "",
-        outNodeMade: false,
         openOut: false,
         testOutColor: "#ff0000"
       });
     }
-    const points = this.props.app.getDiagramEngine().getRelativeMousePoint(event);
-    node.x = points.x;
-    node.y = points.y;
     this.props.app
       .getDiagramEngine()
       .getDiagramModel()
