@@ -4,8 +4,10 @@ import { withRouter } from "react-router-dom";
 // import { } from "../store";
 import { List } from "semantic-ui-react";
 import { IssueItem } from "../index";
+import { fetchIssues } from "../../store/issues";
 
 const Issues = props => {
+  console.log("props in Issues ", props);
   const { issues } = props;
   return (
     <div>
@@ -16,8 +18,9 @@ const Issues = props => {
 };
 
 const mapState = ({ issues }) => {
+  console.log("issues in mapState", issues);
   return {
-    issues
+    issues: issues.issueList
   };
 };
 

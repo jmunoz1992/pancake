@@ -59,7 +59,7 @@ const issueListReducer = (state = [], action) => {
 const issueFilterReducer = (state = "", action) => {
   switch (action.type) {
     case SET_ISSUE_FILTER:
-      return action.filter;
+      return action.filter.toLowerCase();
     default:
       return state;
   }
