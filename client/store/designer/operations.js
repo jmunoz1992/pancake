@@ -82,7 +82,9 @@ const setError = error => (dispatch, getState) => {
   dispatch(actions.setConnectionStatus(status));
 };
 
+// Links to actions
 const loadElements = actions.loadElements;
+const setEditMode = actions.setEditMode;
 
 export {
   selectElement,
@@ -92,6 +94,7 @@ export {
   updateElementProperty,
   deleteElement,
   loadElements,
+  setEditMode,
   loadMockup,
   disconnect,
   setConnecting,

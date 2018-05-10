@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { Header, Icon, Dimmer, Loader } from "semantic-ui-react";
 import { default as DesignerElement } from "./element";
 import { designerOperations } from "../../store";
 import { connect } from "react-redux";
