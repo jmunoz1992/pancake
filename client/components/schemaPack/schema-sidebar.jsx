@@ -13,7 +13,7 @@ const panes = [
     )
   },
   {
-    menuItem: "Issues Schema",
+    menuItem: "Schema Issues",
     render: () => (
       <Tab.Pane>
         <Issues />

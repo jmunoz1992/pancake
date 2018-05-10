@@ -55,6 +55,7 @@ export class Application {
       }
       this.addLinks(links, allPorts);
     }
+    console.log("active model result in deserializer ", this.activeModel);
   }
 
   addListenersOnNode(nodeToAdd) {
@@ -72,6 +73,7 @@ export class Application {
   }
 
   addLinks(links, allPorts) {
+    console.log("i am in addLinks", links);
     for (let link in links) {
       if (links.hasOwnProperty(link)) {
         let fromPort = "";
@@ -83,13 +85,15 @@ export class Application {
             toPort = allPorts[i];
           }
         }
+        console.log("fromPort", fromPort, "toPort", toPort);
         if (fromPort && toPort) {
           const linkForModel = fromPort.link(toPort);
           this.activeModel.addLink(linkForModel);
-          console.log("current active model ", this.activeModel);
+          console.log("making link for active model in add Links ", this.activeModel);
         }
       }
     }
+    console.log("resulting active model in add links ", this.activeModel);
   }
 
   updateSchema() {
@@ -135,6 +139,7 @@ export class Application {
   }
 
   updateLinks(linkModel, serializedObject) {
+    console.log("i am in update links ", linkModel);
     for (let link in linkModel) {
       if (linkModel.hasOwnProperty(link)) {
         const linkDetails = linkModel[link];
