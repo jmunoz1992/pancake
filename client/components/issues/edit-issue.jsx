@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button, Divider, Form, Modal } from "semantic-ui-react";
+import { Button, Divider, Form, Icon, Modal } from "semantic-ui-react";
 
 import { AssigneeLabel, LabelLabel } from "./index";
-import { addAssignee, editIssue } from "../../store/issues";
+import { addAssignee, editIssue, addLabel } from "../../store/issues";
 
 class EditIssue extends Component {
     constructor(props) {
@@ -22,11 +22,6 @@ class EditIssue extends Component {
                 assignees: newProps.issue.assignees,
             });
         }
-        if (newProps.issue.labels !== oldProps.issue.labels) {
-            this.setState({
-                labels: newProps.issue.labels,
-            });
-        }
     }
 
     componentDidMount = () => {
@@ -41,14 +36,39 @@ class EditIssue extends Component {
         this.setState({ [name]: value });
     }
 
+    onChangeTitle = event => {
+        const { issue } = this.state;
+        issue.title = event.target.value;
+        this.setState({ issue });
+    }
+
+    onChangeBody = event => {
+        const { issue } = this.state;
+        issue.body = event.target.value;
+        this.setState({ issue });
+    }
+
+    submitEditIssue = () => {
+        this.props.editIssue(this.state.issue);
+    }
+
+    toggleState = () => {
+        const { issue } = this.state;
+        (issue.state === "open") ? issue.state = "closed" : issue.state = "open";
+        this.setState({ issue });
+        this.props.editIssue(this.state.issue);
+    }
+
     addAssignee = () => {
         const newAssignees = [...this.state.assignees, this.state.selectedAssignee];
         this.setState({ assignees: newAssignees });
         this.props.addAssignee(this.props.issue.number, newAssignees);
     }
 
-    addIssue = () => {
-        console.log("CLICKED");
+    addLabel = () => {
+        const newLabels = [...this.state.labels, this.state.selectedLabel];
+        this.setState({ labels: newLabels });
+        this.props.addLabel(this.props.issue.number, newLabels, this.props.issue.id);
     }
 
     findUnassignedCollabs = (assignedCollabs, allCollabs) => {
@@ -95,28 +115,45 @@ class EditIssue extends Component {
         if (!issue) return (<div />);
         return (
             <Modal.Content>
-                <Form>
-                    <Form.Field>
-                        <label>Title</label>
-                        <input placeholder="First Name" />
-                    </Form.Field>
-                    <Form.Field>
-                        <label>Body</label>
-                        <input placeholder="Last Name" />
-                    </Form.Field>
+                <h1 style={{ width: "100px", display: "inline" }}>ISSUE #{issue.number}</h1>
+                <Button
+                    floated="right"
+                    color={(issue.state === "open") ? "green" : "red"}
+                    onClick={this.toggleState}
+                >
+                    {issue.state}
+                </Button>
+                <Divider />
+                <Form onSubmit={this.submitEditIssue}>
+                    <Form.Input
+                        name="title"
+                        label="Title"
+                        onChange={this.onChangeTitle}
+                        value={issue.title}
+                    />
+                    <Form.Input
+                        name="body"
+                        label="Body"
+                        onChange={this.onChangeBody}
+                        value={issue.body}
+                    />
                     <Button type="submit">Submit</Button>
                 </Form>
                 <Divider />
                 <Form onSubmit={this.addAssignee}>
-                    <Form.Field>
+                    <Form.Group widths="equal">
                         <Form.Select
-                            label="Add Assignee"
                             name="selectedAssignee"
                             onChange={this.onChange}
                             options={collabOptions}
-                            placeholder="Select" />
-                        <Button type="submit">Add Assignee</Button>
-                    </Form.Field>
+                            placeholder="Add Assignee" />
+                        <Button
+                            icon
+                            type="submit"
+                        >
+                            <Icon name="add" />
+                        </Button>
+                    </Form.Group>
                     {issue.assignees
                         .map(assignee =>
                             (<AssigneeLabel
@@ -127,23 +164,28 @@ class EditIssue extends Component {
                         )}
                 </Form>
                 <Divider />
-                <Form onSubmit={this.addIssue}>
-                    <Form.Field>
+                <Form onSubmit={this.addLabel}>
+                    <Form.Group widths="equal">
                         <Form.Select
-                            label="Add Label"
                             name="selectedLabel"
                             onChange={this.onChange}
                             options={labelOptions}
-                            placeholder="Select" />
-                        <Button type="submit">Add Label</Button>
-                        {issue.labels
-                            .map(label =>
-                                (<LabelLabel
-                                    key={label.id}
-                                    label={label}
-                                    issue={issue}
-                                />))}
-                    </Form.Field>
+                            placeholder="Add Label" />
+                        <Button
+                            icon
+                            type="submit"
+                        >
+                            <Icon name="add" />
+                        </Button>
+                    </Form.Group>
+                    {issue.labels
+                        .map(label => {
+                            return (<LabelLabel
+                                key={label.id}
+                                label={label}
+                                issue={issue}
+                            />);
+                        })}
                 </Form>
             </Modal.Content>
         );
@@ -151,7 +193,6 @@ class EditIssue extends Component {
 }
 
 const mapState = ({ issues, collaborators, labels }, ownProps) => {
-    console.log("labels", labels);
     return {
         issue: issues.find(issue => issue.id === ownProps.issue.id),
         collaborators,
@@ -159,6 +200,6 @@ const mapState = ({ issues, collaborators, labels }, ownProps) => {
     };
 };
 
-const mapDispatch = { editIssue, addAssignee };
+const mapDispatch = { editIssue, addAssignee, addLabel };
 
 export default connect(mapState, mapDispatch)(EditIssue);
