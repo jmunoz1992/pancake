@@ -16,7 +16,8 @@ export class BodyWidget extends React.Component {
       inNodeMade: false,
       openIn: false,
       openOut: false,
-      testColor: "#FFFFFF",
+      testInColor: "#ff0000",
+      testOutColor: "#ff0000",
       outNodeTitle: "DefaultOutNode",
       outNodeColor: "rgb(0,192, 255)",
       outPorts: [],
@@ -26,7 +27,7 @@ export class BodyWidget extends React.Component {
 
   handleInNodeTitleChange = event => {
     console.log("inside handleNodeTitle");
-    this.setState({ inNodeTitle: event.target.value }, () => {});
+    this.setState({ inNodeTitle: event.target.value });
   };
 
   cutHex = hexNum => {
@@ -34,6 +35,8 @@ export class BodyWidget extends React.Component {
   };
 
   handleInNodeColorChange = event => {
+    console.log("color in handleInNodeColor ", event.target.value);
+    this.setState({ testInColor: event.target.value });
     const red = parseInt(this.cutHex(event.target.value).substring(0, 2), 16);
     const green = parseInt(this.cutHex(event.target.value).substring(2, 4), 16);
     const blue = parseInt(this.cutHex(event.target.value).substring(4, 6), 16);
@@ -42,15 +45,17 @@ export class BodyWidget extends React.Component {
   };
 
   handleOutNodeTitleChange = event => {
-    this.setState({ outNodeTitle: event.target.value }, () => {});
+    this.setState({ outNodeTitle: event.target.value });
   };
 
   handleOutNodeColorChange = event => {
+    console.log("collor in handleOutNodeColor ", event.target.value);
+    this.setState({ testOutColor: event.target.value });
     const red = parseInt(this.cutHex(event.target.value).substring(0, 2), 16);
     const green = parseInt(this.cutHex(event.target.value).substring(2, 4), 16);
     const blue = parseInt(this.cutHex(event.target.value).substring(4, 6), 16);
     const rgbColor = `rgb(${red}, ${green}, ${blue})`;
-    this.setState({ outNodeColor: event.target.value }, () => {});
+    this.setState({ outNodeColor: rgbColor });
   };
 
   handlePortSelectChange = (event, typeOfPort) => {
@@ -129,7 +134,9 @@ export class BodyWidget extends React.Component {
           <TrayWidget>
             <br />
             <Modal
-              trigger={<Button>Add IN Node</Button>}
+              trigger={
+                <Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>Add IN Node</Button>
+              }
               closeIcon
               style={{ width: "400px" }}
               open={openIn}
@@ -164,11 +171,11 @@ export class BodyWidget extends React.Component {
                   })}
                   <Form.Group>
                     <Form.Field>Node Color</Form.Field>
-                    <Input
+                    <input
                       type="color"
                       onChange={this.handleInNodeColorChange}
                       name="inNodeColor"
-                      value={this.state.testColor}
+                      value={this.state.testInColor}
                     />
                   </Form.Group>
                   <Form.Button>Submit</Form.Button>
@@ -181,7 +188,9 @@ export class BodyWidget extends React.Component {
             ) : null}
             <br />
             <Modal
-              trigger={<Button>Add OUT Node</Button>}
+              trigger={
+                <Button style={{ backgroundColor: "rgb(0,192,255)", color: "#000000" }}>Add OUT Node</Button>
+              }
               closeIcon
               style={{ width: "400px" }}
               open={openOut}
@@ -216,11 +225,11 @@ export class BodyWidget extends React.Component {
                   })}
                   <Form.Group>
                     <Form.Field>Node Color</Form.Field>
-                    <Input
+                    <input
                       type="color"
                       onChange={this.handleOutNodeColorChange}
-                      name="inNodeColor"
-                      value={this.state.testColor}
+                      name="outNodeColor"
+                      value={this.state.testOutColor}
                     />
                   </Form.Group>
                   <Form.Button>Submit</Form.Button>
@@ -261,13 +270,27 @@ export class BodyWidget extends React.Component {
       this.state.inPorts.map(inPort => {
         node.addInPort(inPort);
       });
-      this.setState({ inPorts: [], inNodeTitle: "", inNodeColor: "", inNodeMade: false, openIn: false });
+      this.setState({
+        inPorts: [],
+        inNodeTitle: "",
+        inNodeColor: "",
+        inNodeMade: false,
+        openIn: false,
+        testInColor: "#ff0000"
+      });
     } else {
       node = new DefaultNodeModel(this.state.outNodeTitle, this.state.outNodeColor);
       this.state.outPorts.map(outPort => {
         node.addOutPort(outPort);
       });
-      this.setState({ outPorts: [], outNodeTitle: "", outNodeColor: "", outNodeMade: false, openOut: false });
+      this.setState({
+        outPorts: [],
+        outNodeTitle: "",
+        outNodeColor: "",
+        outNodeMade: false,
+        openOut: false,
+        testOutColor: "#ff0000"
+      });
     }
     const points = this.props.app.getDiagramEngine().getRelativeMousePoint(event);
     node.x = points.x;

@@ -5,6 +5,7 @@ import {
   DesignerCanvas,
   DesignerSidebar,
   Schema,
+  SchemaSidebar,
   SocketModal,
   MockupList,
   Issues
@@ -48,6 +49,7 @@ class App extends Component {
             <Grid.Column id="sidebar">
               <Switch>
                 <Route path="/mockups" component={DesignerSidebar} />
+                <Route path="/schema" component={SchemaSidebar} />
                 <Route component={Issues} />
               </Switch>
             </Grid.Column>
