@@ -12,4 +12,15 @@ const loadElements = elements => ({ type: types.LOAD_ELEMENTS, payload: elements
 // Network status
 const setConnectionStatus = status => ({ type: types.SET_CONNECTION_STATUS, payload: status });
 
-export { setSelectedElement, createElement, updateElement, removeElement, loadElements, setConnectionStatus };
+// Designer configuration
+const setEditMode = mode => ({ type: types.SET_EDIT_MODE, payload: mode });
+
+export {
+  setSelectedElement,
+  createElement,
+  updateElement,
+  removeElement,
+  loadElements,
+  setConnectionStatus,
+  setEditMode
+};
