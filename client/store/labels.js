@@ -1,11 +1,10 @@
 import axios from "axios";
-import history from "../history";
-
 /**
  * ACTION TYPES
  */
 const GET_LABELS = "GET_LABELS";
 const CREATE_LABEL = "CREATE_LABEL";
+const ADD_LABEL = "ADD_LABEL";
 
 /**
  * ACTION CREATORS

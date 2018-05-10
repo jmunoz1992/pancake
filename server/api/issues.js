@@ -55,9 +55,7 @@ router.put("/:number", async (req, res, next) => {
       number: req.params.number,
       title: req.body.title,
       body: req.body.body,
-      assignees: req.body.assignees,
-      labels: req.body.labels,
-      state: req.body.state
+      state: req.body.state,
     });
     res.json(response.data);
   } catch (err) {
@@ -87,10 +85,6 @@ router.post("/:number/assignees", async (req, res, next) => {
  * Remove assigne from issue
  */
 router.put("/:number/assignees", async (req, res, next) => {
-
-  console.log("REQ.BODY", req.body);
-  console.log("NUMBER: ", req.params.number);
-  // console.log("ASSIGNEES TO REMOVE", req.body.assignees);
   try {
     const response = await req.octokit.issues.removeAssigneesFromIssue({
       owner: req.repoOwner,
@@ -118,5 +112,37 @@ router.get("/labels", async (req, res, next) => {
   } catch (err) {
     next(err);
   }
-})
-  ;
+});
+
+/**
+ * Add label to this issue
+ */
+router.post("/:number/labels", async (req, res, next) => {
+  try {
+    const response = await req.octokit.issues.addLabels({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      number: req.params.number,
+      labels: req.body,
+    });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/:number/labels/:name", async (req, res, next) => {
+  console.log("in delete");
+  try {
+    const response = await req.octokit.issues.removeLabel({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      number: req.params.number,
+      name: req.params.name,
+    });
+    console.log("RESPONSE:", response);
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+});
