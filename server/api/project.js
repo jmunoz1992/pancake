@@ -13,18 +13,18 @@ router.post("/", async (req, res, next) => {
       }
     });
     const currentUser = await User.findById(req.user.id);
-    await currentUser.setActiveProject(project[0]);
+    await currentUser.setActiveProject(project[0].id);
     await currentUser.addProject(project[0]);
 
     const mockups = await Mockup.count({ where: { projectId: req.user.activeProjectId } });
     if (!mockups) {
       await Mockup.create({
         name: "Mockup 1",
-        projectId: project[0]
+        projectId: project[0].id
       });
     }
     await Schema.upsert(
-      { projectId: req.user.activeProjectId },
+      { projectId: req.user.activeProjectId, properties: "" },
       { where: { projectId: req.user.activeProjectId } }
     );
 

@@ -15,13 +15,18 @@ class Routes extends Component {
 
   render() {
     const { isLoggedIn, hasActiveProject } = this.props;
-
+    console.log("has active project ", hasActiveProject);
     return (
       <Switch>
-        {isLoggedIn && (
-          <Switch>{hasActiveProject ? <Route component={App} /> : <Route component={Welcome} />}</Switch>
+        {isLoggedIn ? (
+          hasActiveProject ? (
+            <Route component={App} />
+          ) : (
+            <Route component={Welcome} />
+          )
+        ) : (
+          <Route component={Login} />
         )}
-        <Route component={Login} />
       </Switch>
     );
   }
@@ -31,6 +36,7 @@ class Routes extends Component {
  * CONTAINER
  */
 const mapState = state => {
+  console.log("state in mapState routes ", state);
   return {
     // Being 'logged in' for our purposes will be defined has having a state.user that has a truthy id.
     // Otherwise, state.user will be an empty object, and state.user.id will be falsey
