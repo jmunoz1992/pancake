@@ -29,7 +29,6 @@ const issueListReducer = (state = [], action) => {
       return action.issues;
 
     case EDIT_ISSUE:
-      console.log("ACTION", action);
       return state.map(issue => {
         if (action.issue.id === issue.id) return action.issue;
         return issue;

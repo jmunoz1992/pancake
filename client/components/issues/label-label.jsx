@@ -17,7 +17,6 @@ const LabelLabel = props => {
 };
 
 const mapStateToProps = ({ labels }, ownProps) => {
-    console.log("ownprops", ownProps);
     const label = labels.filter(currLabel => currLabel.name === ownProps.name)[0];
     return { label };
 };

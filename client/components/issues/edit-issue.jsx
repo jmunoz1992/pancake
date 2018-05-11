@@ -93,7 +93,7 @@ class EditIssue extends Component {
     closeState = () => { this.setState({ state: "closed" }); }
 
     handleSubmit = () => {
-        const { title, body, state, labels, assignees } = this.state;
+        const { title, body, state, labels, assignees, number } = this.state;
         let goodSubmit = true;
         if (title === "") {
             this.setState({ hideNoTitleWarning: false });
@@ -106,7 +106,7 @@ class EditIssue extends Component {
 
         if (!goodSubmit) return;
 
-        this.props.editIssue({ title, body, state, labels, assignees });
+        this.props.editIssue({ title, body, state, labels, assignees, number });
         this.closeModal();
     }
 

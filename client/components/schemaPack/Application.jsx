@@ -40,7 +40,7 @@ export class Application {
       }
       this.addLinks(links, allPorts);
     }
-    console.log("active model result in deserializer ", this.activeModel);
+    ("active model result in deserializer ", this.activeModel);
   }
 
   addPort(portArr, nodeToAdd) {
@@ -87,7 +87,6 @@ export class Application {
         // const linkModelDeserialized = deSerialize(links[link], this.diagramEngine);
       }
     }
-    console.log("resulting active model in add links ", this.activeModel);
   }
 
   updateSchema() {
