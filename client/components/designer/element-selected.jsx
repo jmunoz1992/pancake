@@ -49,7 +49,7 @@ class DraggableElement extends Component {
     const { MIN_HEIGHT, MAX_HEIGHT, MIN_WIDTH, MAX_WIDTH } = this.getElementConstraints();
     return (
       <Rnd
-        className={this.props.className}
+        style={this.props.style}
         ref={this.rnd}
         default={{
           x: this.props.element.left + this.props.offset.x,

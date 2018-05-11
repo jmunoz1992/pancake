@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import styled from "styled-components";
 import { SelectedElement } from "./";
 import { default as ElementLibrary } from "./elements";
 import { designerOperations, setIssueFilter } from "../../store";
+import { ElementComponentWrapper } from "./element-wrapper";
 
 class MockupElement extends Component {
   constructor(props) {
@@ -27,7 +27,13 @@ class MockupElement extends Component {
       <SelectedElement
         className={this.props.className}
         offset={this.props.offset}
-        element={this.props.element}>
+        element={this.props.element}
+        style={{
+          position: "absolute",
+          outline: "1px solid black",
+          backgroundColor: "#EAEAEA",
+          overflow: "hidden"
+        }}>
         {this.renderElement()}
       </SelectedElement>
     );
@@ -36,8 +42,24 @@ class MockupElement extends Component {
   // If the element isn't selected, we wrap it with a div and pass in style/CSS props received
   // from StyledComponents
   renderUnselected() {
+    const { element, offset } = this.props;
     return (
-      <div className={this.props.className} style={this.props.style} onClick={this.onElementClicked}>
+      <div
+        className={this.props.className}
+        style={{
+          transform: `translate(${element.left + offset.x}px, ${element.top + offset.y}px)`,
+          width: `${element.width}px`,
+          height: `${element.height}px`,
+          zIndex: `${element.zIndex}`,
+          position: "absolute",
+          outline: "none",
+          backgroundColor: "transparent",
+          overflow: "hidden"
+          //   outline: ${({ selected }) => (selected ? "1px solid black" : "none")};
+          //   background-color: ${({ selected }) => (selected ? "#EAEAEA" : "transparent")};
+          //   overflow: hidden;
+        }}
+        onClick={this.onElementClicked}>
         {this.renderElement()}
       </div>
     );
@@ -48,39 +70,23 @@ class MockupElement extends Component {
   // all of the different element types, and also has a reference to the appropriate React
   // Component to render.
   renderElement() {
-    const ElementToRender = ElementLibrary[this.props.element.type].element.COMPONENT;
-    const ClickInterceptor = styled.div`
-      position: absolute;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      background: transparent;
-    `;
+    const component = ElementLibrary[this.props.element.type].element.COMPONENT;
+    const style = {
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      pointerEvents: "none",
+      background: "transparent"
+    };
     return (
       // ClickInterceptor is an invisible overlay that stops mouse events, so the user doesn't
       // accidentally click on textboxes or buttons while trying to drag a mockup element around.
-      <ClickInterceptor>
-        <ElementToRender element={this.props.element} />
-      </ClickInterceptor>
+      <div style={style}>
+        <ElementComponentWrapper component={component} element={this.props.element} />
+      </div>
     );
   }
 }
-
-// StyledComponents warns against putting frequently modified styles (like position while the user
-// is dragging an element around) inside of the template string and instead suggests using `attrs`.
-const StyledWireframeElement = styled(MockupElement).attrs({
-  style: ({ element, offset }) => ({
-    transform: `translate(${element.left + offset.x}px, ${element.top + offset.y}px)`,
-    width: `${element.width}px`,
-    height: `${element.height}px`,
-    zIndex: `${element.zIndex}`
-  })
-})`
-  position: absolute;
-  outline: ${({ selected }) => (selected ? "1px solid black" : "none")};
-  background-color: ${({ selected }) => (selected ? "#EAEAEA" : "transparent")};
-  overflow: hidden;
-`;
 
 const mapDispatch = (dispatch, ownProps) => ({
   doSelectElement: () => dispatch(designerOperations.selectElements([ownProps.element.id])),
@@ -88,4 +94,4 @@ const mapDispatch = (dispatch, ownProps) => ({
   doSetFilter: () => dispatch(setIssueFilter(ownProps.element.name))
 });
 
-export default connect(null, mapDispatch)(StyledWireframeElement);
+export default connect(null, mapDispatch)(MockupElement);

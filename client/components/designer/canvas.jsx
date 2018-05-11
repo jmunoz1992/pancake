@@ -151,20 +151,14 @@ class DesignerCanvas extends Component {
       x: box.left + box.width + this.state.panOffsetX,
       y: box.top + box.height + this.state.panOffsetY
     };
-    console.log(boxLeft, boxRight);
-
     const selectedElements = [];
     this.props.elements.forEach(element => {
       const elementLeft = { x: element.left, y: element.top };
       const elementRight = { x: element.left + element.width, y: element.top + element.height };
-      console.log("elementLeft", elementLeft, "elementRight", elementRight);
       if (boxLeft.x > elementRight.x || elementLeft.x > boxRight.x) return;
-      console.log("passed X");
       if (boxLeft.y > elementRight.y || elementLeft.y > boxRight.y) return;
-      console.log("passed y");
       selectedElements.push(element.id);
     });
-    console.log("intersect", selectedElements);
     this.props.selectElements(selectedElements);
   };
 
