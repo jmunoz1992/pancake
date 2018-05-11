@@ -148,9 +148,10 @@ class DesignerCanvas extends Component {
     this.setState({ boxSelectionStart: [] });
     const boxLeft = { x: box.left - this.state.panOffsetX, y: box.top - this.state.panOffsetY };
     const boxRight = {
-      x: box.left + box.width + this.state.panOffsetX,
-      y: box.top + box.height + this.state.panOffsetY
+      x: box.left + box.width - this.state.panOffsetX,
+      y: box.top + box.height - this.state.panOffsetY
     };
+    console.log("Box:", boxLeft, boxRight);
     const selectedElements = [];
     this.props.elements.forEach(element => {
       const elementLeft = { x: element.left, y: element.top };
