@@ -15,39 +15,45 @@ class Properties extends Component {
     return (
       <div style={{ height: "50%", overflowY: "scroll", paddingRight: "10px" }}>
         <h2>Properties</h2>
-        {this.props.element ? this.renderElementProperties() : <p>Nothing selected.</p>}
+        {this.props.elements.length && this.props.elements[0] ? (
+          this.renderElementProperties()
+        ) : (
+          <p>Nothing selected.</p>
+        )}
       </div>
     );
   }
 
   componentWillReceiveProps(props) {
-    if (props.element) {
+    if (props.elements.length === 1 && props.elements[0]) {
       const properties = this.getProperties.call({ props });
       properties.forEach(property => {
-        this.setState({ [property]: props.element[property] });
+        this.setState({ [property]: props.elements[0][property] });
       });
     }
   }
 
   onChange = event => {
-    this.props.updateProperty(this.props.element, event.target.name, event.target.value);
+    this.props.updateProperty(this.props.elements[0], event.target.name, event.target.value);
     this.setState({ [event.target.name]: event.target.value });
   };
 
   getProperties() {
-    const properties = Object.keys(ElementLibrary[this.props.element.type].properties);
+    const properties = Object.keys(ElementLibrary[this.props.elements[0].type].properties);
     properties.push("name", "zIndex");
     return properties;
   }
 
   renderElementProperties() {
+    if (this.props.elements.length > 1) return <p>{this.props.elements.length} elements selected.</p>;
+
     const properties = this.getProperties();
 
     return (
       <div>
-        <p>{`ID: ${this.props.element.id}`}</p>
-        <p>{`Position: ${this.props.element.left}, ${this.props.element.top}`}</p>
-        <p>{`Height: ${this.props.element.height}x${this.props.element.width}`}</p>
+        <p>{`ID: ${this.props.elements[0].id}`}</p>
+        <p>{`Position: ${this.props.elements[0].left}, ${this.props.elements[0].top}`}</p>
+        <p>{`Height: ${this.props.elements[0].height}x${this.props.elements[0].width}`}</p>
         <Form>
           {properties.map(property => (
             <Form.Input
@@ -59,7 +65,7 @@ class Properties extends Component {
             />
           ))}
         </Form>
-        <Button negative onClick={() => this.props.deleteElement(this.props.element)}>
+        <Button negative onClick={() => this.props.deleteElement()}>
           Delete Element
         </Button>
       </div>
@@ -84,14 +90,15 @@ const debounce = function(func, wait, immediate) {
 };
 
 const mapState = state => {
-  const { selectedElement, elements } = state.designer;
-  const selectedElementObj = elements.find(e => e.id === selectedElement);
-  return { element: selectedElementObj };
+  const { selectedElements, elements } = state.designer;
+  const selectedElementObjects = selectedElements.map(id => elements.find(element => element.id === id));
+
+  return { elements: selectedElementObjects };
 };
 
 const mapDispatch = dispatch => ({
   updateProperty: debounce((...args) => dispatch(designerOperations.updateElementProperty(...args)), 500),
-  deleteElement: element => dispatch(designerOperations.deleteElement(element))
+  deleteElement: () => dispatch(designerOperations.deleteElement())
 });
 
 export default connect(mapState, mapDispatch)(Properties);

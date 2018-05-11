@@ -26,15 +26,14 @@ class DraggableElement extends Component {
   // the meantime.
   onDragStop = (...args) => {
     const positionInfo = args[1];
-    let x = positionInfo.x - this.props.offset.x;
-    let y = positionInfo.y - this.props.offset.y;
-    x = Math.round(x / 5) * 5; // Round to the nearest 5 for grid snapping
-    y = Math.round(y / 5) * 5;
-    this.props.doMoveElement(x, y);
+    let deltaX = this.props.element.left - positionInfo.x + this.props.offset.x;
+    let deltaY = this.props.element.top - positionInfo.y + this.props.offset.y;
+    deltaX = Math.round(deltaX / 5) * 5; // Round to the nearest 5 for grid snapping
+    deltaY = Math.round(deltaY / 5) * 5;
+    this.props.doMoveElement(deltaX, deltaY);
   };
 
   onResizeStop = (...eventArgs) => {
-    console.log(eventArgs);
     const sizeDelta = eventArgs[3];
     const coords = eventArgs[4];
     const width = this.props.element.width + sizeDelta.width;
@@ -50,7 +49,7 @@ class DraggableElement extends Component {
     const { MIN_HEIGHT, MAX_HEIGHT, MIN_WIDTH, MAX_WIDTH } = this.getElementConstraints();
     return (
       <Rnd
-        className={this.props.className}
+        style={this.props.style}
         ref={this.rnd}
         default={{
           x: this.props.element.left + this.props.offset.x,
@@ -88,7 +87,7 @@ const mapDispatch = (dispatch, ownProps) => {
   return {
     doResizeElement: (height, width, x, y) =>
       dispatch(designerOperations.resizeElement(ownProps.element, { height, width, x, y })),
-    doMoveElement: (x, y) => dispatch(designerOperations.moveElement(ownProps.element, { x, y }))
+    doMoveElement: (x, y) => dispatch(designerOperations.moveSelection({ x, y }))
   };
 };
 

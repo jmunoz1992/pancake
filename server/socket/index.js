@@ -83,6 +83,7 @@ const onActionReceived = async (action, socket) => {
 
     store.dispatch(action);
     store.serialize(store, sessionName);
+    console.log("sending", action);
     io.to(sessionName).emit("update-mockup-state", action);
   } catch (error) {
     console.log(`Unable to dispatch action. (Action=${action}, Client=${socket.id}))`);
