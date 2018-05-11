@@ -6,34 +6,23 @@ import { List } from "semantic-ui-react";
 import { IssueItem } from "../index";
 
 const Issues = props => {
-  const { issues, filter } = props;
-  console.log("these are the filtered issues ", filter);
+  let { issues, filter } = props;
+  if (filter) {
+    issues = issues.filter(
+      issue => issue.title.toLowerCase().includes(filter) || issue.body.toLowerCase().includes(filter)
+    );
+  }
   return (
     <div>
       <h1>Issues</h1>
-      {filter ? (
-        <List>
-          {issues.map(issue => {
-            return issue.labels.map(label => {
-              if (label.name === filter) {
-                console.log("inside issues map loop ", issue);
-                return <IssueItem key={issue.id} issue={issue} />;
-              }
-            });
-          })}
-        </List>
-      ) : (
-        <List>{issues.map(issue => <IssueItem key={issue.id} issue={issue} />)}</List>
-      )}
+      {filter ? <h3>Showing '{filter}' issues</h3> : null}
+      <List>{issues.map(issue => <IssueItem key={issue.id} issue={issue} />)}</List>
     </div>
   );
 };
 
 const mapState = ({ issues }) => {
-  return {
-    issues: issues.issueList,
-    filter: issues.filter
-  };
+  return { issues: issues.issueList, filter: issues.filter };
 };
 
 const mapDispatch = dispatch => {
