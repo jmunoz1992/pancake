@@ -14,7 +14,6 @@ class Schema extends React.Component {
   }
 
   componentDidMount() {
-    console.log("Schema componentDidMount");
     connectToSession(newJson => {
       this.setState({ diagramJson: newJson });
     });

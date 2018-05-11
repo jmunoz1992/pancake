@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 import { Button, Form, Icon } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
+import store, { me } from "../store";
 
 class Welcome extends Component {
   constructor(props) {
@@ -15,10 +16,10 @@ class Welcome extends Component {
     };
   }
 
-  componentWillReceiveProps(props) {
-    console.log("received", props);
-    this.setState({ selectedOrg: props.user.username });
-  }
+  // componentWillReceiveProps(props) {
+  //   console.log("received", props);
+  //   this.setState({ selectedOrg: props.user.username });
+  // }
 
   componentDidMount() {
     this.getUserRepos();
@@ -55,7 +56,10 @@ class Welcome extends Component {
   onCreateProjectClick = () => {
     axios
       .post("/api/project/", { owner: this.state.selectedOrg, repository: this.state.selectedRepo })
-      .then(() => this.props.history.push("/app"));
+      .then(() => {
+        store.dispatch(me());
+        this.props.history.push("/app");
+      });
   };
 
   onChange = (evt, { name, value }) => {
@@ -101,6 +105,7 @@ class Welcome extends Component {
 }
 
 const mapState = ({ user }) => {
+  console.log("user in welcome ", user);
   return { user: user.username ? user : { username: "Nothing" } };
 };
 

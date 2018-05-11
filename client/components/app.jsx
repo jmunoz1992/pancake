@@ -5,6 +5,7 @@ import {
   DesignerCanvas,
   DesignerSidebar,
   Schema,
+  SchemaSidebar,
   SocketModal,
   MockupList,
   Issues
@@ -37,6 +38,8 @@ class App extends Component {
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route
+                  exact
+                  path="/home"
                   render={() => (
                     <div>
                       <h2>No matching route</h2>
@@ -48,6 +51,7 @@ class App extends Component {
             <Grid.Column id="sidebar">
               <Switch>
                 <Route path="/mockups" component={DesignerSidebar} />
+                <Route path="/schema" component={SchemaSidebar} />
                 <Route component={Issues} />
               </Switch>
             </Grid.Column>
