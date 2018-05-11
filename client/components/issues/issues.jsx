@@ -2,8 +2,8 @@ import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 // import { } from "../store";
-import { List } from "semantic-ui-react";
-import { EditIssue } from "../index";
+import { Divider, List } from "semantic-ui-react";
+import { AddIssue, EditIssue } from "../index";
 
 const Issues = props => {
   let { issues, filter } = props;
@@ -14,7 +14,8 @@ const Issues = props => {
   }
   return (
     <div>
-      <h1>Issues</h1>
+      <AddIssue />
+      <Divider />
       {filter ? <h3>Showing '{filter}' issues</h3> : null}
       <List>{issues.map(issue => <EditIssue key={issue.id} issue={issue} />)}</List>
     </div>

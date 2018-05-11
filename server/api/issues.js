@@ -47,7 +47,6 @@ router.post("/", async (req, res, next) => {
  * need to use assignee method for issue
  */
 router.put("/:number", async (req, res, next) => {
-  console.log("edit route", req.body);
   try {
     // returns created issue object
     const response = await req.octokit.issues.edit({
