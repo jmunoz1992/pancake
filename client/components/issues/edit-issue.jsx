@@ -88,6 +88,22 @@ class EditIssue extends Component {
         }
     }
 
+    removeAssignee = login => {
+        const assignees = [];
+        for (let i = 0; i < this.state.assignees.length; i++) {
+            if (this.state.assignees[i] !== login) assignees.push(this.state.assignees[i]);
+        }
+        this.setState({ assignees });
+    }
+
+    removeLabel = name => {
+        const labels = [];
+        for (let i = 0; i < this.state.labels.length; i++) {
+            if (this.state.labels[i] !== name) labels.push(this.state.labels[i]);
+        }
+        this.setState({ labels });
+    }
+
     openState = () => { this.setState({ state: "open" }); }
 
     closeState = () => { this.setState({ state: "closed" }); }
@@ -98,10 +114,14 @@ class EditIssue extends Component {
         if (title === "") {
             this.setState({ hideNoTitleWarning: false });
             goodSubmit = false;
+        } else {
+            this.setState({ hideNoTitleWarning: true });
         }
         if (body === "") {
             this.setState({ hideNoBodyWarning: false });
             goodSubmit = false;
+        } else {
+            this.setState({ hideNoBodyWarning: true });
         }
 
         if (!goodSubmit) return;
@@ -109,6 +129,7 @@ class EditIssue extends Component {
         this.props.editIssue({ title, body, state, labels, assignees, number });
         this.closeModal();
     }
+
 
     render() {
         const collabOptions = this.findUnassignedCollabs(this.state.assignees, this.props.collaborators)
@@ -166,13 +187,13 @@ class EditIssue extends Component {
                                 <Grid.Column>
                                     {/* Assignee List */}
                                     {this.state.assignees
-                                        ? this.state.assignees.map(login => <AssigneeLabel key={login} login={login} />)
+                                        ? this.state.assignees.map(login => <div key={login} onClick={() => this.removeAssignee(login)}><AssigneeLabel login={login} /></div>)
                                         : <div />}
                                 </Grid.Column>
                                 <Grid.Column>
                                     {/* Label List */}
                                     {this.state.labels
-                                        ? this.state.labels.map(name => <LabelLabel key={name} name={name} />)
+                                        ? this.state.labels.map(name => <div key={name} onClick={() => this.removeLabel(name)}><LabelLabel name={name} /></div>)
                                         : <div />}
                                 </Grid.Column>
                             </Grid.Row>
