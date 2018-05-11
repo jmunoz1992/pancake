@@ -1,10 +1,15 @@
 import { combineReducers } from "redux";
 import * as types from "./types";
 
-const selectedElementReducer = (state = 0, action) => {
+const selectedElementsReducer = (state = [], action) => {
   switch (action.type) {
-    case types.SET_SELECTED_ELEMENT:
-      return action.payload.id;
+    case types.SET_SELECTED_ELEMENTS:
+      return [...action.payload];
+    case types.ADD_ELEMENTS_TO_SELECTION: {
+      const elementSet = new Set(state);
+      action.payload.forEach(element => elementSet.add(element));
+      return [...elementSet];
+    }
     default:
       return state;
   }
@@ -44,7 +49,7 @@ const configReducer = (state = { editMode: true }, action) => {
 };
 
 const reducer = combineReducers({
-  selectedElement: selectedElementReducer,
+  selectedElements: selectedElementsReducer,
   elements: elementReducer,
   networkStatus: networkStatusReducer,
   config: configReducer

@@ -13,7 +13,7 @@ class MockupElement extends Component {
 
   onElementClicked = _ => {
     if (!this.props.selected) {
-      !this.props.selected && this.props.doSelectElement();
+      this.props.shiftDown ? this.props.doAddElementToSelection() : this.props.doSelectElement();
     }
     if (!this.props.editMode) this.props.doSetFilter();
   };
@@ -83,7 +83,8 @@ const StyledWireframeElement = styled(MockupElement).attrs({
 `;
 
 const mapDispatch = (dispatch, ownProps) => ({
-  doSelectElement: () => dispatch(designerOperations.selectElement(ownProps.element)),
+  doSelectElement: () => dispatch(designerOperations.selectElements([ownProps.element.id])),
+  doAddElementToSelection: () => dispatch(designerOperations.addElementsToSelection([ownProps.element.id])),
   doSetFilter: () => dispatch(setIssueFilter(ownProps.element.name))
 });
 

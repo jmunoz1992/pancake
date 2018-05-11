@@ -2,21 +2,38 @@ import * as actions from "./actions";
 import { dispatchNetworkAction, connectToSession, disconnectFromSession } from "../../socket";
 
 // Element Selection
-const selectElement = element => dispatch => {
-  dispatch(actions.setSelectedElement(element));
+const selectElements = elements => dispatch => {
+  dispatch(actions.setSelectedElements(elements));
+};
+
+const addElementsToSelection = elements => dispatch => {
+  dispatch(actions.addElementsToSelection(elements));
+};
+
+const removeElementFromSelection = elementToRemove => (dispatch, getState) => {
+  const selection = getState().designer.selectedElements.filter(
+    elememnt => elememnt.id !== elementToRemove.id
+  );
+  dispatch(actions.setSelectedElements(selection));
 };
 
 // Element manipulation
+const getSelectedElementsFromIds = state =>
+  state.designer.selectedElements.map(id => state.designer.elements.find(element => element.id === id));
+
 const createNewElement = element => (dispatch, getState) => {
   element.id = "uninitialized";
   element.zIndex = getState().designer.elements.length;
   dispatchNetworkAction(actions.createElement(element));
 };
 
-const moveElement = (element, newPosition) => (dispatch, getState) => {
-  element.top = newPosition.y;
-  element.left = newPosition.x;
-  dispatchNetworkAction(actions.updateElement(element));
+const moveSelection = positionDelta => (dispatch, getState) => {
+  const selection = getSelectedElementsFromIds(getState());
+  selection.forEach(selectedElement => {
+    selectedElement.top -= positionDelta.y;
+    selectedElement.left -= positionDelta.x;
+    dispatchNetworkAction(actions.updateElement(selectedElement));
+  });
 };
 
 const updateElementProperty = (element, property, newValue) => (dispatch, getState) => {
@@ -24,8 +41,10 @@ const updateElementProperty = (element, property, newValue) => (dispatch, getSta
   dispatchNetworkAction(actions.updateElement(element));
 };
 
-const deleteElement = element => dispatch => {
-  dispatchNetworkAction(actions.removeElement(element));
+const deleteElements = element => (dispatch, getState) => {
+  const selection = getSelectedElementsFromIds(getState());
+  selection.forEach(selectedElement => dispatchNetworkAction(actions.removeElement(selectedElement)));
+  dispatch(selectElements([]));
 };
 
 const resizeElement = (element, newSize) => (dispatch, getState) => {
@@ -84,7 +103,7 @@ const setError = error => (dispatch, getState) => {
 };
 
 const setEditMode = mode => dispatch => {
-  dispatch(actions.setSelectedElement({ id: 0 }));
+  dispatch(actions.setSelectedElements());
   dispatch(actions.setEditMode(mode));
 };
 
@@ -92,12 +111,13 @@ const setEditMode = mode => dispatch => {
 const loadElements = actions.loadElements;
 
 export {
-  selectElement,
+  selectElements,
+  addElementsToSelection,
   createNewElement,
-  moveElement,
+  moveSelection,
   resizeElement,
   updateElementProperty,
-  deleteElement,
+  deleteElements,
   loadElements,
   setEditMode,
   loadMockup,
