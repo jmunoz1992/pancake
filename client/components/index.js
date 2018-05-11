@@ -14,6 +14,7 @@ export { default as Issues } from "./issues/issues";
 export { default as IssueItem } from "./issues/issue-item";
 export { default as AssigneeLabel } from "./issues/assignee-label";
 export { default as LabelLabel } from "./issues/label-label";
+export { default as Board } from "./board";
 export * from "./designer";
 export * from "./schemaPack";
 export * from "./issues";

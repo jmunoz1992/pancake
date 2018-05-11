@@ -55,7 +55,7 @@ router.put("/:number", async (req, res, next) => {
       number: req.params.number,
       title: req.body.title,
       body: req.body.body,
-      state: req.body.state,
+      state: req.body.state
     });
     res.json(response.data);
   } catch (err) {
@@ -90,14 +90,13 @@ router.put("/:number/assignees", async (req, res, next) => {
       owner: req.repoOwner,
       repo: req.repoName,
       number: Number(req.params.number),
-      assignees: req.body,
+      assignees: req.body
     });
     res.json(response.data);
   } catch (err) {
     next(err);
   }
 });
-
 
 /**
  * Get all labels from this repository
@@ -106,7 +105,7 @@ router.get("/labels", async (req, res, next) => {
   try {
     const response = await req.octokit.issues.getLabels({
       owner: req.repoOwner,
-      repo: req.repoName,
+      repo: req.repoName
     });
     res.json(response.data);
   } catch (err) {
@@ -123,7 +122,7 @@ router.post("/:number/labels", async (req, res, next) => {
       owner: req.repoOwner,
       repo: req.repoName,
       number: req.params.number,
-      labels: req.body,
+      labels: req.body
     });
     res.json(response.data);
   } catch (err) {
@@ -138,7 +137,7 @@ router.delete("/:number/labels/:name", async (req, res, next) => {
       owner: req.repoOwner,
       repo: req.repoName,
       number: req.params.number,
-      name: req.params.name,
+      name: req.params.name
     });
     console.log("RESPONSE:", response);
     res.json(response.data);

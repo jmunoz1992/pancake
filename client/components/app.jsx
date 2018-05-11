@@ -8,7 +8,8 @@ import {
   SchemaSidebar,
   SocketModal,
   MockupList,
-  Issues
+  Issues,
+  Board
 } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
@@ -37,6 +38,7 @@ class App extends Component {
               <Switch>
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
+                <Route path="/board" component={Board} />
                 <Route
                   exact
                   path="/home"
