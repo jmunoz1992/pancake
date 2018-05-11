@@ -68,23 +68,23 @@ export class Application {
   addLinks(links, allPorts) {
     for (let link in links) {
       if (links.hasOwnProperty(link)) {
-        let fromPort = "";
-        let toPort = "";
-        for (let i = 0; i < allPorts.length; i++) {
-          console.log("allPorts in addLinks ", allPorts);
-          if (allPorts[i].label === links[link].from) {
-            fromPort = allPorts[i];
-          }
-          if (allPorts[i].label === links[link].to) {
-            toPort = allPorts[i];
-          }
-        }
-        console.log("fromPort", fromPort, "toPort", toPort);
-        if (fromPort && toPort) {
-          const linkForModel = fromPort.link(toPort);
-          this.activeModel.addLink(linkForModel);
-          console.log("making link for active model in add Links ", this.activeModel);
-        }
+        // let fromPort = "";
+        // let toPort = "";
+        // for (let i = 0; i < allPorts.length; i++) {
+        //   if (allPorts[i].parent.name === links[link].from) {
+        //     console.log("inside matching parent names ", allPorts[i]);
+        //   }
+        //   if (allPorts[i].label === links[link].to) {
+        //     toPort = allPorts[i];
+        //   }
+        // }
+        // console.log("fromPort", fromPort, "toPort", toPort);
+        // if (fromPort && toPort) {
+        //   const linkForModel = fromPort.link(toPort);
+        //   this.activeModel.addLink(linkForModel);
+        //   console.log("making link for active model in add Links ", this.activeModel);
+        // }
+        // const linkModelDeserialized = deSerialize(links[link], this.diagramEngine);
       }
     }
     console.log("resulting active model in add links ", this.activeModel);
@@ -135,15 +135,8 @@ export class Application {
   updateLinks(linkModel, serializedObject) {
     for (let link in linkModel) {
       if (linkModel.hasOwnProperty(link)) {
-        const linkDetails = linkModel[link];
-        const sourcePortModel = linkDetails.sourcePort;
-        const targetPortModel = linkDetails.targetPort;
-        if (sourcePortModel && targetPortModel) {
-          serializedObject.links[link] = {
-            from: sourcePortModel.label,
-            to: targetPortModel.label
-          };
-        }
+        const serializedLinkModel = linkModel[link].serialize();
+        serializedObject.links[link] = serializedLinkModel;
       }
     }
     return serializedObject;
