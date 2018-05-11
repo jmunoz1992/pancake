@@ -148,9 +148,8 @@ class EditIssue extends Component {
         return (
             <List.Item>
                 <Modal trigger={<Button onClick={this.openModal} fluid>{this.state.title}</Button>} open={this.state.modalOpen}>
+                    <Modal.Header>Issue #{this.state.number}</Modal.Header>
                     <Modal.Content>
-                        <h1>Issue #{this.state.number}</h1>
-                        <Divider />
 
                         {/* Edit Title */}
                         <Input fluid name="title" label="Title" onChange={this.handleChange} placeholder="Enter Title" value={this.state.title} />
@@ -198,14 +197,13 @@ class EditIssue extends Component {
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>
-                        <Divider />
-                        <Modal.Actions>
-                            {/* Submit Button */}
-                            <Button color="green" onClick={this.handleSubmit}><Icon name="checkmark" /> Submit</Button>
-                            {/* Cancel Button */}
-                            <Button color="red" onClick={this.closeModal}><Icon name="checkmark" /> Cancel</Button>
-                        </Modal.Actions>
                     </Modal.Content>
+                    <Modal.Actions>
+                        {/* Submit Button */}
+                        <Button color="green" onClick={this.handleSubmit}><Icon name="checkmark" /> Submit</Button>
+                        {/* Cancel Button */}
+                        <Button color="red" onClick={this.closeModal}><Icon name="checkmark" /> Cancel</Button>
+                    </Modal.Actions>
                 </Modal>
             </List.Item>
         );
