@@ -8,7 +8,7 @@ const AssigneeLabel = props => {
         <Label
             as="a"
             image
-            key={assignee.id}
+            key={assignee.login}
         >
             <img src={assignee.avatar_url} />
             {assignee.login}

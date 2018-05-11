@@ -22,6 +22,7 @@ router.get("/", async (req, res, next) => {
  * need to use assignee method for issue
  */
 router.post("/", async (req, res, next) => {
+  console.log("req.body", req.body);
   try {
     // returns created issue object
     const response = await req.octokit.issues.create({
@@ -47,7 +48,6 @@ router.post("/", async (req, res, next) => {
  * need to use assignee method for issue
  */
 router.put("/:number", async (req, res, next) => {
-  console.log("edit route", req.body);
   try {
     // returns created issue object
     const response = await req.octokit.issues.edit({
@@ -65,42 +65,6 @@ router.put("/:number", async (req, res, next) => {
 });
 
 /**
- * Add assignee to issue
- */
-router.post("/:number/assignees", async (req, res, next) => {
-  try {
-    const newAssignees = req.body.map(user => user.login);
-    const response = await req.octokit.issues.addAssigneesToIssue({
-      owner: req.repoOwner,
-      repo: req.repoName,
-      number: Number(req.params.number),
-      assignees: newAssignees
-    });
-    res.json(response.data);
-  } catch (err) {
-    next(err);
-  }
-});
-
-/**
- * Remove assigne from issue
- */
-router.put("/:number/assignees", async (req, res, next) => {
-  try {
-    const response = await req.octokit.issues.removeAssigneesFromIssue({
-      owner: req.repoOwner,
-      repo: req.repoName,
-      number: Number(req.params.number),
-      assignees: req.body,
-    });
-    res.json(response.data);
-  } catch (err) {
-    next(err);
-  }
-});
-
-
-/**
  * Get all labels from this repository
  */
 router.get("/labels", async (req, res, next) => {
@@ -109,39 +73,6 @@ router.get("/labels", async (req, res, next) => {
       owner: req.repoOwner,
       repo: req.repoName,
     });
-    res.json(response.data);
-  } catch (err) {
-    next(err);
-  }
-});
-
-/**
- * Add label to this issue
- */
-router.post("/:number/labels", async (req, res, next) => {
-  try {
-    const response = await req.octokit.issues.addLabels({
-      owner: req.repoOwner,
-      repo: req.repoName,
-      number: req.params.number,
-      labels: req.body,
-    });
-    res.json(response.data);
-  } catch (err) {
-    next(err);
-  }
-});
-
-router.delete("/:number/labels/:name", async (req, res, next) => {
-  console.log("in delete");
-  try {
-    const response = await req.octokit.issues.removeLabel({
-      owner: req.repoOwner,
-      repo: req.repoName,
-      number: req.params.number,
-      name: req.params.name,
-    });
-    console.log("RESPONSE:", response);
     res.json(response.data);
   } catch (err) {
     next(err);

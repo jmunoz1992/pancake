@@ -1,34 +1,29 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button, Divider, Grid, Icon, Input, List, Message, Modal, Radio, Select } from "semantic-ui-react";
+import { Button, Divider, Grid, Icon, Input, Message, Modal, Select } from "semantic-ui-react";
 
 import { AssigneeLabel, LabelLabel } from "./index";
-import { editIssue } from "../../store/issues";
+import { createIssue } from "../../store/issues";
 
-class EditIssue extends Component {
+class AddIssue extends Component {
     constructor(props) {
         super(props);
         this.state = {
             selectedAssignee: "",
             selectedLabel: "",
-            hideNoBodyWarning: true,
-            hideNoTitleWarning: true,
             modalOpen: false,
+            hideNoTitleWarning: true,
+            hideNoBodyWarning: true,
         };
     }
 
     componentDidMount = () => {
-        const { title, body, state, assignees, labels, id, number } = this.props.activeIssue;
-        const assigneeLogins = assignees.map(assignee => assignee.login);
-        const labelNames = labels.map(label => label.name);
         this.setState({
-            title,
-            body,
-            state,
-            assignees: assigneeLogins,
-            labels: labelNames,
-            id,
-            number,
+            title: "",
+            body: "",
+            state: "open",
+            assignees: [],
+            labels: [],
             hideNoBodyWarning: true,
             hideNoTitleWarning: true,
             modalOpen: false,
@@ -37,12 +32,21 @@ class EditIssue extends Component {
 
     handleChange = (evt, { name, value }) => { this.setState({ [name]: value }); }
 
-    openModal = () => {
-        this.setState({ modalOpen: true });
-    }
+    openModal = () => { this.setState({ modalOpen: true }); }
 
-    closeModal = () => {
-        this.setState({ modalOpen: false });
+    cancel = () => {
+        this.setState({
+            title: "",
+            body: "",
+            state: "open",
+            labels: [],
+            assignees: [],
+            selectedLabel: {},
+            selectedAssignee: {},
+            hideNoTitleWarning: true,
+            hideNoBodyWarning: true,
+            modalOpen: false
+        });
     }
 
     findUnassignedCollabs = (assignedCollabs, allCollabs) => {
@@ -78,7 +82,6 @@ class EditIssue extends Component {
             const assignees = [...this.state.assignees, this.state.selectedAssignee];
             this.setState({ assignees, selectedAssignee: "" });
         }
-
     }
 
     addLabel = () => {
@@ -104,12 +107,8 @@ class EditIssue extends Component {
         this.setState({ labels });
     }
 
-    openState = () => { this.setState({ state: "open" }); }
-
-    closeState = () => { this.setState({ state: "closed" }); }
-
     handleSubmit = () => {
-        const { title, body, state, labels, assignees, number } = this.state;
+        const { title, body, state, labels, assignees } = this.state;
         let goodSubmit = true;
         if (title === "") {
             this.setState({ hideNoTitleWarning: false });
@@ -125,35 +124,38 @@ class EditIssue extends Component {
         }
 
         if (!goodSubmit) return;
-
-        this.props.editIssue({ title, body, state, labels, assignees, number });
-        this.closeModal();
+        const newIssue = { title, body, state, labels, assignees };
+        this.props.createIssue(newIssue);
+        this.cancel();
     }
 
-
     render() {
-        const collabOptions = this.findUnassignedCollabs(this.state.assignees, this.props.collaborators)
+        const issue = this.state;
+        const collabOptions = this.findUnassignedCollabs(issue.assignees, this.props.collaborators)
             .map(collab => ({
-                key: collab.id,
+                key: collab.login,
                 text: collab.login,
                 image: collab.avatar_url,
                 value: collab.login
             }));
-        const labelOptions = this.findUnnassignedLabels(this.state.labels, this.props.labels)
+        const labelOptions = this.findUnnassignedLabels(issue.labels, this.props.labels)
             .map(label => ({
-                key: label.id,
+                key: label.name,
                 text: label.name,
                 value: label.name,
             }));
         return (
-            <List.Item>
-                <Modal trigger={<Button onClick={this.openModal} fluid>{this.state.title}</Button>} open={this.state.modalOpen}>
-                    <Modal.Header>Issue #{this.state.number}</Modal.Header>
+            <div>
+                <Divider />
+                <h1 style={{ width: "100px", display: "inline" }}>Issues</h1>
+                <Button floated="right" onClick={this.openModal}>New Issue</Button>
+                <Modal open={this.state.modalOpen}>
+                    <Modal.Header>New Issue</Modal.Header>
                     <Modal.Content>
 
                         {/* Edit Title */}
-                        <Input fluid name="title" label="Title" onChange={this.handleChange} placeholder="Enter Title" value={this.state.title} />
-                        <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning><Icon name="warning sign" />Issue must contain a Title</Message>
+                        <Input fluid label="Title" name="title" onChange={this.handleChange} placeholder="Enter Title" />
+                        <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning><Icon name="warning sign" />Issue must contain a title</Message>
 
                         <Divider hidden />
 
@@ -162,63 +164,54 @@ class EditIssue extends Component {
                         <Message hidden={this.state.hideNoBodyWarning} attached="bottom" warning><Icon name="warning sign" />Issue must contain a body</Message>
 
                         <Divider hidden />
-
-                        {/* Select State */}
-                        <Radio label="Open" checked={this.state.state === "open"} style={{ marginRight: "10px" }} onClick={this.openState} />
-                        <Radio label="Closed" checked={this.state.state === "closed"} onClick={this.closeState} />
-
-                        <Divider hidden />
                         <Grid divided columns="equal">
                             <Grid.Row>
                                 <Grid.Column>
+
                                     {/* Select Assignee */}
                                     <Select name="selectedAssignee" label="Assignees" onChange={this.handleChange} options={collabOptions} placeholder="Select Assignees" />
                                     <Button icon onClick={this.addAssignee}><Icon name="add" /></Button>
 
                                 </Grid.Column>
                                 <Grid.Column>
+
                                     {/* Select Label */}
                                     <Select name="selectedLabel" label="Add Labels" onChange={this.handleChange} options={labelOptions} placeholder="Select Labels" />
                                     <Button icon onClick={this.addLabel}><Icon name="add" /></Button>
+
                                 </Grid.Column>
                             </Grid.Row>
                             <Grid.Row>
                                 <Grid.Column>
+
                                     {/* Assignee List */}
                                     {this.state.assignees
                                         ? this.state.assignees.map(login => <div key={login} onClick={() => this.removeAssignee(login)}><AssigneeLabel login={login} /></div>)
                                         : <div />}
+
                                 </Grid.Column>
                                 <Grid.Column>
+
                                     {/* Label List */}
                                     {this.state.labels
                                         ? this.state.labels.map(name => <div key={name} onClick={() => this.removeLabel(name)}><LabelLabel name={name} /></div>)
                                         : <div />}
+
                                 </Grid.Column>
                             </Grid.Row>
                         </Grid>
                     </Modal.Content>
                     <Modal.Actions>
-                        {/* Submit Button */}
                         <Button color="green" onClick={this.handleSubmit}><Icon name="checkmark" /> Submit</Button>
-                        {/* Cancel Button */}
-                        <Button color="red" onClick={this.closeModal}><Icon name="checkmark" /> Cancel</Button>
+                        <Button color="red" onClick={this.cancel}><Icon name="checkmark" /> Cancel</Button>
                     </Modal.Actions>
                 </Modal>
-            </List.Item>
+            </div>
         );
     }
 }
 
-const mapState = ({ issues, collaborators, labels }, ownProps) => {
-    const activeIssue = issues.issueList.find(issue => issue.id === ownProps.issue.id);
-    return ({
-        activeIssue,
-        collaborators,
-        labels,
-    });
-};
+const mapState = ({ labels, collaborators }) => ({ labels, collaborators });
+const mapDispatch = { createIssue };
 
-const mapDispatch = { editIssue };
-
-export default connect(mapState, mapDispatch)(EditIssue);
+export default connect(mapState, mapDispatch)(AddIssue);
