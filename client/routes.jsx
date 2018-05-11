@@ -10,6 +10,7 @@ import { me } from "./store";
  */
 class Routes extends Component {
   componentDidMount() {
+    console.log("we are mounting in routes");
     this.props.loadInitialData();
   }
 
