@@ -2,20 +2,51 @@ import React from "react";
 import { DesignerToolbox, DesignerProperties } from "./index";
 import { connect } from "react-redux";
 import { Issues } from "../";
+import { Tab } from "semantic-ui-react";
+import { default as styled } from "styled-components";
 
 const DesignerSidebar = props => {
-  if (props.editMode) {
-    return (
-      <div style={{ height: "100%" }}>
-        <DesignerToolbox />
-        <DesignerProperties />
-      </div>
-    );
+  const panes = [
+    {
+      menuItem: "Issues",
+      render: () => (
+        <Tab.Pane attached={false}>
+          <Issues />
+        </Tab.Pane>
+      )
+    }
+  ];
+  if (props.areElementsSelected) {
+    panes.push({
+      menuItem: "Properties",
+      render: () => (
+        <Tab.Pane attached={false}>
+          <DesignerProperties />
+        </Tab.Pane>
+      )
+    });
   } else {
-    return <Issues />;
+    panes.push({
+      menuItem: "Components",
+      render: () => (
+        <Tab.Pane attached={false}>
+          <DesignerToolbox />
+        </Tab.Pane>
+      )
+    });
   }
+
+  return (
+    <Wrapper>
+      <Tab menu={{ secondary: true, pointing: true }} panes={panes} />
+    </Wrapper>
+  );
 };
 
-const mapState = state => ({ editMode: state.designer.config.editMode });
+const Wrapper = styled.div`
+  /* padding-right: 10px; */
+`;
+
+const mapState = state => ({ areElementsSelected: state.designer.selectedElements.length });
 
 export default connect(mapState, null)(DesignerSidebar);

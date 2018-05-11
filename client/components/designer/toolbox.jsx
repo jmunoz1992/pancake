@@ -23,7 +23,7 @@ class Toolbox extends Component {
     }));
 
     return (
-      <div style={{ height: "50%", overflowY: "scroll", paddingRight: "10px" }}>
+      <div>
         <h2>Components</h2>
         <Accordion defaultActiveIndex={-1} panels={categories} />
         {this.renderComponentsForCategory()}
@@ -68,8 +68,8 @@ const mapDispatch = dispatch => {
       // component we're creating.
       for (const key in item.properties) {
         if (item.properties.hasOwnProperty(key)) {
-          const value = item.properties[key];
-          element[key] = value;
+          const property = item.properties[key];
+          element[key] = property.default ? property.default : property.name;
         }
       }
       dispatch(designerOperations.createNewElement(element));

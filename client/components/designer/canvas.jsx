@@ -4,6 +4,7 @@ import { default as DesignerElement } from "./element";
 import { designerOperations } from "../../store";
 import { connect } from "react-redux";
 import Toolbar from "./toolbar";
+import SelectionWrapper from "./selection-wrapper";
 
 class DesignerCanvas extends Component {
   constructor(props) {
@@ -18,6 +19,7 @@ class DesignerCanvas extends Component {
       boxSelectionStart: [],
       boxSelectionPoints: {}
     };
+    this.ref = React.createRef();
   }
 
   // Event listeners for canvas panning.  They're added to the document because if we add them to
@@ -90,9 +92,12 @@ class DesignerCanvas extends Component {
   onMouseDown = event => {
     if (event.target.id === "mockup-canvas" && event.button === 0) {
       if (this.state.shiftDown) {
+        const rect = this.ref.current.getBoundingClientRect(); //Account for div's position on page
+        const points = { x: event.clientX - rect.x, y: event.clientY - rect.y };
+        console.log("points", points, "event", event);
         this.setState({
-          boxSelectionStart: [event.clientX, event.clientY],
-          boxSelectionPoints: { top: event.clientY, left: event.clientX, width: 0, height: 0 }
+          boxSelectionStart: [points.x, points.y],
+          boxSelectionPoints: { top: points.y, left: points.x, width: 0, height: 0 }
         });
       } else {
         this.setState({
@@ -124,8 +129,9 @@ class DesignerCanvas extends Component {
   drawBox(event) {
     const startX = this.state.boxSelectionStart[0];
     const startY = this.state.boxSelectionStart[1];
-    const mouseX = event.pageX;
-    const mouseY = event.pageY;
+    const rect = this.ref.current.getBoundingClientRect();
+    const mouseX = event.clientX - rect.x;
+    const mouseY = event.clientY - rect.y;
     let box = {};
 
     if (mouseX < startX) box = { left: mouseX, width: startX - mouseX };
@@ -162,6 +168,34 @@ class DesignerCanvas extends Component {
     this.props.selectElements(selectedElements);
   };
 
+  calculateSelectionWrapperRect = selection => {
+    // Generates a rectangle that contains all of the selected elements
+    let boxLeft, boxRight;
+    selection.forEach(element => {
+      if (boxLeft && boxRight) {
+        const elementLeft = { x: element.left, y: element.top };
+        const elementRight = { x: element.left + element.width, y: element.top + element.height };
+        if (elementLeft.x < boxLeft.x) boxLeft.x = elementLeft.x;
+        if (elementLeft.y < boxLeft.y) boxLeft.y = elementLeft.y;
+        if (elementRight.x > boxRight.x) boxRight.x = elementRight.x;
+        if (elementRight.y > boxRight.y) boxRight.y = elementRight.y;
+      } else {
+        boxLeft = { x: element.left, y: element.top };
+        boxRight = { x: element.left + element.width, y: element.top + element.height };
+      }
+    });
+    let computedRect = {};
+
+    if (boxLeft.x < boxRight.x) computedRect = { left: boxLeft.x, width: boxRight.x - boxLeft.x };
+    else computedRect = { left: boxRight.x, width: boxLeft.x - boxRight.x };
+    if (boxLeft.y < boxRight.y) {
+      computedRect = { ...computedRect, top: boxLeft.y, height: boxRight.y - boxLeft.y };
+    } else {
+      computedRect = { ...computedRect, top: boxRight.y, height: boxLeft.y - boxRight.y };
+    }
+    return computedRect;
+  };
+
   // ignoreNextClick is set after a drag event, since drag events fire unwanted onClicks.
   onCanvasClicked = event => {
     if (
@@ -174,8 +208,18 @@ class DesignerCanvas extends Component {
   };
 
   render() {
+    const idSet = new Set(this.props.selectedElements);
+    let selected = [],
+      unselected = [];
+    this.props.elements.forEach(
+      element => (idSet.has(element.id) ? selected.push(element) : unselected.push(element))
+    );
+    let selectionRect;
+    if (selected.length) selectionRect = this.calculateSelectionWrapperRect(selected);
+
     return (
       <StyledCanvas
+        innerRef={this.ref}
         id="mockup-canvas"
         onKeyDown={this.onKeyDown}
         onWheel={this.onScroll}
@@ -183,13 +227,21 @@ class DesignerCanvas extends Component {
         tabIndex="0"
         className={"noselect"}
         gridOffset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}>
-        {this.props.elements.map(element => (
+        {selected.length ? (
+          <SelectionWrapper
+            shiftDown={this.state.shiftDown}
+            bounds={selectionRect}
+            elements={selected}
+            offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}
+          />
+        ) : null}
+        {unselected.map(element => (
           <DesignerElement
             key={element.id}
             element={element}
             editMode={this.props.editMode}
             shiftDown={this.state.shiftDown}
-            selected={this.props.selectedElements.indexOf(element.id) !== -1}
+            selected={false}
             offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}
           />
         ))}
@@ -208,6 +260,7 @@ const BoxSelection = styled.div.attrs({
     width: points.width
   })
 })`
+  /* margin-left: 10px; */
   position: absolute;
   border: 1px solid blue;
   background: #0000ff44;
@@ -231,9 +284,6 @@ const StyledCanvas = styled.div.attrs({
 `;
 
 const mapState = state => {
-  const selectedElement = state.designer.elements.find(
-    element => element.id === state.designer.selectedElement
-  );
   return {
     editMode: state.designer.config.editMode,
     selectedMockupId: state.mockups.selectedMockup,
