@@ -18,6 +18,7 @@ class DesignerCanvas extends Component {
       boxSelectionStart: [],
       boxSelectionPoints: {}
     };
+    this.ref = React.createRef();
   }
 
   // Event listeners for canvas panning.  They're added to the document because if we add them to
@@ -90,9 +91,12 @@ class DesignerCanvas extends Component {
   onMouseDown = event => {
     if (event.target.id === "mockup-canvas" && event.button === 0) {
       if (this.state.shiftDown) {
+        const rect = this.ref.current.getBoundingClientRect(); //Account for div's position on page
+        const points = { x: event.clientX - rect.x, y: event.clientY - rect.y };
+        console.log("points", points, "event", event);
         this.setState({
-          boxSelectionStart: [event.clientX, event.clientY],
-          boxSelectionPoints: { top: event.clientY, left: event.clientX, width: 0, height: 0 }
+          boxSelectionStart: [points.x, points.y],
+          boxSelectionPoints: { top: points.y, left: points.x, width: 0, height: 0 }
         });
       } else {
         this.setState({
@@ -124,8 +128,9 @@ class DesignerCanvas extends Component {
   drawBox(event) {
     const startX = this.state.boxSelectionStart[0];
     const startY = this.state.boxSelectionStart[1];
-    const mouseX = event.pageX;
-    const mouseY = event.pageY;
+    const rect = this.ref.current.getBoundingClientRect();
+    const mouseX = event.clientX - rect.x;
+    const mouseY = event.clientY - rect.y;
     let box = {};
 
     if (mouseX < startX) box = { left: mouseX, width: startX - mouseX };
@@ -176,6 +181,7 @@ class DesignerCanvas extends Component {
   render() {
     return (
       <StyledCanvas
+        innerRef={this.ref}
         id="mockup-canvas"
         onKeyDown={this.onKeyDown}
         onWheel={this.onScroll}
@@ -208,6 +214,7 @@ const BoxSelection = styled.div.attrs({
     width: points.width
   })
 })`
+  /* margin-left: 10px; */
   position: absolute;
   border: 1px solid blue;
   background: #0000ff44;
