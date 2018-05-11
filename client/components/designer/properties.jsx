@@ -1,21 +1,30 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Form, Button } from "semantic-ui-react";
+import { Form, Button, Dropdown } from "semantic-ui-react";
 import { designerOperations } from "../../store";
 import { default as ElementLibrary } from "./elements";
 
 class Properties extends Component {
   constructor(props) {
     super(props);
-    this.state = { form: {} };
+    this.state = { form: {}, labels: [] };
   }
 
   BASE_PROPERTIES = {
-    name: { name: "Element Name", label: "Element Name", type: "string", value: "" },
-    zIndex: { name: "Z-Index", label: "Z-Index", type: "number", value: "" }
+    labels: { name: "Labels", label: "Labels", type: "labels", value: "" },
+    zIndex: { name: "Z-Index", label: "Z-Index", type: "number", value: "" },
+    keywords: { name: "Keywords", label: "Keywords", type: "string", value: "" }
   };
 
+  componentDidMount() {
+    this.setupForm(this.props);
+  }
+
   componentWillReceiveProps(props) {
+    this.setupForm(props);
+  }
+
+  setupForm(props) {
     if (!props.elements[0]) {
       return this.setState({ form: {} });
     }
@@ -26,6 +35,7 @@ class Properties extends Component {
 
     const state = { ...this.BASE_PROPERTIES };
     if (props.elements.length === 1) {
+      this.deserializeLabels(props.elements[0].labels);
       const propertyList = { ...ElementLibrary[props.elements[0].type].properties, ...this.BASE_PROPERTIES };
       for (const key in propertyList) {
         if (propertyList.hasOwnProperty(key)) {
@@ -38,9 +48,22 @@ class Properties extends Component {
         }
       }
     }
-
     this.setState({ form: state });
   }
+
+  deserializeLabels(serialized) {
+    if (serialized) this.setState({ labels: JSON.parse(serialized) });
+  }
+
+  serializeAndUpdateLabels = (event, target) => {
+    this.setState({ labels: target.value });
+    const serialized = JSON.stringify(target.value);
+    if (this.props.elements.length > 1) {
+      this.props.bulkUpdateProperty(this.props.elements, "labels", serialized);
+    } else {
+      this.props.updateProperty(this.props.elements[0], "labels", serialized);
+    }
+  };
 
   onChange = event => {
     const formState = { ...this.state.form };
@@ -57,12 +80,10 @@ class Properties extends Component {
 
   render() {
     return (
-      <div style={{ height: "50%", overflowY: "scroll", paddingRight: "10px" }}>
+      <div>
         <h2>Properties</h2>
         {this.props.elements.length > 1 ? (
-          <p>
-            {this.props.elements.length} elements selected. Changes made below will be applied to all of them.
-          </p>
+          <p>{this.props.elements.length} elements selected. Changes will be applied to all of them.</p>
         ) : null}
         {Object.keys(this.state.form).length ? this.renderForm() : <p>Nothing selected.</p>}
       </div>
@@ -74,47 +95,50 @@ class Properties extends Component {
     for (const key in this.state.form) {
       if (this.state.form.hasOwnProperty(key)) {
         const field = this.state.form[key];
-        fields.push(
-          <Form.Input
-            key={key}
-            label={`${field.label}:`}
-            name={key}
-            onChange={this.onChange}
-            value={field.value}
-          />
-        );
+        if (field.type === "labels") fields.push(this.renderLabels(key, field));
+        else fields.push(this.renderField(key, field));
       }
     }
-    return <Form>{fields}</Form>;
-  }
-
-  renderField() {}
-
-  renderElementProperties() {
-    if (this.props.elements.length > 1) return <p>{this.props.elements.length} elements selected.</p>;
-
-    const properties = this.getProperties();
-
     return (
       <div>
-        {/* <p>{`ID: ${this.props.elements[0].id}`}</p>
-        <p>{`Position: ${this.props.elements[0].left}, ${this.props.elements[0].top}`}</p>
-        <p>{`Height: ${this.props.elements[0].height}x${this.props.elements[0].width}`}</p> */}
         <Form>
-          {properties.map(property => (
-            <Form.Input
-              key={property.name}
-              label={`${property.name}:`}
-              name={property.name}
-              onChange={this.onChange}
-              value={this.state[property]}
-            />
-          ))}
+          {fields}
+          <Form.Field>
+            <Button negative onClick={() => this.props.deleteElement()}>
+              Delete
+            </Button>
+          </Form.Field>
         </Form>
-        <Button negative onClick={() => this.props.deleteElement()}>
-          Delete Element
-        </Button>
       </div>
+    );
+  }
+
+  renderLabels(key, fieldInfo) {
+    const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
+    return (
+      <Form.Dropdown
+        key={key}
+        label={"Labels:"}
+        placeholder="Labels"
+        fluid
+        multiple
+        selection
+        options={options}
+        onChange={this.serializeAndUpdateLabels}
+        value={this.state.labels}
+      />
+    );
+  }
+
+  renderField(key, fieldInfo) {
+    return (
+      <Form.Input
+        key={key}
+        label={`${fieldInfo.label}:`}
+        name={key}
+        onChange={this.onChange}
+        value={fieldInfo.value}
+      />
     );
   }
 }
@@ -138,7 +162,7 @@ const debounce = function(func, wait, immediate) {
 const mapState = state => {
   const { selectedElements, elements } = state.designer;
   const selectedIdSet = new Set(selectedElements);
-  return { elements: elements.filter(element => selectedIdSet.has(element.id)) };
+  return { labels: state.labels, elements: elements.filter(element => selectedIdSet.has(element.id)) };
 };
 
 const mapDispatch = dispatch => ({
@@ -149,7 +173,7 @@ const mapDispatch = dispatch => ({
     });
   }, 500),
   updateProperty: debounce((...args) => dispatch(designerOperations.updateElementProperty(...args)), 500),
-  deleteElement: () => dispatch(designerOperations.deleteElement())
+  deleteElement: () => dispatch(designerOperations.deleteElements())
 });
 
 export default connect(mapState, mapDispatch)(Properties);
