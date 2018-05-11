@@ -1,4 +1,5 @@
 import io from "socket.io-client";
+import { debounce } from "lodash";
 import { default as store, designerOperations } from "./store";
 
 const mockupSocket = io(`${window.location.origin}/mockups`, {
@@ -36,9 +37,28 @@ mockupSocket.on("load-initial-state", state => {
   store.dispatch(designerOperations.loadElements(state));
 });
 
+// Combines multiple UPDATE_ELEMENT actions that arrive all at once into a single bulk update.
+// This avoids render thrashing when dispatching many separate UPDATE actions (each of which causes)
+// a render.
+let actionQueue = [];
+const dispatchUpdate = debounce((store, action) => {
+  console.log(`Dispatching ${actionQueue.length} update actions.`);
+  if (actionQueue.length === 1) {
+    store.dispatch(action);
+  } else {
+    const updateArray = actionQueue.map(action => action.payload);
+    store.dispatch(designerOperations.bulkUpdateElements(updateArray));
+  }
+  actionQueue = [];
+}, 100);
+
 mockupSocket.on("update-mockup-state", action => {
-  console.log("Received action from server", action);
-  store.dispatch(action);
+  if (action.type === "designer/UPDATE_ELEMENT") {
+    actionQueue.push(action);
+    dispatchUpdate(store, action);
+  } else {
+    store.dispatch(action);
+  }
 });
 
 mockupSocket.on("exception", error => {

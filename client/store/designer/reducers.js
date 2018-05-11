@@ -21,6 +21,13 @@ const elementReducer = (state = [], action) => {
       return [action.payload, ...state];
     case types.UPDATE_ELEMENT:
       return state.map(element => (action.payload.id === element.id ? action.payload : element));
+    case types.BULK_UPDATE_ELEMENTS: {
+      const elementMap = new Map(action.payload.map(element => [element.id, element]));
+      return state.map(element => {
+        const updatedElement = elementMap.get(element.id);
+        return updatedElement ? updatedElement : element;
+      });
+    }
     case types.REMOVE_ELEMENT:
       return state.filter(element => element.id !== action.payload.id);
     case types.LOAD_ELEMENTS:

@@ -7,6 +7,7 @@ const addElementsToSelection = elements => ({ type: types.ADD_ELEMENTS_TO_SELECT
 // Element manipulation
 const createElement = element => ({ type: types.CREATE_ELEMENT, payload: element });
 const updateElement = element => ({ type: types.UPDATE_ELEMENT, payload: element });
+const bulkUpdateElements = elements => ({ type: types.BULK_UPDATE_ELEMENTS, payload: elements });
 const removeElement = element => ({ type: types.REMOVE_ELEMENT, payload: element });
 const loadElements = elements => ({ type: types.LOAD_ELEMENTS, payload: elements });
 
@@ -21,6 +22,7 @@ export {
   addElementsToSelection,
   createElement,
   updateElement,
+  bulkUpdateElements,
   removeElement,
   loadElements,
   setConnectionStatus,

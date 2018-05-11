@@ -109,6 +109,7 @@ const setEditMode = mode => dispatch => {
 
 // Links to actions
 const loadElements = actions.loadElements;
+const bulkUpdateElements = actions.bulkUpdateElements;
 
 export {
   selectElements,
@@ -119,6 +120,7 @@ export {
   updateElementProperty,
   deleteElements,
   loadElements,
+  bulkUpdateElements,
   setEditMode,
   loadMockup,
   disconnect,
