@@ -1,22 +1,11 @@
 import * as SRD from "storm-react-diagrams";
-import {
-  DiagramEngine,
-  DiagramModel,
-  DiagramProps,
-  DefaultNodeModel,
-  LinkModel,
-  DiagramWidget
-} from "storm-react-diagrams";
-import axios from "axios";
 import { sendSchemaUpdate } from "../../socket/schema";
 import store from "../../store";
 import { setIssueFilter } from "../../store/issues";
-import { connect } from "react-redux";
 
 export class Application {
   constructor(json) {
     this.diagramEngine = new SRD.DiagramEngine();
-    this.diagramEngine.addListener({ repaintCanvas: () => console.log("repaint") });
     this.diagramEngine.installDefaultFactories();
     this.loadDiagram(json);
     this.state = {
@@ -27,7 +16,6 @@ export class Application {
 
   loadDiagram(json) {
     this.activeModel = new SRD.DiagramModel();
-    this.activeModel.addListener({ nodesUpdated: (...args) => console.log("nodesUpdated", args) });
     this.json = json;
     this.diagramEngine.setDiagramModel(this.activeModel);
     if (json) this.deserializer(json);
@@ -41,12 +29,9 @@ export class Application {
     for (let node in nodes) {
       let nodeDetails = nodes[node];
       let nodeToAdd = new SRD.DefaultNodeModel(nodeDetails.title, nodeDetails.color);
-      if (nodeDetails.type === "outNode") {
-        nodeToAdd = this.addPort(nodeDetails.outPort, nodeToAdd, "outNode");
-        if (nodeToAdd) allPorts = allPorts.concat(nodeToAdd.getOutPorts());
-      } else {
-        nodeToAdd = this.addPort(nodeDetails.inPort, nodeToAdd, "inNode");
-        if (nodeToAdd) allPorts = allPorts.concat(nodeToAdd.getInPorts());
+      nodeToAdd = this.addPort(nodeDetails.outPort, nodeToAdd);
+      if (nodeToAdd) {
+        allPorts = allPorts.concat(nodeToAdd.getInPorts()).concat(nodeToAdd.getOutPorts());
       }
       if (nodeToAdd) {
         nodeToAdd.setPosition(nodeDetails.posX, nodeDetails.posY);
@@ -58,11 +43,19 @@ export class Application {
     console.log("active model result in deserializer ", this.activeModel);
   }
 
+  addPort(portArr, nodeToAdd) {
+    if (portArr) {
+      for (let i = 0; i < portArr.length; i += 2) {
+        nodeToAdd.addInPort(portArr[i]);
+        nodeToAdd.addOutPort(" ");
+      }
+      return nodeToAdd;
+    }
+  }
+
   addListenersOnNode(nodeToAdd) {
-    console.log("name in node to add in addListenersOnNode", nodeToAdd.name);
     nodeToAdd.addListener({
       selectionChanged: () => {
-        console.log("i am in the add listener");
         setTimeout(this.updateSchema.bind(this), 0);
         store.dispatch(setIssueFilter(nodeToAdd.name));
       },
@@ -73,15 +66,16 @@ export class Application {
   }
 
   addLinks(links, allPorts) {
-    console.log("i am in addLinks", links);
     for (let link in links) {
       if (links.hasOwnProperty(link)) {
         let fromPort = "";
         let toPort = "";
         for (let i = 0; i < allPorts.length; i++) {
+          console.log("allPorts in addLinks ", allPorts);
           if (allPorts[i].label === links[link].from) {
             fromPort = allPorts[i];
-          } else if (allPorts[i].label === links[link].to) {
+          }
+          if (allPorts[i].label === links[link].to) {
             toPort = allPorts[i];
           }
         }
@@ -139,7 +133,6 @@ export class Application {
   }
 
   updateLinks(linkModel, serializedObject) {
-    console.log("i am in update links ", linkModel);
     for (let link in linkModel) {
       if (linkModel.hasOwnProperty(link)) {
         const linkDetails = linkModel[link];
@@ -154,19 +147,6 @@ export class Application {
       }
     }
     return serializedObject;
-  }
-
-  addPort(portArr, nodeToAdd, typePort) {
-    if (portArr) {
-      for (let i = 0; i < portArr.length; i++) {
-        if (typePort === "outNode") {
-          nodeToAdd.addOutPort(portArr[i]);
-        } else {
-          nodeToAdd.addInPort(portArr[i]);
-        }
-      }
-      return nodeToAdd;
-    }
   }
 
   getActiveDiagram() {

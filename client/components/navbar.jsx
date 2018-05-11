@@ -4,13 +4,16 @@ import { connect } from "react-redux";
 import { logout } from "../store";
 import { Menu, Header, Dropdown } from "semantic-ui-react";
 import styled from "styled-components";
+import { Link } from "react-router-dom";
 
 const Navbar = props => {
   const { doLogout, className } = props;
   return (
     <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
       <Menu.Item>
-        <img src="/logo.png" />
+        <Link to={"/home"} style={{}}>
+          <img src="/logo.png" width="auto" height="27px" />
+        </Link>
       </Menu.Item>
       <Menu.Item as="a" name="mockup" onClick={() => props.history.push("/mockups")}>
         Mockups

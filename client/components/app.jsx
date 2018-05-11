@@ -38,6 +38,8 @@ class App extends Component {
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route
+                  exact
+                  path="/home"
                   render={() => (
                     <div>
                       <h2>No matching route</h2>

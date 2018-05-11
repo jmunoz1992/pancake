@@ -1,11 +1,11 @@
 const router = require("express").Router();
-const octokit = require("@octokit/rest")();
 const { User, Project, Mockup, Schema } = require("../db/models");
 module.exports = router;
 
 router.post("/", async (req, res, next) => {
   try {
-    req.user = await User.findById(1);
+    console.log("getting into projects post route ", req.body);
+    console.log("req user in post project ", req.user);
     const project = await Project.findOrCreate({
       where: {
         owner: req.body.owner,

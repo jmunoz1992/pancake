@@ -11,7 +11,6 @@ const authenticateGithub = (req, res, next) => {
     type: "oauth",
     token: req.user.token
   });
-
   req.octokit = octokit;
   next();
 };
