@@ -1,83 +1,36 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { Button, Divider, Form, Icon, Modal } from "semantic-ui-react";
+import { Button, Divider, Grid, Icon, Input, Message, Modal, Select } from "semantic-ui-react";
 
 import { AssigneeLabel, LabelLabel } from "./index";
-import { addAssignee, editIssue, addLabel } from "../../store/issues";
+// import { addAssignee, editIssue, addLabel } from "../../store/issues";
 
 class EditIssue extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            selectedAssignee: {},
-            assignees: [],
-            selectedLabel: {},
-            labels: [],
+            selectedAssignee: "",
+            selectedLabel: "",
         };
     }
 
-    componentWillReceiveProps = (newProps, oldProps) => {
-        if (newProps.issue.assignees !== oldProps.issue.assignees) {
-            this.setState({
-                assignees: newProps.issue.assignees,
-            });
-        }
-    }
-
     componentDidMount = () => {
-        this.setState({
-            issue: this.props.issue,
-            assignees: this.props.issue.assignees,
-            labels: this.props.issue.labels,
-        });
+        const { title, body, state, assignees, labels, id, number } = this.props.activeIssue;
+        const assigneeLogins = assignees.map(assignee => assignee.login);
+        const labelNames = labels.map(label => label.name);
+        this.setState({ title, body, state, assignees: assigneeLogins, labels: labelNames, id, number });
     }
 
-    onChange = (evt, { name, value }) => {
-        this.setState({ [name]: value });
-    }
-
-    onChangeTitle = event => {
-        const { issue } = this.state;
-        issue.title = event.target.value;
-        this.setState({ issue });
-    }
-
-    onChangeBody = event => {
-        const { issue } = this.state;
-        issue.body = event.target.value;
-        this.setState({ issue });
-    }
-
-    submitEditIssue = () => {
-        this.props.editIssue(this.state.issue);
-    }
-
-    toggleState = () => {
-        const { issue } = this.state;
-        (issue.state === "open") ? issue.state = "closed" : issue.state = "open";
-        this.setState({ issue });
-        this.props.editIssue(this.state.issue);
-    }
-
-    addAssignee = () => {
-        const newAssignees = [...this.state.assignees, this.state.selectedAssignee];
-        this.setState({ assignees: newAssignees });
-        this.props.addAssignee(this.props.issue.number, newAssignees);
-    }
-
-    addLabel = () => {
-        const newLabels = [...this.state.labels, this.state.selectedLabel];
-        this.setState({ labels: newLabels });
-        this.props.addLabel(this.props.issue.number, newLabels, this.props.issue.id);
-    }
+    handleChange = (evt, { name, value }) => { this.setState({ [name]: value }); }
 
     findUnassignedCollabs = (assignedCollabs, allCollabs) => {
+        if (!assignedCollabs) return allCollabs;
         let result = [];
         let found = false;
         for (let i = 0; i < allCollabs.length; i++) {
             found = false;
             for (let j = 0; j < assignedCollabs.length; j++) {
-                if (allCollabs[i].login === assignedCollabs[j].login) found = true;
+                if (allCollabs[i].login === assignedCollabs[j]) found = true;
             }
             if (!found) result.push(allCollabs[i]);
         }
@@ -85,121 +38,117 @@ class EditIssue extends Component {
     }
 
     findUnnassignedLabels = (assignedLabels, allLabels) => {
+        if (!assignedLabels) return allLabels;
         let result = [];
         let found = false;
         for (let i = 0; i < allLabels.length; i++) {
             found = false;
             for (let j = 0; j < assignedLabels.length; j++) {
-                if (allLabels[i].id === assignedLabels[j].id) found = true;
+                if (allLabels[i].name === assignedLabels[j]) found = true;
             }
             if (!found) result.push(allLabels[i]);
         }
         return result;
     }
 
+    addAssignee = () => {
+        if (!this.state.selectedAssignee) {
+            console.log("No assignee selected");
+        } else {
+            const assignees = [...this.state.assignees, this.state.selectedAssignee];
+            this.setState({ assignees, selectedAssignee: "" });
+        }
+
+    }
+
+    addLabel = () => {
+        if (!this.state.selectedLabel) {
+            console.log("No label selected");
+        } else {
+            const labels = [...this.state.labels, this.state.selectedLabel];
+            this.setState({ labels, selectedLabel: "" });
+        }
+    }
+
     render() {
-        const { issue } = this.state;
-        const collabOptions = this.findUnassignedCollabs(this.props.issue.assignees, this.props.collaborators)
+        const collabOptions = this.findUnassignedCollabs(this.state.assignees, this.props.collaborators)
             .map(collab => ({
                 key: collab.id,
                 text: collab.login,
                 image: collab.avatar_url,
-                value: collab
+                value: collab.login
             }));
-        const labelOptions = this.findUnnassignedLabels(this.props.issue.labels, this.props.labels)
+        const labelOptions = this.findUnnassignedLabels(this.state.labels, this.props.labels)
             .map(label => ({
                 key: label.id,
                 text: label.name,
-                value: label,
+                value: label.name,
             }));
-        if (!issue) return (<div />);
         return (
             <Modal.Content>
-                <h1 style={{ width: "100px", display: "inline" }}>ISSUE #{issue.number}</h1>
-                <Button
-                    floated="right"
-                    color={(issue.state === "open") ? "green" : "red"}
-                    onClick={this.toggleState}
-                >
-                    {issue.state}
-                </Button>
+                <h1>Issue #{this.state.number}</h1>
                 <Divider />
-                <Form onSubmit={this.submitEditIssue}>
-                    <Form.Input
-                        name="title"
-                        label="Title"
-                        onChange={this.onChangeTitle}
-                        value={issue.title}
-                    />
-                    <Form.Input
-                        name="body"
-                        label="Body"
-                        onChange={this.onChangeBody}
-                        value={issue.body}
-                    />
-                    <Button type="submit">Submit</Button>
-                </Form>
-                <Divider />
-                <Form onSubmit={this.addAssignee}>
-                    <Form.Group widths="equal">
-                        <Form.Select
-                            name="selectedAssignee"
-                            onChange={this.onChange}
-                            options={collabOptions}
-                            placeholder="Add Assignee" />
-                        <Button
-                            icon
-                            type="submit"
-                        >
-                            <Icon name="add" />
-                        </Button>
-                    </Form.Group>
-                    {issue.assignees
-                        .map(assignee =>
-                            (<AssigneeLabel
-                                key={assignee.id}
-                                assignee={assignee}
-                                issue={issue}
-                            />)
-                        )}
-                </Form>
-                <Divider />
-                <Form onSubmit={this.addLabel}>
-                    <Form.Group widths="equal">
-                        <Form.Select
-                            name="selectedLabel"
-                            onChange={this.onChange}
-                            options={labelOptions}
-                            placeholder="Add Label" />
-                        <Button
-                            icon
-                            type="submit"
-                        >
-                            <Icon name="add" />
-                        </Button>
-                    </Form.Group>
-                    {issue.labels
-                        .map(label => {
-                            return (<LabelLabel
-                                key={label.id}
-                                label={label}
-                                issue={issue}
-                            />);
-                        })}
-                </Form>
+
+                {/* Edit Title */}
+                <Input fluid name="title" label="Title" onChange={this.handleChange} placeholder="Enter Title" value={this.state.title} />
+
+                <Divider hidden />
+
+                {/* Edit Body */}
+                <Input fluid name="body" label="Body" onChange={this.handleChange} placeholder="Enter Body" value={this.state.body} />
+
+                <Divider hidden />
+                <Grid divided columns="equal">
+                    <Grid.Row>
+                        <Grid.Column>
+
+                            {/* Select Assignee */}
+                            <Select name="selectedAssignee" label="Assignees" onChange={this.handleChange} options={collabOptions} placeholder="Select Assignees" />
+                            <Button icon onClick={this.addAssignee}><Icon name="add" /></Button>
+
+                        </Grid.Column>
+                        <Grid.Column>
+
+                            {/* Select Label */}
+                            <Select name="selectedLabel" label="Add Labels" onChange={this.handleChange} options={labelOptions} placeholder="Select Labels" />
+                            <Button icon onClick={this.addLabel}><Icon name="add" /></Button>
+
+                        </Grid.Column>
+                    </Grid.Row>
+                    <Grid.Row>
+                        <Grid.Column>
+
+                            {/* Assignee List */}
+                            {this.state.assignees
+                                ? this.state.assignees.map(login => <AssigneeLabel key={login} login={login} />)
+                                : <div />}
+
+                        </Grid.Column>
+                        <Grid.Column>
+
+                            {/* Label List */}
+                            {this.state.labels
+                                ? this.state.labels.map(name => <LabelLabel key={name} name={name} />)
+                                : <div />}
+
+                        </Grid.Column>
+                    </Grid.Row>
+                </Grid>
             </Modal.Content>
+
         );
     }
 }
 
 const mapState = ({ issues, collaborators, labels }, ownProps) => {
-    return {
-        issue: issues.find(issue => issue.id === ownProps.issue.id),
+    const activeIssue = issues.issueList.find(issue => issue.id === ownProps.issue.id);
+    return ({
+        activeIssue,
         collaborators,
         labels,
-    };
+    });
 };
 
-const mapDispatch = { editIssue, addAssignee, addLabel };
+// const mapDispatch = ;
 
-export default connect(mapState, mapDispatch)(EditIssue);
+export default connect(mapState, null)(EditIssue);
