@@ -150,10 +150,10 @@ class EditIssue extends Component {
       value: label.name
     }));
     return (
-      <List.Item style={{ width: "350px", display: "inline" }}>
+      <List.Item style={{ width: "250px", display: "inline" }}>
         <Modal
           trigger={
-            <Button onClick={this.openModal} style={{ width: "350px", display: "inline" }}>
+            <Button onClick={this.openModal} style={{ width: "250px", display: "inline" }}>
               {this.state.title}
             </Button>
           }

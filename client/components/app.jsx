@@ -39,15 +39,7 @@ class App extends Component {
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route path="/board" component={Board} />
-                <Route
-                  exact
-                  path="/home"
-                  render={() => (
-                    <div>
-                      <h2>No matching route</h2>
-                    </div>
-                  )}
-                />
+                <Route component={Board} />
               </Switch>
             </Grid.Column>
             <Grid.Column id="sidebar">
