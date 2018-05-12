@@ -116,9 +116,6 @@ export class BodyWidget extends React.Component {
                       name="nodeTitle"
                       value={this.state.nodeTitle}
                     />
-                    <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning>
-                      <Icon name="warning sign" />Model must contain a Title
-                    </Message>
                   </Form.Group>
                   <Form.Group inline>
                     <Form.Field>Model Fields</Form.Field>
@@ -132,16 +129,10 @@ export class BodyWidget extends React.Component {
                       <option value="4">4</option>
                       <option value="5">5</option>
                     </Form.Field>
-                    <Message hidden={this.state.hideNoPortAmountWarning} attached="bottom" warning>
-                      <Icon name="warning sign" />Must pick a number of fields.
-                    </Message>
                   </Form.Group>
                   {this.state.nodePorts.map(portNum => {
                     return <Input key={portNum} placeholder="Field Name Here" name={`port${portNum}`} />;
                   })}
-                  <Message hidden={this.state.hideNoPortsNamedWarning} attached="bottom" warning>
-                    <Icon name="warning sign" />Must have names for all fields.
-                  </Message>
                   <Form.Group>
                     <Form.Field>Model Color</Form.Field>
                     <ColorPicker
@@ -155,6 +146,15 @@ export class BodyWidget extends React.Component {
                   </Form.Group>
                   <Form.Button>Submit</Form.Button>
                 </Form>
+                <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Model must contain a Title
+                </Message>
+                <Message hidden={this.state.hideNoPortAmountWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Must pick a number of fields.
+                </Message>
+                <Message hidden={this.state.hideNoPortsNamedWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Must have names for all fields.
+                </Message>
               </Modal.Content>
             </Modal>
             <br />
