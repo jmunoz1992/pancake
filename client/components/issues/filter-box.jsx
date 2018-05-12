@@ -1,6 +1,8 @@
 import React, { Component } from "react";
-import { Form, Input } from "semantic-ui-react";
+import { Form, Input, Search } from "semantic-ui-react";
 import { debounce } from "lodash";
+import { connect } from "react-redux";
+import { setIssueFilter } from "../../store";
 import { default as filter } from "./filter-parser";
 const parse = filter.parse;
 
@@ -8,10 +10,16 @@ class FilterBox extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      filter: {},
       filterText: "",
       parserResult: "none"
     };
-    this.doParse = debounce(this.runParser, 1000);
+    this.debouncedParse = debounce(this.parse, 500);
+  }
+
+  componentWillReceiveProps(newProps) {
+    // TODO: Deserialize filter in newProps if another component changes the filter.
+    if (this.state.filter !== newProps.issues.filter) console.log("FilterBox: Receiving new filter via props.");
   }
 
   serializeFilterObject(filterObj) {
@@ -39,32 +47,45 @@ class FilterBox extends Component {
 
   onFilterChanged = event => {
     this.setState({ filterText: event.target.value });
-    this.doParse();
+    this.debouncedParse();
   };
 
-  runParser() {
+  parse() {
     const result = parse(this.state.filterText);
     this.setState({
+      filter: result,
       parserResult: JSON.stringify(result),
       parserSerialized: this.serializeFilterObject(result)
     });
+    this.props.setIssueFilter(result);
   }
 
   // Look into contentEditable div
   render() {
     return (
       <span className="inverted">
-        <Input
+        <Search
           icon="search"
           placeholder="Filter Issues"
           value={this.state.filterText}
           onChange={this.onFilterChanged}
         />
-        {`Parsed: ${this.state.parserResult}, `}
-        {`Serialized: ${this.state.parserSerialized}`}
       </span>
+    );
+  }
+
+  renderDatalist() {
+    return (
+      <datalist id="context-suggestions">
+        <option value="English" />
+        <option value="Chinese" />
+        <option value="Dutch" />
+      </datalist>
     );
   }
 }
 
-export default FilterBox;
+const mapState = ({ issues }) => ({ issues });
+const mapDispatch = { setIssueFilter };
+
+export default connect(mapState, mapDispatch)(FilterBox);

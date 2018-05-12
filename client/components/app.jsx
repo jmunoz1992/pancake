@@ -7,8 +7,6 @@ import { fetchIssues, fetchCollaborators, fetchLabels } from "../store";
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
 
-import { default as FilterBox } from "./issues/filter-box";
-
 class App extends Component {
   componentDidMount() {
     this.props.loadCollaborators();
@@ -33,7 +31,6 @@ class App extends Component {
                   render={() => (
                     <div>
                       <h2>No matching route</h2>
-                      <FilterBox />
                     </div>
                   )}
                 />
