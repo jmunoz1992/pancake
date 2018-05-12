@@ -2,18 +2,27 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../store";
-import { Menu, Header, Dropdown } from "semantic-ui-react";
+import { Input, Menu, Header, Dropdown, Icon } from "semantic-ui-react";
 import styled from "styled-components";
-import { Link } from "react-router-dom";
+import { default as FilterBox } from "./issues/filter-box";
 
 const Navbar = props => {
   const { doLogout, className } = props;
   return (
     <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
       <Menu.Item>
-        <Link to={"/home"} style={{}}>
-          <img src="/logo.png" width="auto" height="27px" />
-        </Link>
+        <Dropdown
+          trigger={<img src="/logo.png" width="auto" height="28px" />}
+          icon={null}
+          pointing="top left">
+          <Dropdown.Menu>
+            <Dropdown.Header>Logged in as {props.user.username}</Dropdown.Header>
+            <Dropdown.Item>Projects</Dropdown.Item>
+            <Dropdown.Item>Settings</Dropdown.Item>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={doLogout}>Logout</Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
       </Menu.Item>
       <Menu.Item as="a" name="mockup" onClick={() => props.history.push("/mockups")}>
         Mockups
@@ -24,9 +33,11 @@ const Navbar = props => {
       <Menu.Item as="a" name="test" onClick={() => props.history.push("/stats")}>
         Stats
       </Menu.Item>
-      <Menu.Item position="right" name="logout" as="a" onClick={doLogout}>
-        Logout
-      </Menu.Item>
+      <Menu.Menu position="right">
+        <Menu.Item>
+          <FilterBox />
+        </Menu.Item>
+      </Menu.Menu>
     </Menu>
   );
 };
@@ -37,6 +48,8 @@ const StyledNavbar = styled(Navbar)`
   }
 `;
 
+const mapState = ({ user, issues }) => ({ user, issues });
+
 const mapDispatch = dispatch => {
   return {
     doLogout(_, { name }) {
@@ -45,4 +58,4 @@ const mapDispatch = dispatch => {
   };
 };
 
-export default withRouter(connect(null, mapDispatch)(StyledNavbar));
+export default withRouter(connect(mapState, mapDispatch)(StyledNavbar));

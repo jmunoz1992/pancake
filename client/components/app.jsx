@@ -1,21 +1,13 @@
 import React, { Component } from "react";
-import {
-  Navbar,
-  Sidebar,
-  DesignerCanvas,
-  DesignerSidebar,
-  Schema,
-  SchemaSidebar,
-  SocketModal,
-  MockupList,
-  Issues
-} from "./index";
+import { Navbar, DesignerCanvas, DesignerSidebar, Schema, SchemaSidebar, SocketModal, Issues } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
-import { fetchIssues, designerOperations, fetchCollaborators, fetchLabels } from "../store";
+import { fetchIssues, fetchCollaborators, fetchLabels } from "../store";
 
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
+
+import { default as FilterBox } from "./issues/filter-box";
 
 class App extends Component {
   componentDidMount() {
@@ -38,11 +30,10 @@ class App extends Component {
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route
-                  exact
-                  path="/home"
                   render={() => (
                     <div>
                       <h2>No matching route</h2>
+                      <FilterBox />
                     </div>
                   )}
                 />
