@@ -7,49 +7,52 @@ const ElementLibrary = {
     element: Textbox,
     title: "Textbox",
     category: "Forms",
-    properties: { placeholder: "Placeholder", label: "Textbox" }
+    properties: {
+      placeholder: { name: "Placeholder Text", type: "string" },
+      label: { name: "Label Text", type: "string", default: "Textbox" }
+    }
   },
   Checkbox: {
     element: Checkbox,
     title: "Checkbox",
     category: "Forms",
-    properties: { label: "Checkbox" }
+    properties: { label: { name: "Label Text", type: "string", default: "Checkbox" } }
   },
   Radio: {
     element: Radio,
     title: "Radio Button",
     category: "Forms",
-    properties: { label: "Radio Button" }
+    properties: { label: { name: "Label Text", type: "string", default: "Radio Button" } }
   },
   Dropdown: {
     element: Dropdown,
     title: "Dropdown",
     category: "Forms",
-    properties: { placeholder: "Dropdown" }
+    properties: { placeholder: { name: "Placeholder Text", type: "string", default: "Dropdown" } }
   },
   Button: {
     element: Button,
     title: "Button",
     category: "Forms",
-    properties: { text: "Button" }
+    properties: { text: { name: "Button Text", type: "string", default: "Button" } }
   },
   Title: {
     element: Title,
     title: "Title",
     category: "Text",
-    properties: { text: "Title Text" }
+    properties: { text: { name: "Title Text", type: "string" } }
   },
   Header: {
     element: Header,
     title: "Header",
     category: "Text",
-    properties: { text: "Header Text" }
+    properties: { text: { name: "Header Text", type: "string" } }
   },
   Paragraph: {
     element: Paragraph,
     title: "Paragraph",
     category: "Text",
-    properties: { text: "Paragraph Text" }
+    properties: { text: { name: "Paragraph Text", type: "longstring" } }
   },
   Rectangle: {
     element: Rectangle,

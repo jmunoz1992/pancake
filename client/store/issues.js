@@ -16,6 +16,7 @@ const SET_ISSUE_FILTER = "SET_ISSUE_FILTER";
  */
 const load = issues => ({ type: GET_ISSUES, issues });
 const edit = issue => ({ type: EDIT_ISSUE, issue });
+const create = issue => ({ type: CREATE_ISSUE, issue });
 
 export const setIssueFilter = filter => ({ type: SET_ISSUE_FILTER, filter });
 
@@ -32,6 +33,9 @@ const issueListReducer = (state = [], action) => {
         if (action.issue.id === issue.id) return action.issue;
         return issue;
       });
+
+    case CREATE_ISSUE:
+      return ([...state, action.issue]);
 
     default:
       return state;
@@ -61,10 +65,15 @@ export const fetchIssues = () => dispatch =>
     .then(res => dispatch(load(res.data)))
     .catch(err => console.error("Fetching issues unsuccessful", err));
 
-export const editIssue = issue => dispatch => {
-  console.log("issue", issue);
+export const editIssue = issue => dispatch =>
   axios
     .put(`/api/issues/${issue.number}`, issue)
     .then(res => dispatch(edit(res.data)))
     .catch(err => console.error(`Updating issue ${issue.number} unsuccessful`, err));
-};
+
+
+export const createIssue = issue => dispatch =>
+  axios
+    .post("/api/issues", issue)
+    .then(res => dispatch(create(res.data)))
+    .catch(err => console.error("Creating issue unsuccessful", err));

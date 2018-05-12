@@ -41,7 +41,7 @@ const updateElementProperty = (element, property, newValue) => (dispatch, getSta
   dispatchNetworkAction(actions.updateElement(element));
 };
 
-const deleteElements = element => (dispatch, getState) => {
+const deleteElements = () => (dispatch, getState) => {
   const selection = getSelectedElementsFromIds(getState());
   selection.forEach(selectedElement => dispatchNetworkAction(actions.removeElement(selectedElement)));
   dispatch(selectElements([]));

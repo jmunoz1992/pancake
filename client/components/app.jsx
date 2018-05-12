@@ -81,7 +81,7 @@ const StyledAppWrapper = styled.div`
     bottom: 0;
     width: 300px;
     box-shadow: 0px 0px 30px 4px rgba(0, 0, 0, 0.3);
-    padding-right: 0px;
+    /* padding-right: 0px; */
   }
 
   scroll-container {

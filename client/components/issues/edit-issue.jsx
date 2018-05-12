@@ -150,18 +150,16 @@ class EditIssue extends Component {
       value: label.name
     }));
     return (
-      <List.Item style={{ display: "inline", width: "500px" }}>
+      <List.Item>
         <Modal
           trigger={
-            <Button onClick={this.openModal} fluid style={{ display: "inline", width: "290px" }}>
+            <Button onClick={this.openModal} fluid>
               {this.state.title}
             </Button>
           }
           open={this.state.modalOpen}>
+          <Modal.Header>Issue #{this.state.number}</Modal.Header>
           <Modal.Content>
-            <h1>Issue #{this.state.number}</h1>
-            <Divider />
-
             {/* Edit Title */}
             <Input
               fluid
@@ -258,18 +256,17 @@ class EditIssue extends Component {
                 </Grid.Column>
               </Grid.Row>
             </Grid>
-            <Divider />
-            <Modal.Actions>
-              {/* Submit Button */}
-              <Button color="green" onClick={this.handleSubmit}>
-                <Icon name="checkmark" /> Submit
-              </Button>
-              {/* Cancel Button */}
-              <Button color="red" onClick={this.closeModal}>
-                <Icon name="checkmark" /> Cancel
-              </Button>
-            </Modal.Actions>
           </Modal.Content>
+          <Modal.Actions>
+            {/* Submit Button */}
+            <Button color="green" onClick={this.handleSubmit}>
+              <Icon name="checkmark" /> Submit
+            </Button>
+            {/* Cancel Button */}
+            <Button color="red" onClick={this.closeModal}>
+              <Icon name="checkmark" /> Cancel
+            </Button>
+          </Modal.Actions>
         </Modal>
       </List.Item>
     );

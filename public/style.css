@@ -2,6 +2,10 @@
   height: 100%;
 }
 
+.resize-handle-fix {
+  z-index: 10000;
+}
+
 .noselect {
   -webkit-touch-callout: none; /* iOS Safari */
   -webkit-user-select: none; /* Safari */
