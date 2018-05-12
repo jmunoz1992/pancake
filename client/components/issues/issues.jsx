@@ -29,7 +29,7 @@ const describeFilter = filter => {
 
   if (filter.status) {
     description.push(
-      <em>
+      <em key="status">
         ...with status <strong>{filter.status}</strong>
         <br />
       </em>
@@ -38,7 +38,7 @@ const describeFilter = filter => {
 
   if (filter.assignees) {
     description.push(
-      <em>
+      <em key="assignees">
         ...assigned to <strong>{filter.assignees.join(", ")}</strong>
         <br />
       </em>
@@ -47,7 +47,7 @@ const describeFilter = filter => {
 
   if (filter.labels) {
     description.push(
-      <em>
+      <em key="labels">
         ...labeled <strong>{filter.labels.join(", ")}</strong>
         <br />
       </em>
@@ -56,7 +56,7 @@ const describeFilter = filter => {
 
   if (filter.text) {
     description.push(
-      <em>
+      <em key="text">
         ...with the words <strong>{filter.text.join(", ")}</strong> in the title or body
         <br />
       </em>
