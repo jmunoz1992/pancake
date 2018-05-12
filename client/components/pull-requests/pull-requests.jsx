@@ -12,7 +12,7 @@ const PullRequests = props => {
             See All Open Pull Requests
           </Button>
         }
-        style={{ width: "500px" }}>
+        style={{ width: "350px" }}>
         <Modal.Content>
           <h1>All Open Pull Requests</h1>
           <List>

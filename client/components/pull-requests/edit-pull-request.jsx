@@ -8,8 +8,9 @@ class EditPullRequest extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      issues: this.props.issues,
-      issueToDelete: {}
+      possibleIssuesToAssign: this.props.issues,
+      issueToDelete: {},
+      relatedIssues: []
     };
   }
 
@@ -17,34 +18,85 @@ class EditPullRequest extends Component {
     this.filterIssues();
   }
 
-  closeIssue = event => {
-    console.log("closing this issue!", event.target.value);
-    console.log("props reached here ? ", this.props.editPickedIssue);
-    const issueToDelete = this.findIssueToDelete(event.target.value);
-    issueToDelete.state = "closed";
-    this.props.editPickedIssue(issueToDelete);
+  assignIssueToPullRequest = event => {
+    const issueToAssignNumber = +event.target.value;
+    this.findIssueToAssign(issueToAssignNumber);
+    this.removeAssignedIssueFromList(issueToAssignNumber);
   };
 
-  findIssueToDelete(issueNumber) {
-    return this.props.issues.filter(issue => issue.number === +issueNumber)[0];
-  }
+  findIssueToAssign = issueNumber => {
+    const issueToAssign = this.props.issues.filter(issue => issue.number === +issueNumber)[0];
+    this.setState({ relatedIssues: [...this.state.relatedIssues, issueToAssign] });
+    return issueToAssign;
+  };
+
+  removeAssignedIssueFromList = issueNumber => {
+    const otherPossibleIssues = this.state.possibleIssuesToAssign.filter(issue => {
+      if (issue.number !== issueNumber) {
+        return issue;
+      }
+    });
+    this.setState({ possibleIssuesToAssign: otherPossibleIssues });
+  };
+
+  removeFromAssigned = event => {
+    const issueToAssignNumber = +event.target.value;
+    this.findIssueToAssignBack(issueToAssignNumber);
+    this.removeAssignedIssueFromRelatedList(issueToAssignNumber);
+  };
+
+  findIssueToAssignBack = issueNumber => {
+    const issueToAssignBack = this.state.relatedIssues.filter(issue => issue.number === issueNumber)[0];
+    this.setState({ possibleIssuesToAssign: [...this.state.possibleIssuesToAssign, issueToAssignBack] });
+  };
+
+  removeAssignedIssueFromRelatedList = issueNumber => {
+    const newRelatedIssues = this.state.relatedIssues.filter(issue => issue.number !== issueNumber);
+    this.setState({ relatedIssues: newRelatedIssues });
+  };
 
   render() {
-    console.log("props in here ", this.props);
     const { pullRequest } = this.props;
+    console.log("current related issues ", this.state.relatedIssues);
+    console.log("list of possible issues ", this.state.possibleIssuesToAssign);
     return (
       <Modal.Content style={{ textAlign: "center" }}>
         <h1>
           Pull Request #{pullRequest.number}: {pullRequest.title}
         </h1>
         <br />
-        <Header style={{ marginLeft: "20px" }}>Possible Related Issues</Header>
-        {this.state.issues.map(issue => {
+        {this.state.relatedIssues.length > 0 ? (
+          <div>
+            <Header style={{ marginLeft: "20px" }}>Assigned Issues To This PR. Remove Unrelated.</Header>
+            {this.state.relatedIssues.map(issue => {
+              return (
+                <div key={issue.id}>
+                  <EditIssue issue={issue} />
+                  <Button
+                    icon
+                    onClick={event => this.removeFromAssigned(event)}
+                    color="red"
+                    value={issue.number}>
+                    Remove
+                  </Button>
+                  <br /> <br />
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+        <br />
+        <Header style={{ marginLeft: "20px" }}>Possible Issues Related To This PR. Assign Related.</Header>
+        {this.state.possibleIssuesToAssign.map(issue => {
           return (
             <div key={issue.id}>
               <EditIssue issue={issue} />
-              <Button icon onClick={event => this.closeIssue(event)} color="red" value={issue.number}>
-                Close Issue
+              <Button
+                icon
+                onClick={event => this.assignIssueToPullRequest(event)}
+                color="green"
+                value={issue.number}>
+                Assign
               </Button>
               <br /> <br />
             </div>
@@ -56,7 +108,7 @@ class EditPullRequest extends Component {
 
   filterIssues = () => {
     const pullRequestTitle = this.props.pullRequest.title;
-    const issues = this.state.issues;
+    const issues = this.state.possibleIssuesToAssign;
     const relatedIssues = issues.filter(issue => {
       if (issue.title !== pullRequestTitle) {
         const prTitleArr = pullRequestTitle.split(" ");
@@ -66,7 +118,7 @@ class EditPullRequest extends Component {
         }
       }
     });
-    this.setState({ issues: relatedIssues });
+    this.setState({ possibleIssuesToAssign: relatedIssues });
   };
 
   issuesRelatedToTitle = (issuesArr, titleArr) => {
