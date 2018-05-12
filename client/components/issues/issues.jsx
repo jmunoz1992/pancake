@@ -19,7 +19,17 @@ const Issues = props => {
           {describeFilter(filter)}
         </p>
       ) : null}
-      <List>{issues.map(issue => <EditIssue key={issue.id} issue={issue} />)}</List>
+      <List>
+        {issues.map(issue => {
+          return (
+            <div>
+              <br />
+              <EditIssue key={issue.id} issue={issue} />
+              <br />
+            </div>
+          );
+        })}
+      </List>
     </div>
   );
 };

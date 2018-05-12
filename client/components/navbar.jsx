@@ -30,8 +30,8 @@ const Navbar = props => {
       <Menu.Item as="a" name="schema" onClick={() => props.history.push("/schema")}>
         Schema Designer
       </Menu.Item>
-      <Menu.Item as="a" name="test" onClick={() => props.history.push("/stats")}>
-        Stats
+      <Menu.Item as="a" name="test" onClick={() => props.history.push("/board")}>
+        Board
       </Menu.Item>
       <Menu.Menu position="right">
         <Menu.Item>

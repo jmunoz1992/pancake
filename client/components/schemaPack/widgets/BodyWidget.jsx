@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import { TrayWidget } from "./TrayWidget";
 import { DefaultNodeModel, DiagramWidget } from "storm-react-diagrams";
 require("storm-react-diagrams/dist/style.min.css");
-import { Button, Header, Input, Modal, Form } from "semantic-ui-react";
+import { Button, Header, Input, Modal, Form, Message, Icon } from "semantic-ui-react";
 import "rc-color-picker/assets/index.css";
 import ColorPicker from "rc-color-picker";
 
@@ -15,7 +15,10 @@ export class BodyWidget extends React.Component {
       nodeColor: "rgb(192,255,0)",
       nodePorts: [],
       isModalOpen: false,
-      nodeTestColor: "#ff0000"
+      nodeTestColor: "#ff0000",
+      hideNoTitleWarning: true,
+      hideNoPortAmountWarning: true,
+      hideNoPortsNamedWarning: true
     };
   }
 
@@ -47,23 +50,37 @@ export class BodyWidget extends React.Component {
   };
 
   nodePortsSubmit = event => {
+    console.log("getting into node submit");
+    console.log("hide no title warning ", this.state.handleNodeTitleChange);
+    console.log("hide no ports amount ", this.state.hideNoPortAmountWarning);
+    console.log("hide no port names warning ", this.state.hideNoPortsNamedWarning);
     event.preventDefault();
-    if (
-      !this.state.nodeTitle ||
-      !this.state.nodeColor ||
-      this.state.nodePorts.length === 0
-      // !this.state.nodePorts.every(port => typeof port === "string")
-    ) {
-      alert("PLEASE FILL IN ALL THE FORM FIELDS!");
+    const { nodeTitle, nodePorts } = this.state;
+    if (nodeTitle === "") {
+      console.log("getting into node title ");
+      this.setState({ hideNoTitleWarning: false });
+      return;
+    } else {
+      this.setState({ hideNoTitleWarning: true });
+    }
+    if (nodePorts.length === 0) {
+      console.log("getting into node ports zero");
+      this.setState({ hideNoPortAmountWarning: false });
+      return;
+    } else {
+      this.setState({ hideNoPortAmountWarning: true });
     }
     let newPorts = [];
     for (let i = 1; i <= this.state.nodePorts.length; i++) {
       const portName = "port" + i;
-      if (!event.target[portName]) {
-        alert("PLEASE FILL IN ALL IN PORT NAME BOXES");
+      if (!event.target[portName] || event.target[portName].value === "") {
+        console.log("port names not named");
+        this.setState({ hideNoPortsNamedWarning: false });
+        return;
       } else {
-        newPorts.push(event.target[portName].value);
+        this.setState({ hideNoPortsNamedWarning: true });
       }
+      newPorts.push(event.target[portName].value);
     }
     this.setState({ nodePorts: newPorts, open: false });
     this.closeIn();
@@ -129,6 +146,15 @@ export class BodyWidget extends React.Component {
                   </Form.Group>
                   <Form.Button>Submit</Form.Button>
                 </Form>
+                <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Model must contain a Title
+                </Message>
+                <Message hidden={this.state.hideNoPortAmountWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Must pick a number of fields.
+                </Message>
+                <Message hidden={this.state.hideNoPortsNamedWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Must have names for all fields.
+                </Message>
               </Modal.Content>
             </Modal>
             <br />

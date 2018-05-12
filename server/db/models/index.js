@@ -4,6 +4,7 @@ const Issue = require("./issue");
 const Schema = require("./schema");
 const Mockup = require("./mockup");
 const MockupElement = require("./mockupelement");
+const PullRequest = require("./pull-request");
 
 User.belongsTo(Project, {
   as: "activeProject"
@@ -17,6 +18,16 @@ Project.belongsToMany(User, {
 
 Project.hasMany(Issue);
 Issue.belongsTo(Project);
+
+Project.hasMany(PullRequest);
+PullRequest.belongsTo(Project);
+
+PullRequest.belongsToMany(Issue, {
+  through: "pullRequests_issues"
+});
+Issue.belongsToMany(PullRequest, {
+  through: "pullRequests_issues"
+});
 
 Schema.belongsTo(Project);
 Project.hasMany(Schema);
@@ -33,5 +44,6 @@ module.exports = {
   Issue,
   Schema,
   Mockup,
-  MockupElement
+  MockupElement,
+  PullRequest
 };

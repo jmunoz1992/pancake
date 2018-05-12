@@ -56,7 +56,7 @@ router.put("/:number", async (req, res, next) => {
       number: req.params.number,
       title: req.body.title,
       body: req.body.body,
-      state: req.body.state,
+      state: req.body.state
     });
     res.json(response.data);
   } catch (err) {
@@ -71,7 +71,7 @@ router.get("/labels", async (req, res, next) => {
   try {
     const response = await req.octokit.issues.getLabels({
       owner: req.repoOwner,
-      repo: req.repoName,
+      repo: req.repoName
     });
     res.json(response.data);
   } catch (err) {

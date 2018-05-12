@@ -28,6 +28,7 @@ router.use("/users", require("./users"));
 router.use("/repos", require("./repos"));
 router.use("/project", authenticateGithub, require("./project"));
 router.use("/issues", authenticateGithub, setupProject, require("./issues"));
+router.use("/pullRequests", authenticateGithub, setupProject, require("./pullRequests"));
 router.use("/schemas", authenticateGithub, setupProject, require("./schemas"));
 router.use("/collaborators", authenticateGithub, setupProject, require("./collaborators"));
 

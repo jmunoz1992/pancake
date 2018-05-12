@@ -1,5 +1,14 @@
 import React, { Component } from "react";
-import { Navbar, DesignerCanvas, DesignerSidebar, Schema, SchemaSidebar, SocketModal, Issues } from "./index";
+import {
+  Navbar,
+  DesignerCanvas,
+  DesignerSidebar,
+  Schema,
+  SchemaSidebar,
+  SocketModal,
+  Issues,
+  Board
+} from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
 import { fetchIssues, fetchCollaborators, fetchLabels } from "../store";
@@ -27,13 +36,8 @@ class App extends Component {
               <Switch>
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
-                <Route
-                  render={() => (
-                    <div>
-                      <h2>No matching route</h2>
-                    </div>
-                  )}
-                />
+                <Route path="/board" component={Board} />
+                <Route component={Board} />
               </Switch>
             </Grid.Column>
             <Grid.Column id="sidebar">

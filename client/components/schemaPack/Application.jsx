@@ -7,6 +7,8 @@ export class Application {
   constructor(json) {
     this.diagramEngine = new SRD.DiagramEngine();
     this.diagramEngine.installDefaultFactories();
+    this.activeLinkModel = new SRD.DefaultLinkModel();
+    this.activeModel = new SRD.DiagramModel();
     this.loadDiagram(json);
     this.state = {
       linksStr: [],
@@ -15,7 +17,6 @@ export class Application {
   }
 
   loadDiagram(json) {
-    this.activeModel = new SRD.DiagramModel();
     this.json = json;
     this.diagramEngine.setDiagramModel(this.activeModel);
     if (json) this.deserializer(json);
@@ -29,10 +30,12 @@ export class Application {
     for (let node in nodes) {
       let nodeDetails = nodes[node];
       let nodeToAdd = new SRD.DefaultNodeModel(nodeDetails.title, nodeDetails.color);
-      nodeToAdd = this.addPort(nodeDetails.outPort, nodeToAdd);
+      nodeToAdd = this.addPort(nodeDetails, nodeToAdd);
       if (nodeToAdd) {
         allPorts = allPorts.concat(nodeToAdd.getInPorts()).concat(nodeToAdd.getOutPorts());
       }
+      console.log("updated node in deserializer thus far", nodeToAdd);
+      console.log("all ports thus far in deserializer ", allPorts);
       if (nodeToAdd) {
         nodeToAdd.setPosition(nodeDetails.posX, nodeDetails.posY);
         this.addListenersOnNode(nodeToAdd, node);
@@ -40,17 +43,19 @@ export class Application {
       }
       this.addLinks(links, allPorts);
     }
-    ("active model result in deserializer ", this.activeModel);
+    console.log("active model result in deserializer ", this.activeModel);
   }
 
-  addPort(portArr, nodeToAdd) {
-    if (portArr) {
-      for (let i = 0; i < portArr.length; i += 2) {
-        nodeToAdd.addInPort(portArr[i]);
-        nodeToAdd.addOutPort(" ");
+  addPort(curNode, updatedNode) {
+    const ports = curNode.ports;
+    for (let i = 0; i < ports.length; i++) {
+      if (ports[i].label.length > 1) {
+        updatedNode.addInPort(ports[i].label);
+      } else {
+        updatedNode.addOutPort(" ");
       }
-      return nodeToAdd;
     }
+    return updatedNode;
   }
 
   addListenersOnNode(nodeToAdd) {
@@ -68,23 +73,24 @@ export class Application {
   addLinks(links, allPorts) {
     for (let link in links) {
       if (links.hasOwnProperty(link)) {
-        // let fromPort = "";
-        // let toPort = "";
-        // for (let i = 0; i < allPorts.length; i++) {
-        //   if (allPorts[i].parent.name === links[link].from) {
-        //     console.log("inside matching parent names ", allPorts[i]);
-        //   }
-        //   if (allPorts[i].label === links[link].to) {
-        //     toPort = allPorts[i];
-        //   }
-        // }
-        // console.log("fromPort", fromPort, "toPort", toPort);
-        // if (fromPort && toPort) {
-        //   const linkForModel = fromPort.link(toPort);
-        //   this.activeModel.addLink(linkForModel);
-        //   console.log("making link for active model in add Links ", this.activeModel);
-        // }
-        // const linkModelDeserialized = deSerialize(links[link], this.diagramEngine);
+        let fromPort = "";
+        let toPort = "";
+        for (let i = 0; i < allPorts.length; i++) {
+          const port = allPorts[i];
+          if (port.label === links[link].target.label) {
+            toPort = port;
+          }
+          if (port.in === false && port.parent.name === links[link].sourceParentName) {
+            fromPort = port;
+          }
+        }
+        console.log("sourcename ", links[link].sourceParentName);
+        console.log("from port ", fromPort);
+        console.log("to port ", toPort);
+        if (fromPort && toPort) {
+          const linkForModel = fromPort.link(toPort);
+          this.activeModel.addLink(linkForModel);
+        }
       }
     }
   }
@@ -118,24 +124,27 @@ export class Application {
     for (let port in ports) {
       if (ports.hasOwnProperty(port)) {
         const portDetails = ports[port];
-        if (portDetails.in) {
-          serializedObject.nodes[id].type = "inNode";
-          serializedObject.nodes[id].inPort = portsPushed;
-        } else {
-          serializedObject.nodes[id].type = "outNode";
-          serializedObject.nodes[id].outPort = portsPushed;
-        }
-        portsPushed.push(portDetails.label);
+        portsPushed.push(portDetails.serialize());
+        serializedObject.nodes[id].ports = portsPushed;
       }
     }
+    console.log("serialzied object in updatePorts ", serializedObject);
     return serializedObject;
   }
 
   updateLinks(linkModel, serializedObject) {
     for (let link in linkModel) {
       if (linkModel.hasOwnProperty(link)) {
-        const serializedLinkModel = linkModel[link].serialize();
-        serializedObject.links[link] = serializedLinkModel;
+        console.log("link model ", linkModel[link]);
+        const sourcePortModel = linkModel[link].sourcePort;
+        const targetPortModel = linkModel[link].targetPort;
+        console.log("source port ", sourcePortModel);
+        console.log("target port ", targetPortModel);
+        serializedObject.links[link] = {
+          source: sourcePortModel.serialize(),
+          target: targetPortModel.serialize(),
+          sourceParentName: sourcePortModel.parent.name
+        };
       }
     }
     return serializedObject;
