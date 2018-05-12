@@ -10,13 +10,11 @@ import { me } from "./store";
  */
 class Routes extends Component {
   componentDidMount() {
-    console.log("we are mounting in routes");
     this.props.loadInitialData();
   }
 
   render() {
     const { isLoggedIn, hasActiveProject } = this.props;
-    console.log("has active project ", hasActiveProject);
     return (
       <Switch>
         {isLoggedIn ? (

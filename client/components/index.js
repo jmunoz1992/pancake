@@ -11,8 +11,10 @@ export { default as App } from "./app";
 export { default as Sidebar } from "./sidebar";
 export { default as SocketModal } from "./socketmodal";
 
-
 export { default as Issues } from "./issues/issues";
+export { default as AssigneeLabel } from "./issues/assignee-label";
+export { default as LabelLabel } from "./issues/label-label";
+export { default as Board } from "./board";
 
 export * from "./designer";
 export * from "./schemaPack";

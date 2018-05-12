@@ -11,7 +11,7 @@ const Navbar = props => {
   return (
     <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
       <Menu.Item>
-        <Link to={"/home"} style={{}}>
+        <Link to={"/board"} style={{}}>
           <img src="/logo.png" width="auto" height="27px" />
         </Link>
       </Menu.Item>
@@ -21,8 +21,8 @@ const Navbar = props => {
       <Menu.Item as="a" name="schema" onClick={() => props.history.push("/schema")}>
         Schema Designer
       </Menu.Item>
-      <Menu.Item as="a" name="test" onClick={() => props.history.push("/stats")}>
-        Stats
+      <Menu.Item as="a" name="test" onClick={() => props.history.push("/board")}>
+        Board
       </Menu.Item>
       <Menu.Item position="right" name="logout" as="a" onClick={doLogout}>
         Logout
