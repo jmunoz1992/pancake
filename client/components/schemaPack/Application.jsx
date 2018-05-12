@@ -43,7 +43,7 @@ export class Application {
       }
       this.addLinks(links, allPorts);
     }
-    ("active model result in deserializer ", this.activeModel);
+    console.log("active model result in deserializer ", this.activeModel);
   }
 
   addPort(curNode, updatedNode) {

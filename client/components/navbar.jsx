@@ -11,7 +11,7 @@ const Navbar = props => {
   return (
     <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
       <Menu.Item>
-        <Link to={"/home"} style={{}}>
+        <Link to={"/board"} style={{}}>
           <img src="/logo.png" width="auto" height="27px" />
         </Link>
       </Menu.Item>

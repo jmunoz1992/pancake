@@ -8,7 +8,6 @@ const GET_ISSUES = "GET_ISSUES";
 const EDIT_ISSUE = "EDIT_ISSUE";
 const CREATE_ISSUE = "CREATE_ISSUE";
 
-
 // Filter
 const SET_ISSUE_FILTER = "SET_ISSUE_FILTER";
 
