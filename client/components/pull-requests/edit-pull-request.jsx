@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Modal, List, Header, Button, Icon } from "semantic-ui-react";
 import { EditIssue } from "../issues";
-import { editIssue } from "../../store/issues";
+import { editIssue, editPullRequest } from "../../store";
 
 class EditPullRequest extends Component {
   constructor(props) {
@@ -18,15 +18,21 @@ class EditPullRequest extends Component {
     this.filterIssues();
   }
 
-  assignIssueToPullRequest = event => {
-    const issueToAssignNumber = +event.target.value;
-    this.findIssueToAssign(issueToAssignNumber);
+  closePickedIssue = event => {
+    let issueToAssignNumber = 0;
+    if (event.target) {
+      issueToAssignNumber = +event.target.value;
+    } else {
+      issueToAssignNumber = event;
+    }
+    const issue = this.findIssueToAssign(issueToAssignNumber);
+    issue.state = "closed";
+    this.props.editPickedIssue(issue);
     this.removeAssignedIssueFromList(issueToAssignNumber);
   };
 
   findIssueToAssign = issueNumber => {
     const issueToAssign = this.props.issues.filter(issue => issue.number === +issueNumber)[0];
-    this.setState({ relatedIssues: [...this.state.relatedIssues, issueToAssign] });
     return issueToAssign;
   };
 
@@ -39,69 +45,47 @@ class EditPullRequest extends Component {
     this.setState({ possibleIssuesToAssign: otherPossibleIssues });
   };
 
-  removeFromAssigned = event => {
-    const issueToAssignNumber = +event.target.value;
-    this.findIssueToAssignBack(issueToAssignNumber);
-    this.removeAssignedIssueFromRelatedList(issueToAssignNumber);
-  };
-
-  findIssueToAssignBack = issueNumber => {
-    const issueToAssignBack = this.state.relatedIssues.filter(issue => issue.number === issueNumber)[0];
-    this.setState({ possibleIssuesToAssign: [...this.state.possibleIssuesToAssign, issueToAssignBack] });
-  };
-
-  removeAssignedIssueFromRelatedList = issueNumber => {
-    const newRelatedIssues = this.state.relatedIssues.filter(issue => issue.number !== issueNumber);
-    this.setState({ relatedIssues: newRelatedIssues });
+  closeAllIssuesInList = () => {
+    this.state.possibleIssuesToAssign.map(issue => {
+      return this.closePickedIssue(issue.number);
+    });
+    this.setState({ possibleIssuesToAssign: [] });
   };
 
   render() {
     const { pullRequest } = this.props;
-    console.log("current related issues ", this.state.relatedIssues);
-    console.log("list of possible issues ", this.state.possibleIssuesToAssign);
     return (
       <Modal.Content style={{ textAlign: "center" }}>
         <h1>
           Pull Request #{pullRequest.number}: {pullRequest.title}
         </h1>
         <br />
-        {this.state.relatedIssues.length > 0 ? (
+        {this.state.possibleIssuesToAssign.length > 0 ? (
           <div>
-            <Header style={{ marginLeft: "20px" }}>Assigned Issues To This PR. Remove Unrelated.</Header>
-            {this.state.relatedIssues.map(issue => {
+            <Header style={{ marginLeft: "20px" }}>Possible Issues Related To This PR. Close Related.</Header>
+            {this.state.possibleIssuesToAssign.map(issue => {
               return (
                 <div key={issue.id}>
                   <EditIssue issue={issue} />
                   <Button
                     icon
-                    onClick={event => this.removeFromAssigned(event)}
+                    onClick={event => this.closePickedIssue(event)}
                     color="red"
                     value={issue.number}>
-                    Remove
+                    Close Issue
                   </Button>
                   <br /> <br />
                 </div>
               );
             })}
+            <br /> <br />
+            <Button icon onClick={this.closeAllIssuesInList} color="red">
+              Close All Issues In This List
+            </Button>
           </div>
-        ) : null}
-        <br />
-        <Header style={{ marginLeft: "20px" }}>Possible Issues Related To This PR. Assign Related.</Header>
-        {this.state.possibleIssuesToAssign.map(issue => {
-          return (
-            <div key={issue.id}>
-              <EditIssue issue={issue} />
-              <Button
-                icon
-                onClick={event => this.assignIssueToPullRequest(event)}
-                color="green"
-                value={issue.number}>
-                Assign
-              </Button>
-              <br /> <br />
-            </div>
-          );
-        })}
+        ) : (
+          <h3>There are no issues related to this pull request</h3>
+        )}
       </Modal.Content>
     );
   }
@@ -131,7 +115,6 @@ class EditPullRequest extends Component {
 }
 
 const mapState = ({ issues }) => {
-  console.log("issues in edit pull request ", issues);
   return { issues: issues.issueList, filter: issues.filter };
 };
 
@@ -139,6 +122,9 @@ const mapDispatch = dispatch => {
   return {
     editPickedIssue(issue) {
       dispatch(editIssue(issue));
+    },
+    editThisPullRequestBody(pullRequest) {
+      dispatch(editPullRequest(pullRequest));
     }
   };
 };
