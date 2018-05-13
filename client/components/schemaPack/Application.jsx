@@ -26,11 +26,21 @@ export class Application {
     for (let node in allNodes) {
       if (allNodes.hasOwnProperty(node)) {
         const nodeToAdd = allNodes[node];
-        console.log("node ", nodeToAdd);
         this.addListenersOnNode(nodeToAdd);
       }
     }
-    console.log("active model result in deserializer ", this.activeModel);
+    const links = this.activeModel.getLinks();
+    for (let link in links) {
+      if (links.hasOwnProperty(link)) {
+        const sourceName = links[link].sourcePort.parent.name;
+        const targetName = links[link].targetPort.parent.name;
+        if (!links[link].labels.length) {
+          links[link].addLabel(`${sourceName} hasMany ${targetName}`);
+          links[link].addLabel(`${targetName} belongsTo ${sourceName}`);
+        }
+      }
+    }
+    console.log("new active model with links ", this.activeModel);
   }
 
   serializerToSchema() {
