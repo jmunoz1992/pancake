@@ -20,9 +20,9 @@ const Issues = props => {
       <List>
         {issues.map(issue => {
           return (
-            <div>
+            <div key={issue.id}>
               <br />
-              <EditIssue key={issue.id} issue={issue} />
+              <EditIssue issue={issue} />
               <br />
             </div>
           );

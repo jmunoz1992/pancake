@@ -50,21 +50,15 @@ export class BodyWidget extends React.Component {
   };
 
   nodePortsSubmit = event => {
-    console.log("getting into node submit");
-    console.log("hide no title warning ", this.state.handleNodeTitleChange);
-    console.log("hide no ports amount ", this.state.hideNoPortAmountWarning);
-    console.log("hide no port names warning ", this.state.hideNoPortsNamedWarning);
     event.preventDefault();
     const { nodeTitle, nodePorts } = this.state;
     if (nodeTitle === "") {
-      console.log("getting into node title ");
       this.setState({ hideNoTitleWarning: false });
       return;
     } else {
       this.setState({ hideNoTitleWarning: true });
     }
     if (nodePorts.length === 0) {
-      console.log("getting into node ports zero");
       this.setState({ hideNoPortAmountWarning: false });
       return;
     } else {
@@ -74,7 +68,6 @@ export class BodyWidget extends React.Component {
     for (let i = 1; i <= this.state.nodePorts.length; i++) {
       const portName = "port" + i;
       if (!event.target[portName] || event.target[portName].value === "") {
-        console.log("port names not named");
         this.setState({ hideNoPortsNamedWarning: false });
         return;
       } else {
@@ -171,8 +164,8 @@ export class BodyWidget extends React.Component {
     let node = null;
     node = new DefaultNodeModel(this.state.nodeTitle, this.state.nodeColor);
     newPorts.map(inPort => {
-      node.addInPort(inPort);
-      node.addOutPort(" ");
+      const portIn = node.addInPort(inPort);
+      const portOut = node.addOutPort(" ");
     });
     this.setState({
       nodeTitle: "",
@@ -186,6 +179,6 @@ export class BodyWidget extends React.Component {
       .getDiagramModel()
       .addNode(node);
     this.forceUpdate();
-    this.props.app.updateSchema();
+    this.props.app.serializerToSchema();
   }
 }
