@@ -12,7 +12,7 @@ class KanbanBoard extends Component {
 
     createIssueCard = issue => {
         return {
-            id: issue.id,
+            id: String(issue.id),
             title: issue.title,
             description: issue.body,
         };
@@ -66,16 +66,27 @@ class KanbanBoard extends Component {
     }
 }
 
+const hasLaneLabel = issue => {
+    const { labels } = issue;
+    for (let i = 0; i < labels.length; i++) {
+        if (labels[i].name === "todo") return true;
+        if (labels[i].name === "next") return true;
+        if (labels[i].name === "in progress") return true;
+        if (labels[i].name === "completed") return true;
+    }
+    return false;
+};
+
 const mapState = ({ issues, collaborators, labels }) => {
+
     const issueList = issues.issueList;
     const todoIssues = issueList.filter(issue => issue.labels.find(label => label.name === "todo"));
     const nextIssues = issueList.filter(issue => issue.labels.find(label => label.name === "next"));
     const inProgressIssues = issueList.filter(issue => issue.labels.find(label => label.name === "in progress"));
     const completedIssues = issueList.filter(issue => issue.labels.find(label => label.name === "completed"));
     // issues missing a lane tag go in the inbox
-    const inboxIssues = issueList.filter(issue => issue.labels.find(label => (label.name !== "todo") && (label.name !== "next") && (label.name !== "in progress") && (label.name !== "completed")));
-    console.log("inboxIssues", inboxIssues);
-    return { collaborators, labels, todoIssues, nextIssues, inProgressIssues, completedIssues };
+    const inboxIssues = issueList.filter(issue => hasLaneLabel(issue));
+    return { collaborators, labels, inboxIssues, todoIssues, nextIssues, inProgressIssues, completedIssues };
 };
 
 export default connect(mapState, null)(KanbanBoard);
