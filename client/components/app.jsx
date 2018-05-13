@@ -43,8 +43,9 @@ class App extends Component {
             <Grid.Column id="sidebar">
               <Switch>
                 <Route path="/mockups" component={DesignerSidebar} />
-                <Route path="/schema" component={SchemaSidebar} />
-                <Route component={Issues} />
+                <scroll-container>
+                  <Route component={Issues} />
+                </scroll-container>
               </Switch>
             </Grid.Column>
           </Grid.Row>
@@ -77,7 +78,7 @@ const StyledAppWrapper = styled.div`
   scroll-container {
     display: block;
     width: 400px;
-    height: 600px;
+    height: 550px;
     overflow-y: scroll;
     scroll-behavior: smooth;
   }
