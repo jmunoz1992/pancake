@@ -35,17 +35,17 @@ const issueListReducer = (state = [], action) => {
       });
 
     case CREATE_ISSUE:
-      return ([...state, action.issue]);
+      return [...state, action.issue];
 
     default:
       return state;
   }
 };
 
-const issueFilterReducer = (state = "", action) => {
+const issueFilterReducer = (state = {}, action) => {
   switch (action.type) {
     case SET_ISSUE_FILTER:
-      return action.filter.toLowerCase();
+      return action.filter;
     default:
       return state;
   }
@@ -70,7 +70,6 @@ export const editIssue = issue => dispatch =>
     .put(`/api/issues/${issue.number}`, issue)
     .then(res => dispatch(edit(res.data)))
     .catch(err => console.error(`Updating issue ${issue.number} unsuccessful`, err));
-
 
 export const createIssue = issue => dispatch =>
   axios
