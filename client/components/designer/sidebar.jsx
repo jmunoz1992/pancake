@@ -11,7 +11,9 @@ const DesignerSidebar = props => {
       menuItem: "Issues",
       render: () => (
         <Tab.Pane attached={false}>
-          <Issues />
+          <scroll-container>
+            <Issues />
+          </scroll-container>
         </Tab.Pane>
       )
     }
@@ -45,6 +47,13 @@ const DesignerSidebar = props => {
 
 const Wrapper = styled.div`
   /* padding-right: 10px; */
+  scroll-container {
+    display: block;
+    width: 400px;
+    height: 550px;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+  }
 `;
 
 const mapState = state => ({ areElementsSelected: state.designer.selectedElements.length });

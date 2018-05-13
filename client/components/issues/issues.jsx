@@ -10,9 +10,9 @@ const Issues = props => {
     issues = issues.filter(issue => testIssueAgainstFilter(issue, filter));
   }
   return (
-    <div>
+    <div style={{ width: "282px" }}>
       <AddIssue />
-      <Divider />
+      <Divider style={{ width: "250px" }} />
       {Object.keys(filter).length ? (
         <p>
           Filtering by issues...<br />
