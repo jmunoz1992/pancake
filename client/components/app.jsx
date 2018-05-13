@@ -1,19 +1,17 @@
 import React, { Component } from "react";
 import {
   Navbar,
-  Sidebar,
   DesignerCanvas,
   DesignerSidebar,
   Schema,
   SchemaSidebar,
   SocketModal,
-  MockupList,
   Issues,
   Board
 } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
-import { fetchIssues, designerOperations, fetchCollaborators, fetchLabels } from "../store";
+import { fetchIssues, fetchCollaborators, fetchLabels } from "../store";
 
 import { Grid } from "semantic-ui-react";
 import { default as styled } from "styled-components";
