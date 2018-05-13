@@ -3,7 +3,7 @@ import * as _ from "lodash";
 import { TrayWidget } from "./TrayWidget";
 import { DefaultNodeModel, DiagramWidget } from "storm-react-diagrams";
 require("storm-react-diagrams/dist/style.min.css");
-import { Button, Header, Input, Modal, Form, Message, Icon } from "semantic-ui-react";
+import { Button, Header, Input, Modal, Form, Message, Icon, Divider } from "semantic-ui-react";
 import "rc-color-picker/assets/index.css";
 import ColorPicker from "rc-color-picker";
 
@@ -100,6 +100,61 @@ export class BodyWidget extends React.Component {
               onOpen={this.isModalOpen}
               onClose={this.closeIn}>
               <Header icon="block layout" content="Let's Make A Model!" />
+              <Modal.Content>
+                <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
+                  <Form.Group widths="equal">
+                    <Input
+                      label="Model Title"
+                      onChange={this.handleNodeTitleChange}
+                      name="nodeTitle"
+                      value={this.state.nodeTitle}
+                    />
+                  </Form.Group>
+                  <Form.Group inline>
+                    <Form.Field>Model Fields</Form.Field>
+                    <Form.Field
+                      control="select"
+                      onChange={event => this.handlePortSelectChange(event, "inPort")}>
+                      <option value="" />
+                      <option value="1">1</option>
+                      <option value="2">2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                    </Form.Field>
+                  </Form.Group>
+                  {this.state.nodePorts.map(portNum => {
+                    return <Input key={portNum} placeholder="Field Name Here" name={`port${portNum}`} />;
+                  })}
+                  <Form.Group>
+                    <Form.Field>Model Color</Form.Field>
+                    <ColorPicker
+                      color={this.state.nodeTestColor}
+                      alpha={30}
+                      onChange={event => this.handleNodeColorChange(event, "inPort")}
+                      placement="topLeft"
+                      className="some-class">
+                      <span className="rc-color-picker-trigger" />
+                    </ColorPicker>
+                  </Form.Group>
+                  <Form.Button>Submit</Form.Button>
+                </Form>
+                <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Model must contain a Title
+                </Message>
+                <Message hidden={this.state.hideNoPortAmountWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Must pick a number of fields.
+                </Message>
+                <Message hidden={this.state.hideNoPortsNamedWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Must have names for all fields.
+                </Message>
+              </Modal.Content>
+              <Divider />
               <Modal.Content>
                 <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
                   <Form.Group widths="equal">
