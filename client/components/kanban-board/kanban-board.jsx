@@ -2,6 +2,8 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Board from "react-trello";
 
+import { EditIssue } from "../issues";
+
 class KanbanBoard extends Component {
     constructor(props) {
         super(props);
@@ -24,43 +26,49 @@ class KanbanBoard extends Component {
             lanes:
                 [
                     {
-                        id: "lane1",
+                        id: "inbox",
                         title: "Inbox",
-                        label: "0/0",
+                        label: "",
                         cards: inboxIssues ? inboxIssues.map(issue => this.createIssueCard(issue)) : [],
                     },
                     {
-                        id: "lane2",
+                        id: "todo",
                         title: "To-Do",
-                        label: "0/0",
+                        label: "",
                         cards: todoIssues ? todoIssues.map(issue => this.createIssueCard(issue)) : [],
                     },
                     {
-                        id: "lane3",
+                        id: "next",
                         title: "Next",
-                        label: "0/0",
+                        label: "",
                         cards: nextIssues ? nextIssues.map(issue => this.createIssueCard(issue)) : [],
                     },
                     {
-                        id: "lane4",
+                        id: "in progress",
                         title: "In Progress",
-                        label: "0/0",
+                        label: "",
                         cards: inProgressIssues ? inProgressIssues.map(issue => this.createIssueCard(issue)) : []
                     },
                     {
-                        id: "lane5",
+                        id: "completed",
                         title: "Completed",
-                        label: "0/0",
+                        label: "",
                         cards: completedIssues ? completedIssues.map(issue => this.createIssueCard(issue)) : []
                     },
                 ]
         };
     }
 
+    // handleDragEnd = (card) = {
+
+    // }
+
     render() {
         return (
             <div>
-                <Board data={this.createBoard()} />
+                <Board
+                    data={this.createBoard()}
+                />
             </div>
         );
     }
