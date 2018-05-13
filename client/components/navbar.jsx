@@ -2,7 +2,7 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout } from "../store";
-import { Input, Menu, Header, Dropdown, Icon } from "semantic-ui-react";
+import { Menu, Dropdown } from "semantic-ui-react";
 import styled from "styled-components";
 import { default as FilterBox } from "./issues/filter-box";
 
@@ -30,7 +30,7 @@ const Navbar = props => {
       <Menu.Item as="a" name="schema" onClick={() => props.history.push("/schema")}>
         Schema Designer
       </Menu.Item>
-      <Menu.Item as="a" name="test" onClick={() => props.history.push("/board")}>
+      <Menu.Item as="a" name="board" onClick={() => props.history.push("/board")}>
         Board
       </Menu.Item>
       <Menu.Menu position="right">
@@ -42,7 +42,7 @@ const Navbar = props => {
   );
 };
 
-const StyledNavbar = styled(Navbar)`
+const StyledNavbar = styled(Navbar) `
   &&& {
     box-shadow: 0px 0px 30px 4px rgba(0, 0, 0, 0.3);
   }
