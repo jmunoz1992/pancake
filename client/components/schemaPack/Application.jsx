@@ -35,8 +35,7 @@ export class Application {
         const sourceName = links[link].sourcePort.parent.name;
         const targetName = links[link].targetPort.parent.name;
         if (!links[link].labels.length) {
-          links[link].addLabel(`${sourceName} hasMany ${targetName}`);
-          links[link].addLabel(`${targetName} belongsTo ${sourceName}`);
+          links[link].addLabel(`${sourceName} to ${targetName}`);
         }
       }
     }
