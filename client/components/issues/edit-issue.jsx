@@ -130,12 +130,6 @@ class EditIssue extends Component {
     }
 
     if (!goodSubmit) return;
-    console.log("title", title);
-    console.log("body", body);
-    console.log("state", state);
-    console.log("labels", labels);
-    console.log("assignees", assignees);
-    console.log("number", number);
     this.props.editIssue({ title, body, state, labels, assignees, number });
     this.closeModal();
   };
@@ -278,8 +272,21 @@ class EditIssue extends Component {
   }
 }
 
-const mapState = ({ issues, collaborators, labels }, ownProps) => {
-  const activeIssue = issues.issueList.find(issue => issue.id === ownProps.issue.id);
+const mapState = (state, ownProps) => {
+  console.log("STATE", state);
+  console.log("ownPRops", ownProps);
+  let { issues, collaborators, labels } = state;
+  let issueList = [];
+  let activeIssue = {};
+  if (!issues) {
+    issueList = ownProps.issueList;
+    collaborators = ownProps.collaborators;
+    labels = ownProps.labels;
+    activeIssue = issueList.find(issue => issue.id === ownProps.issue.id);
+  } else {
+    activeIssue = issues.issueList.find(issue => issue.id === ownProps.issue.id);
+  }
+
   return {
     activeIssue,
     collaborators,

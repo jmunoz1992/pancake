@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import Board from "react-trello";
-
-import { addLabel, removeLabel } from "../../store/issues";
+import { EditIssue } from "../issues/index";
+import { addLabel, removeLabel, editIssue } from "../../store/issues";
 
 class KanbanBoard extends Component {
     constructor(props) {
@@ -13,7 +13,9 @@ class KanbanBoard extends Component {
     }
 
     createIssueCard = issue => {
+        console.log("issue", issue);
         return {
+            issue,
             id: String(issue.id),
             title: issue.title,
             description: issue.body,
@@ -31,8 +33,11 @@ class KanbanBoard extends Component {
     };
 
     createBoard = () => {
-        const { inboxIssues, nextIssues, todoIssues, inProgressIssues, completedIssues } = this.props;
+        const { inboxIssues, nextIssues, todoIssues, inProgressIssues, completedIssues, issueList, collaborators, labels } = this.props;
         return {
+            issueList,
+            collaborators,
+            labels,
             lanes:
                 [
                     {
@@ -76,7 +81,10 @@ class KanbanBoard extends Component {
                     data={this.createBoard()}
                     draggable
                     handleDragEnd={this.handleDragEnd}
-                />
+                    customCardLayout
+                >
+                    <EditIssue issueList={this.props.issueList} collaborators={this.props.collaborators} labels={this.props.labels} />
+                </Board>
             </div>
         );
     }
@@ -85,7 +93,6 @@ class KanbanBoard extends Component {
 const hasLaneLabel = issue => {
     const { labels } = issue;
     for (let i = 0; i < labels.length; i++) {
-        console.log("label name", labels[i].name);
         if (labels[i].name === "todo") return true;
         if (labels[i].name === "next") return true;
         if (labels[i].name === "in progress") return true;
@@ -97,6 +104,7 @@ const hasLaneLabel = issue => {
 const mapState = ({ issues, collaborators, labels }) => {
 
     const issueList = issues.issueList;
+
     const todoIssues = issueList.filter(issue => issue.labels.find(label => label.name === "todo"));
     const nextIssues = issueList.filter(issue => issue.labels.find(label => label.name === "next"));
     const inProgressIssues = issueList.filter(issue => issue.labels.find(label => label.name === "in progress"));

@@ -93,16 +93,14 @@ export const createIssue = issue => dispatch =>
     .then(res => dispatch(create(res.data)))
     .catch(err => console.error("Creating issue unsuccessful", err));
 
-export const addLabel = (issue, labels) => dispatch => {
+export const addLabel = (issue, labels) => dispatch =>
   axios
     .post(`/api/issues/${issue.number}/labels`, labels)
     .then(res => dispatch(addLabelToIssue(issue.id, res.data)))
     .catch(err => console.error("Adding label unsuccessful", err));
-};
 
-export const removeLabel = (issue, labelname) => dispatch => {
+export const removeLabel = (issue, labelname) => dispatch =>
   axios
     .delete(`/api/issues/${issue.number}/labels/${labelname}`)
     .then(res => dispatch(removeLabelFromIssue(issue.id, res.data)))
     .catch(err => console.error("Removing label unsuccessful", err));
-};
