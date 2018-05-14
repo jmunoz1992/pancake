@@ -27,8 +27,6 @@ class Navbar extends React.Component {
             pointing="top left">
             <Dropdown.Menu>
               <Dropdown.Header>Logged in as {this.props.user.username}</Dropdown.Header>
-              <Dropdown.Item>Projects</Dropdown.Item>
-              <Dropdown.Item>Settings</Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item onClick={doLogout}>Logout</Dropdown.Item>
             </Dropdown.Menu>
@@ -56,7 +54,7 @@ class Navbar extends React.Component {
   }
 }
 
-const StyledNavbar = styled(Navbar) `
+const StyledNavbar = styled(Navbar)`
   &&& {
     box-shadow: 0px 0px 30px 4px rgba(0, 0, 0, 0.3);
   }
