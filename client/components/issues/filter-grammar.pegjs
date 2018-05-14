@@ -25,7 +25,7 @@ https://pegjs.org/online
 */
 
 Expression
-  = _ conditions:(LabelAssigneeCondition / StatusCondition / UnmatchedTextCondition)* _ 
+  = _ conditions:(LabelAssigneeCondition / StatusCondition / UnmatchedTextCondition)* _
     {
       const expression = {};
       conditions.forEach(condition => {
@@ -57,7 +57,7 @@ ValueList "value list"
 
 Value "value"
   = text:Token+
-    { return text.join(""); }  
+    { return text.join(""); }
   / "\"" quotedText:[^\"]* "\""
     { return quotedText.join(""); }
 
