@@ -14,9 +14,12 @@ export class BodyWidget extends React.Component {
       nodeTitle: "Default Model Title",
       nodeColor: "rgb(192,255,0)",
       nodePorts: [],
+      linkTitle: "",
       isModalOpen: false,
+      linkModalOpen: false,
       nodeTestColor: "#ff0000",
       hideNoTitleWarning: true,
+      hideNoLinkTitleWarning: true,
       hideNoPortAmountWarning: true,
       hideNoPortsNamedWarning: true
     };
@@ -24,6 +27,10 @@ export class BodyWidget extends React.Component {
 
   handleNodeTitleChange = event => {
     this.setState({ nodeTitle: event.target.value });
+  };
+
+  handleLinkTitleChange = event => {
+    this.setState({ linkTitle: event.target.value });
   };
 
   cutHex = hexNum => {
@@ -47,6 +54,17 @@ export class BodyWidget extends React.Component {
       ports.push(i);
     }
     this.setState({ nodePorts: ports });
+  };
+
+  linkTitleSumit = () => {
+    if (this.state.linkTitle === "") {
+      this.setState({ hideNoLinkTitleWarning: false });
+      return;
+    } else {
+      this.setState({ hideNoLinkTitleWarning: true });
+    }
+    this.closeIn();
+    this.addNodeToCanvas();
   };
 
   nodePortsSubmit = event => {
@@ -83,8 +101,11 @@ export class BodyWidget extends React.Component {
   isModalOpen = () => this.setState({ isModalOpen: true });
   closeIn = () => this.setState({ isModalOpen: false });
 
+  linkModalOpen = () => this.setState({ linkModalOpen: true });
+  linkCloseIn = () => this.setState({ linkModalOpen: false });
+
   render() {
-    const { isModalOpen, openOut } = this.state;
+    const { isModalOpen } = this.state;
     return (
       <div className="body">
         <div className="content">
@@ -156,6 +177,36 @@ export class BodyWidget extends React.Component {
               </Modal.Content>
             </Modal>
             <br />
+            <br />
+            <Modal
+              trigger={
+                <Button style={{ backgroundColor: "rgb(255,255, 255)", color: "#000000" }}>
+                  Add A Link Label
+                </Button>
+              }
+              closeIcon
+              open={this.state.linkModalOpen}
+              style={{ width: "400px" }}
+              onOpen={this.linkModalOpen}
+              onClose={this.linkCloseIn}>
+              <Modal.Content>
+                <Header>Let's Make a Link Label!</Header>
+                <Form onSubmit={this.linkTitleSumit} style={{ margin: "10px" }}>
+                  <Form.Group widths="equal">
+                    <Input
+                      label="Link Label"
+                      onChange={this.handleLinkTitleChange}
+                      name="linkTitle"
+                      value={this.state.linkTitle}
+                    />
+                  </Form.Group>
+                  <Form.Button>Submit</Form.Button>
+                </Form>
+                <Message hidden={this.state.hideNoLinkTitleWarning} attached="bottom" warning>
+                  <Icon name="warning sign" />Link must contain a Title
+                </Message>
+              </Modal.Content>
+            </Modal>
           </TrayWidget>
           <div className="diagram-layer">
             <DiagramWidget className="srd-demo-canvas" diagramEngine={this.props.app.getDiagramEngine()} />
@@ -167,14 +218,19 @@ export class BodyWidget extends React.Component {
 
   addNodeToCanvas(newPorts) {
     let node = null;
-    node = new DefaultNodeModel(this.state.nodeTitle, this.state.nodeColor);
-    newPorts.map(inPort => {
-      const portIn = node.addInPort(inPort);
-      const portOut = node.addOutPort(" ");
-    });
+    if (newPorts) {
+      node = new DefaultNodeModel(this.state.nodeTitle, this.state.nodeColor);
+      newPorts.map(inPort => {
+        node.addInPort(inPort);
+        node.addOutPort(" ");
+      });
+    } else {
+      node = new DefaultNodeModel(this.state.linkTitle, this.state.nodeTestColor);
+    }
     this.setState({
       nodeTitle: "",
       nodeColor: "",
+      linkTitle: "",
       isModalOpen: false,
       nodeTestColor: "#ff0000"
     });

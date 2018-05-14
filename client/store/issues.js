@@ -18,7 +18,9 @@ const load = issues => ({ type: GET_ISSUES, issues });
 const edit = issue => ({ type: EDIT_ISSUE, issue });
 const create = issue => ({ type: CREATE_ISSUE, issue });
 
-export const setIssueFilter = filter => ({ type: SET_ISSUE_FILTER, filter });
+export const setIssueFilter = filter => {
+  return { type: SET_ISSUE_FILTER, filter };
+};
 
 /**
  * REDUCER
