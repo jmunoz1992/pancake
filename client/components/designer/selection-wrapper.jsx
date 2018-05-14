@@ -8,7 +8,7 @@ import { ElementComponentWrapper } from "./element-wrapper";
 class SelectionWrapper extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = { tempSizeDelta: null };
     this.rnd = React.createRef();
   }
 
@@ -58,12 +58,14 @@ class SelectionWrapper extends Component {
     this.props.doMoveElement(deltaX, deltaY);
   };
 
-  onResizeStop = (...eventArgs) => {
-    const sizeDelta = eventArgs[3];
-    const coords = eventArgs[4];
+  onResize = (event, handleName, element, sizeDelta) => {
+    this.setState({ tempSizeDelta: sizeDelta });
+  };
+
+  onResizeStop = (event, handleName, element, sizeDelta, coords) => {
     const width = this.props.elements[0].width + sizeDelta.width;
     const height = this.props.elements[0].height + sizeDelta.height;
-
+    this.setState({ tempSizeDelta: null });
     this.props.doResizeElement(height, width, coords.x - this.props.offset.x, coords.y - this.props.offset.y);
   };
 
@@ -97,6 +99,7 @@ class SelectionWrapper extends Component {
           topLeft: "resize-handle-fix",
           topRight: "resize-handle-fix"
         }}
+        onResize={this.onResize}
         onResizeStop={this.onResizeStop}
         onDragStop={this.onDragStop}>
         {this.renderElementWrapper(this.props.elements[0])}
@@ -132,14 +135,19 @@ class SelectionWrapper extends Component {
 
   renderElementWrapper(element) {
     const component = ElementLibrary[element.type].element.COMPONENT;
+    let { width, height } = element;
+    if (this.state.tempSizeDelta) {
+      width += this.state.tempSizeDelta.width;
+      height += this.state.tempSizeDelta.height;
+    }
     return (
       <div
         key={element.id}
         style={{
           transform: `translate(${element.left - this.props.bounds.left}px, ${element.top -
             this.props.bounds.top}px)`,
-          width: `${element.width}px`,
-          height: `${element.height}px`,
+          width: `${width}px`,
+          height: `${height}px`,
           zIndex: `${element.zIndex}`,
           position: "absolute",
           outline: "none",

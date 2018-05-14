@@ -20,7 +20,8 @@ class FilterBox extends Component {
   }
 
   componentWillReceiveProps(newProps) {
-    if (this.state.filter !== newProps.issues.filter) this.serializeFilterObject(newProps.issues.filter);
+    console.log(this.state.filter, newProps.issues.filter);
+    if (this.state.filter !== newProps.issues.filter) this.setState({ filterText: this.serializeFilterObject(newProps.issues.filter) });
   }
 
   serializeFilterObject(filterObj) {
