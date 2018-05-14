@@ -47,6 +47,8 @@ const writeStateToDatabase = async schemaId => {
 const onJoinSession = async (projectId, socket) => {
   try {
     const schema = await Schema.findOne({ where: { projectId } });
+    console.log("project id ", projectId);
+    console.log("schema ", schema);
     const session = await findOrCreateSession(schema.id);
     console.log(`Client ${socket.id} is joining session ${schema.id}`);
     session.clients.push(socket.id);

@@ -14,8 +14,8 @@ const { Project, Mockup, Schema } = require("../server/db/models");
 
 async function seed() {
   await db.sync({ force: true });
-  const project = await Project.create({ owner: "flapjackstack", repository: "demo" });
-  const mockup = await Mockup.create({ id: 2, name: "My Test Mockup", projectId: 1 });
+  const project = await Project.create({ owner: "PrincessPotatoPancake", repository: "demo" });
+  const mockup = await Mockup.create({ id: 1, name: "My Test Mockup", projectId: 1 });
   const objToSerialize = {
     id: "7fe33b4d-9470-4f97-b53c-0c2ead0fd180",
     offsetX: 0,
