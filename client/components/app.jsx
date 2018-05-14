@@ -7,7 +7,7 @@ import {
   SchemaSidebar,
   SocketModal,
   Issues,
-  Board
+  KanbanBoard,
 } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
@@ -36,8 +36,8 @@ class App extends Component {
               <Switch>
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
-                <Route path="/board" component={Board} />
-                <Route component={Board} />
+                <Route path="/board" component={KanbanBoard} />
+                <Route component={KanbanBoard} />
               </Switch>
             </Grid.Column>
             <Grid.Column id="sidebar">

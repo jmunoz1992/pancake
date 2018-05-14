@@ -130,7 +130,12 @@ class EditIssue extends Component {
     }
 
     if (!goodSubmit) return;
-
+    console.log("title", title);
+    console.log("body", body);
+    console.log("state", state);
+    console.log("labels", labels);
+    console.log("assignees", assignees);
+    console.log("number", number);
     this.props.editIssue({ title, body, state, labels, assignees, number });
     this.closeModal();
   };
@@ -239,8 +244,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                    <div />
-                  )}
+                      <div />
+                    )}
                 </Grid.Column>
                 <Grid.Column>
                   {/* Label List */}
@@ -251,8 +256,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                    <div />
-                  )}
+                      <div />
+                    )}
                 </Grid.Column>
               </Grid.Row>
             </Grid>

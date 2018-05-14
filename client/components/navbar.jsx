@@ -53,7 +53,7 @@ class Navbar extends React.Component {
   }
 }
 
-const StyledNavbar = styled(Navbar)`
+const StyledNavbar = styled(Navbar) `
   &&& {
     box-shadow: 0px 0px 30px 4px rgba(0, 0, 0, 0.3);
   }
