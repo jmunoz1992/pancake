@@ -234,6 +234,7 @@ export class BodyWidget extends React.Component {
       isModalOpen: false,
       nodeTestColor: "#ff0000"
     });
+    console.log("node in addNode ", node);
     this.props.app.addListenersOnNode(node);
     this.props.app
       .getDiagramEngine()

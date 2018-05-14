@@ -22,15 +22,21 @@ export class Application {
     const deserializedData = JSON.parse(data);
     this.activeModel.deSerializeDiagram(deserializedData, this.diagramEngine);
     const allNodes = this.activeModel.getNodes();
+    console.log("all nodes in activeModel ", allNodes);
+    for (let node in allNodes) {
+      if (allNodes.hasOwnProperty(node)) {
+        const nodeToAdd = allNodes[node];
+        this.addListenersOnNode(nodeToAdd);
+      }
+    }
     const links = this.activeModel.getLinks();
     for (let link in links) {
       if (links.hasOwnProperty(link)) {
-        if (links[link].sourcePort && links[link].targetPort) {
-          const sourceName = links[link].sourcePort.parent.name;
-          const targetName = links[link].targetPort.parent.name;
-          if (!links[link].labels.length) {
-            links[link].addLabel(`${sourceName} to ${targetName}`);
-          }
+        const sourceName = links[link].sourcePort.parent.name;
+        const targetName = links[link].targetPort.parent.name;
+        if (!links[link].labels.length) {
+          links[link].addLabel(`${sourceName} hasMany ${targetName}`);
+          links[link].addLabel(`${targetName} belongsTo ${sourceName}`);
         }
       }
     }
@@ -49,12 +55,7 @@ export class Application {
     nodeToAdd.addListener({
       selectionChanged: () => {
         setTimeout(this.serializerToSchema.bind(this), 0);
-        const nodeName = nodeToAdd.name.toLowerCase();
-        console.log("node name ", nodeName);
-        const labelObj = {
-          labels: [nodeName]
-        };
-        store.dispatch(setIssueFilter(labelObj));
+        store.dispatch(setIssueFilter(nodeToAdd.name));
       },
       entityRemoved: () => {
         setTimeout(this.serializerToSchema.bind(this), 0);
