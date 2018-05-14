@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Button, Form, Icon } from "semantic-ui-react";
+import { Button, Container, Divider, Form, Icon } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import store, { me } from "../store";
 
@@ -15,11 +15,6 @@ class Welcome extends Component {
       selectedRepo: ""
     };
   }
-
-  // componentWillReceiveProps(props) {
-  //   console.log("received", props);
-  //   this.setState({ selectedOrg: props.user.username });
-  // }
 
   componentDidMount() {
     this.getUserRepos();
@@ -78,7 +73,8 @@ class Welcome extends Component {
     orgOptions = [{ key: user.username, text: user.username, value: user.username }, ...orgOptions];
 
     return (
-      <div>
+      <Container text>
+        <Divider hidden="true" />
         <Form.Select
           fluid
           name="selectedOrg"
@@ -88,6 +84,7 @@ class Welcome extends Component {
           value={this.state.selectedOrg}
           onChange={this.onChange}
         />
+        <Divider hidden="true" />
         <Form.Select
           fluid
           name="selectedRepo"
@@ -96,10 +93,11 @@ class Welcome extends Component {
           placeholder="Repositories"
           onChange={this.onChange}
         />
+        <Divider hidden="true" />
         <Button onClick={this.onCreateProjectClick}>
           <Icon name="github" /> Create Project
         </Button>
-      </div>
+      </Container>
     );
   }
 }
