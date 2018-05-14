@@ -13,10 +13,29 @@ class Toolbar extends Component {
   render() {
     return (
       <Menu inverted className={this.props.className}>
+        <Menu.Item header>Sort By</Menu.Item>
+
         <Menu.Item>
           <MockupSwitcher />
         </Menu.Item>
+        {this.props.selectedElements.length ? this.renderElementTools() : this.renderNothing()}
       </Menu>
+    );
+  }
+
+  renderNothing() {
+    return (
+      <Menu.Menu>
+        <Menu.Item>Nothing selected.</Menu.Item>
+      </Menu.Menu>
+    );
+  }
+
+  renderElementTools() {
+    return (
+      <Menu.Menu>
+        <Menu.Item>Something selected.</Menu.Item>
+      </Menu.Menu>
     );
   }
 }
@@ -30,6 +49,11 @@ const StyledToolbar = styled(Toolbar)`
   width: 100%;
   bottom: 0;
   left: 0;
+  z-index: 10000;
 `;
 
-export default StyledToolbar;
+const mapState = state => {
+  return { selectedElements: state.designer.selectedElements };
+};
+
+export default connect(mapState, null)(StyledToolbar);
