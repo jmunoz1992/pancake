@@ -20,20 +20,24 @@ export class Application {
 
   deserializer(data) {
     const deserializedData = JSON.parse(data);
+    console.log("deserialized data", deserializedData);
+    if (!Object.keys(deserializedData).length) {
+      console.log("getting in deserializer");
+      this.activeModel = new SRD.DiagramModel();
+      this.diagramEngine.setDiagramModel(this.activeModel);
+      return;
+    }
+    this.activeModel = new SRD.DiagramModel();
+    this.diagramEngine.setDiagramModel(this.activeModel);
     this.activeModel.deSerializeDiagram(deserializedData, this.diagramEngine);
     const allNodes = this.activeModel.getNodes();
-    const links = this.activeModel.getLinks();
-    for (let link in links) {
-      if (links.hasOwnProperty(link)) {
-        if (links[link].sourcePort && links[link].targetPort) {
-          const sourceName = links[link].sourcePort.parent.name;
-          const targetName = links[link].targetPort.parent.name;
-          if (!links[link].labels.length) {
-            links[link].addLabel(`${sourceName} to ${targetName}`);
-          }
-        }
+    for (let node in allNodes) {
+      if (allNodes.hasOwnProperty(node)) {
+        const nodeToAdd = allNodes[node];
+        this.addListenersOnNode(nodeToAdd);
       }
     }
+
     console.log("new active model with links ", this.activeModel);
   }
 
