@@ -18,7 +18,7 @@ const Login = _ => {
         </button>
         <button className="ui github button" style={{ backgroundColor: "#0E8DEC" }}>
           <i className="github icon" />
-          <a style={{ color: "#ffffff" }} href="/auth/github">
+          <a style={{ color: "#ffffff" }} href="/auth/github/demo">
             Login As Demo User
           </a>
         </button>

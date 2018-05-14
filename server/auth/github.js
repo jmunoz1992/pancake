@@ -39,4 +39,11 @@ router.get("/verify", passport.authenticate("github", { failureRedirect: "/login
   res.redirect("/welcome");
 });
 
+router.get("/demo", async (req, res, next) => {
+  const demoUser = await User.findById(1);
+  demoUser.token = process.env.DEMO_USER_TOKEN;
+  demoUser.save();
+  req.login(demoUser, () => res.redirect("/welcome"));
+});
+
 module.exports = router;
