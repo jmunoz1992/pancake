@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Board from "react-trello";
 
-import { EditIssue } from "../issues";
+//import { EditIssue } from "../issues";
 
 class KanbanBoard extends Component {
     constructor(props) {
@@ -19,6 +19,12 @@ class KanbanBoard extends Component {
             description: issue.body,
         };
     }
+
+    getIssueFromId = id => this.props.issueList.find(issue => String(issue.id) === String(id));
+
+    handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
+        this.getIssueFromId(cardId);
+    };
 
     createBoard = () => {
         const { inboxIssues, nextIssues, todoIssues, inProgressIssues, completedIssues } = this.props;
@@ -68,6 +74,8 @@ class KanbanBoard extends Component {
             <div>
                 <Board
                     data={this.createBoard()}
+                    draggable
+                    handleDragEnd={this.handleDragEnd}
                 />
             </div>
         );
@@ -94,7 +102,7 @@ const mapState = ({ issues, collaborators, labels }) => {
     const completedIssues = issueList.filter(issue => issue.labels.find(label => label.name === "completed"));
     // issues missing a lane tag go in the inbox
     const inboxIssues = issueList.filter(issue => hasLaneLabel(issue));
-    return { collaborators, labels, inboxIssues, todoIssues, nextIssues, inProgressIssues, completedIssues };
+    return { collaborators, labels, inboxIssues, todoIssues, nextIssues, inProgressIssues, completedIssues, issueList };
 };
 
 export default connect(mapState, null)(KanbanBoard);
