@@ -10,11 +10,15 @@
  * Now that you've got the main idea, check it out in practice below!
  */
 const db = require("../server/db");
-const { Project, Mockup, Schema } = require("../server/db/models");
+const { Project, Mockup, Schema, User } = require("../server/db/models");
 
 async function seed() {
   await db.sync({ force: true });
   const project = await Project.create({ owner: "PrincessPotatoPancake", repository: "demo" });
+  const user = await User.create({
+    username: "PrincessPotatoPancake",
+    activeProjectId: 1
+  });
   const mockup = await Mockup.create({ id: 1, name: "My Test Mockup", projectId: 1 });
   const objToSerialize = {
     id: "7fe33b4d-9470-4f97-b53c-0c2ead0fd180",
