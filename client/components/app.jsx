@@ -24,8 +24,9 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.props.showSidebar);
     return (
-      <StyledAppWrapper>
+      <StyledAppWrapper showSidebar={this.props.showSidebar}>
         <Grid style={{ paddingTop: "0px" }}>
           <Grid.Row>
             <Navbar />
@@ -60,11 +61,20 @@ const StyledAppWrapper = styled.div`
     position: fixed;
     top: 60px;
     height: 100%;
-    width: calc(100% - 260px);
     overflow: hidden;
+    width: calc(100% - ${props => (props.showSidebar ? "260px" : "0px")});
+    ${props =>
+      (props.showSidebar
+        ? ""
+        : `
+    right: 0;
+    padding-left: 0px;
+    padding-right: 0px;
+    `)};
   }
 
   #sidebar {
+    display: ${props => (props.showSidebar ? "block" : "none")};
     position: fixed;
     background: white;
     top: 60px;
@@ -84,6 +94,12 @@ const StyledAppWrapper = styled.div`
   }
 `;
 
+const mapState = (state, ownProps) => {
+  let showSidebar = true;
+  if (ownProps.location.pathname.startsWith("/board")) showSidebar = false;
+  return { showSidebar };
+};
+
 const mapDispatch = dispatch => {
   return {
     loadCollaborators() {
@@ -98,4 +114,4 @@ const mapDispatch = dispatch => {
   };
 };
 
-export default withRouter(connect(null, mapDispatch)(App));
+export default withRouter(connect(mapState, mapDispatch)(App));
