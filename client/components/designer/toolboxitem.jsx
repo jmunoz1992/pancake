@@ -10,10 +10,16 @@ const ToolboxItem = ({ handleClick, item }) => {
       elementProps[key] = property.default || property.name;
     }
   }
+  console.log(item);
+  elementProps.height = 60;
+  elementProps.width = 60;
   return (
     <Segment raised secondary onClick={handleClick}>
       <div style={{ marginBottom: "25px", pointerEvents: "none" }}>
-        <ComponentToRender element={elementProps} />
+        <ComponentToRender
+          style={{ minHeight: elementProps.height, minWidth: elementProps.width }}
+          element={elementProps}
+        />
       </div>
       <Label attached="bottom">{item.title}</Label>
     </Segment>

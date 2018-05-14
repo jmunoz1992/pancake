@@ -71,18 +71,18 @@ class DesignerCanvas extends Component {
       case 46: // Delete
         this.props.deleteElements();
         break;
-      // case 37: //Left
-      //   this.props.doMoveElement(element, element.left - 1, element.top);
-      //   break;
-      // case 38: //Up
-      //   this.props.doMoveElement(element, element.left, element.top - 1);
-      //   break;
-      // case 39: //Right
-      //   this.props.doMoveElement(element, element.left + 1, element.top);
-      //   break;
-      // case 40: // Down
-      //   this.props.doMoveElement(element, element.left, element.top + 1);
-      //   break;
+      case 37: //Left
+        this.props.nudgeSelection(1, 0);
+        break;
+      case 38: //Up
+        this.props.nudgeSelection(0, 1);
+        break;
+      case 39: //Right
+        this.props.nudgeSelection(-1, 0);
+        break;
+      case 40: // Down
+        this.props.nudgeSelection(0, -1);
+        break;
       default:
         break;
     }
@@ -293,7 +293,7 @@ const mapDispatch = dispatch => {
     loadMockup: () => dispatch(designerOperations.loadMockup()),
     disconnect: () => dispatch(designerOperations.disconnect()),
     selectElements: elements => dispatch(designerOperations.selectElements(elements)),
-    doMoveSelection: (x, y) => dispatch(designerOperations.moveSelection({ x, y })),
+    nudgeSelection: (x, y) => dispatch(designerOperations.moveSelection({ x, y })),
     deleteElements: () => dispatch(designerOperations.deleteElements()),
     deselect: () => dispatch(designerOperations.selectElements([]))
   };
