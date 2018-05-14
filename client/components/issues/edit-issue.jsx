@@ -238,8 +238,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                      <div />
-                    )}
+                    <div />
+                  )}
                 </Grid.Column>
                 <Grid.Column>
                   {/* Label List */}
@@ -250,8 +250,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                      <div />
-                    )}
+                    <div />
+                  )}
                 </Grid.Column>
               </Grid.Row>
             </Grid>
@@ -273,19 +273,8 @@ class EditIssue extends Component {
 }
 
 const mapState = (state, ownProps) => {
-  console.log("STATE", state);
-  console.log("ownPRops", ownProps);
   let { issues, collaborators, labels } = state;
-  let issueList = [];
-  let activeIssue = {};
-  if (!issues) {
-    issueList = ownProps.issueList;
-    collaborators = ownProps.collaborators;
-    labels = ownProps.labels;
-    activeIssue = issueList.find(issue => issue.id === ownProps.issue.id);
-  } else {
-    activeIssue = issues.issueList.find(issue => issue.id === ownProps.issue.id);
-  }
+  let activeIssue = issues.issueList.find(issue => issue.id === ownProps.issue.id);
 
   return {
     activeIssue,
