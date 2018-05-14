@@ -40,6 +40,9 @@ class Navbar extends React.Component {
         <Menu.Item as="a" name="schema" onClick={() => this.props.history.push("/schema")}>
           Schema Designer
         </Menu.Item>
+        <Menu.Item as="a" name="mockup" onClick={() => this.props.history.push("/board")}>
+          Board
+        </Menu.Item>
         <Menu.Menu position="right">
           <Menu.Item>
             <PullRequests allPullRequests={pullRequests} />
