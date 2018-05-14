@@ -12,8 +12,8 @@ export class Rectangle extends BaseElement {
 
   static MIN_WIDTH = 2;
   static MIN_HEIGHT = 2;
-  static MAX_HEIGHT = 1000;
-  static MAX_WIDTH = 1000;
+  static MAX_HEIGHT = 3000;
+  static MAX_WIDTH = 3000;
   static COMPONENT = styled.div`
     height: 100%;
     width: 100%;
