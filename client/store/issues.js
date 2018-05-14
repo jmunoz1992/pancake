@@ -7,6 +7,8 @@ import { combineReducers } from "redux";
 const GET_ISSUES = "GET_ISSUES";
 const EDIT_ISSUE = "EDIT_ISSUE";
 const CREATE_ISSUE = "CREATE_ISSUE";
+const ADD_LABEL_TO_ISSUE = "ADD_LABEL_TO_ISSUE";
+const REMOVE_LABEL_FROM_ISSUE = "REMOVE_LABEL_FROM_ISSUE";
 
 // Filter
 const SET_ISSUE_FILTER = "SET_ISSUE_FILTER";
@@ -17,6 +19,8 @@ const SET_ISSUE_FILTER = "SET_ISSUE_FILTER";
 const load = issues => ({ type: GET_ISSUES, issues });
 const edit = issue => ({ type: EDIT_ISSUE, issue });
 const create = issue => ({ type: CREATE_ISSUE, issue });
+const addLabelToIssue = (issueId, labels) => ({ type: ADD_LABEL_TO_ISSUE, issueId, labels });
+const removeLabelFromIssue = (issueId, newLabels) => ({ type: REMOVE_LABEL_FROM_ISSUE, issueId, newLabels });
 
 export const setIssueFilter = filter => ({ type: SET_ISSUE_FILTER, filter });
 
@@ -36,6 +40,18 @@ const issueListReducer = (state = [], action) => {
 
     case CREATE_ISSUE:
       return [...state, action.issue];
+
+    case ADD_LABEL_TO_ISSUE:
+      return state.map(issue => {
+        if (action.issueId === issue.id) return { ...issue, labels: action.labels };
+        return issue;
+      });
+
+    case REMOVE_LABEL_FROM_ISSUE:
+      return state.map(issue => {
+        if (action.issueId === issue.id) return { ...issue, labels: action.newLabels };
+        return issue;
+      });
 
     default:
       return state;
@@ -76,3 +92,17 @@ export const createIssue = issue => dispatch =>
     .post("/api/issues", issue)
     .then(res => dispatch(create(res.data)))
     .catch(err => console.error("Creating issue unsuccessful", err));
+
+export const addLabel = (issue, labels) => dispatch => {
+  axios
+    .post(`/api/issues/${issue.number}/labels`, labels)
+    .then(res => dispatch(addLabelToIssue(issue.id, res.data)))
+    .catch(err => console.error("Adding label unsuccessful", err));
+};
+
+export const removeLabel = (issue, labelname) => dispatch => {
+  axios
+    .delete(`/api/issues/${issue.number}/labels/${labelname}`)
+    .then(res => dispatch(removeLabelFromIssue(issue.id, res.data)))
+    .catch(err => console.error("Removing label unsuccessful", err));
+};

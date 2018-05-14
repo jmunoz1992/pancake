@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import Board from "react-trello";
 
-//import { EditIssue } from "../issues";
+import { addLabel, removeLabel } from "../../store/issues";
 
 class KanbanBoard extends Component {
     constructor(props) {
@@ -22,8 +22,12 @@ class KanbanBoard extends Component {
 
     getIssueFromId = id => this.props.issueList.find(issue => String(issue.id) === String(id));
 
+    getLabelFromName = name => this.props.labels.find(label => label.name === name)
+
     handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
-        this.getIssueFromId(cardId);
+        const issue = this.getIssueFromId(cardId);
+        this.props.removeLabel(issue, [sourceLaneId]);
+        this.props.addLabel(issue, [targetLaneId]);
     };
 
     createBoard = () => {
@@ -65,10 +69,6 @@ class KanbanBoard extends Component {
         };
     }
 
-    // handleDragEnd = (card) = {
-
-    // }
-
     render() {
         return (
             <div>
@@ -105,4 +105,6 @@ const mapState = ({ issues, collaborators, labels }) => {
     return { collaborators, labels, inboxIssues, todoIssues, nextIssues, inProgressIssues, completedIssues, issueList };
 };
 
-export default connect(mapState, null)(KanbanBoard);
+const mapDispatch = { addLabel, removeLabel };
+
+export default connect(mapState, mapDispatch)(KanbanBoard);
