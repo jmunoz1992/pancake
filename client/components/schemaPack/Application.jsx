@@ -20,26 +20,24 @@ export class Application {
 
   deserializer(data) {
     const deserializedData = JSON.parse(data);
+    console.log("deserialized data", deserializedData);
+    if (!Object.keys(deserializedData).length) {
+      console.log("getting in deserializer");
+      this.activeModel = new SRD.DiagramModel();
+      this.diagramEngine.setDiagramModel(this.activeModel);
+      return;
+    }
+    this.activeModel = new SRD.DiagramModel();
+    this.diagramEngine.setDiagramModel(this.activeModel);
     this.activeModel.deSerializeDiagram(deserializedData, this.diagramEngine);
     const allNodes = this.activeModel.getNodes();
-    console.log("all nodes in activeModel ", allNodes);
     for (let node in allNodes) {
       if (allNodes.hasOwnProperty(node)) {
         const nodeToAdd = allNodes[node];
         this.addListenersOnNode(nodeToAdd);
       }
     }
-    const links = this.activeModel.getLinks();
-    for (let link in links) {
-      if (links.hasOwnProperty(link)) {
-        const sourceName = links[link].sourcePort.parent.name;
-        const targetName = links[link].targetPort.parent.name;
-        if (!links[link].labels.length) {
-          links[link].addLabel(`${sourceName} hasMany ${targetName}`);
-          links[link].addLabel(`${targetName} belongsTo ${sourceName}`);
-        }
-      }
-    }
+
     console.log("new active model with links ", this.activeModel);
   }
 
@@ -55,7 +53,12 @@ export class Application {
     nodeToAdd.addListener({
       selectionChanged: () => {
         setTimeout(this.serializerToSchema.bind(this), 0);
-        store.dispatch(setIssueFilter(nodeToAdd.name));
+        const nodeName = nodeToAdd.name.toLowerCase();
+        console.log("node name ", nodeName);
+        const labelObj = {
+          labels: [nodeName]
+        };
+        store.dispatch(setIssueFilter(labelObj));
       },
       entityRemoved: () => {
         setTimeout(this.serializerToSchema.bind(this), 0);

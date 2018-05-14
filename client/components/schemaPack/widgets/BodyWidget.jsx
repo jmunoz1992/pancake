@@ -17,7 +17,7 @@ export class BodyWidget extends React.Component {
       linkTitle: "",
       isModalOpen: false,
       linkModalOpen: false,
-      nodeTestColor: "#ff0000",
+      nodeTestColor: "rgb(255,255, 255)",
       hideNoTitleWarning: true,
       hideNoLinkTitleWarning: true,
       hideNoPortAmountWarning: true,
@@ -232,10 +232,12 @@ export class BodyWidget extends React.Component {
       nodeColor: "",
       linkTitle: "",
       isModalOpen: false,
-      nodeTestColor: "#ff0000"
+      linkModalOpen: false,
+      nodeTestColor: "rgb(255,255, 255)"
     });
-    console.log("node in addNode ", node);
+    console.log("node in addNode before listener", node);
     this.props.app.addListenersOnNode(node);
+    console.log("node in addNode AFTER listener", node);
     this.props.app
       .getDiagramEngine()
       .getDiagramModel()
