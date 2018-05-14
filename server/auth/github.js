@@ -15,8 +15,10 @@ function verificationCallback(token, refreshToken, profile, done) {
   const username = profile.username;
 
   const info = {
-    username: "PrincessPotatoPancake",
-    token: "24458465a43aca050d27f2fca7e36c72aaecd3a7"
+    username,
+    token
+    // username: "PrincessPotatoPancake",
+    // token: "24458465a43aca050d27f2fca7e36c72aaecd3a7"
   };
 
   User.findOrCreate({
