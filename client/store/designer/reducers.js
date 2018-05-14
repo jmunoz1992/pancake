@@ -46,20 +46,10 @@ const networkStatusReducer = (state = { connecting: false, connected: false, err
   }
 };
 
-const configReducer = (state = { editMode: true }, action) => {
-  switch (action.type) {
-    case types.SET_EDIT_MODE:
-      return { ...state, editMode: action.payload };
-    default:
-      return state;
-  }
-};
-
 const reducer = combineReducers({
   selectedElements: selectedElementsReducer,
   elements: elementReducer,
-  networkStatus: networkStatusReducer,
-  config: configReducer
+  networkStatus: networkStatusReducer
 });
 
 export default reducer;

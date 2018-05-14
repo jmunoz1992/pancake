@@ -14,7 +14,6 @@ class DesignerCanvas extends Component {
       panOffsetY: 0,
       dragging: false,
       ignoreNextClick: false,
-      editMode: false,
       shiftDown: false,
       boxSelectionStart: [],
       boxSelectionPoints: {}
@@ -60,8 +59,8 @@ class DesignerCanvas extends Component {
 
   // Keyboard shortcuts
   onKeyDown = event => {
-    const { editMode, selectedElements } = this.props;
-    if (editMode && selectedElements.length) {
+    const { selectedElements } = this.props;
+    if (selectedElements.length) {
       this.keycodeHandler(event.keyCode);
     }
   };
@@ -199,7 +198,6 @@ class DesignerCanvas extends Component {
   // ignoreNextClick is set after a drag event, since drag events fire unwanted onClicks.
   onCanvasClicked = event => {
     if (
-      this.props.editMode &&
       event.target.id === "mockup-canvas" &&
       this.props.selectedElements.length &&
       !this.state.ignoreNextClick
@@ -239,7 +237,6 @@ class DesignerCanvas extends Component {
           <DesignerElement
             key={element.id}
             element={element}
-            editMode={this.props.editMode}
             shiftDown={this.state.shiftDown}
             selected={false}
             offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}
@@ -285,7 +282,6 @@ const StyledCanvas = styled.div.attrs({
 
 const mapState = state => {
   return {
-    editMode: state.designer.config.editMode,
     selectedMockupId: state.mockups.selectedMockup,
     elements: state.designer.elements,
     selectedElements: state.designer.selectedElements

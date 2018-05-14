@@ -14,7 +14,8 @@ class MockupElement extends Component {
     if (!this.props.selected) {
       this.props.shiftDown ? this.props.doAddElementToSelection() : this.props.doSelectElement();
     }
-    if (!this.props.editMode) this.props.doSetFilter();
+    // TODO: Fix mockup issue filter
+    this.props.doSetFilter();
   };
 
   // If the element isn't selected, we wrap it with a div and pass in style/CSS props received

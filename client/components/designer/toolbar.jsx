@@ -16,16 +16,6 @@ class Toolbar extends Component {
         <Menu.Item>
           <MockupSwitcher />
         </Menu.Item>
-        <Menu.Item>
-          <Button
-            icon
-            primary={this.props.editMode}
-            active={this.props.editMode}
-            onClick={() => this.props.setEditMode(!this.props.editMode)}>
-            Edit Mode
-            <Icon name="edit" />
-          </Button>
-        </Menu.Item>
       </Menu>
     );
   }
@@ -42,7 +32,4 @@ const StyledToolbar = styled(Toolbar)`
   left: 0;
 `;
 
-const mapState = state => ({ editMode: state.designer.config.editMode });
-const mapDispatch = { setEditMode: designerOperations.setEditMode };
-
-export default connect(mapState, mapDispatch)(StyledToolbar);
+export default StyledToolbar;
