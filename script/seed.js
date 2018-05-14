@@ -16,7 +16,9 @@ async function seed() {
   await db.sync({ force: true });
   const project = await Project.create({ owner: "flapjackstack", repository: "demo" });
   const mockup = await Mockup.create({ id: 2, name: "My Test Mockup", projectId: 1 });
-  const schema = await Schema.create({ id: 1, properties: "", projectId: 1 });
+  const objToSerialize = {};
+  const stringifiedData = JSON.stringify(objToSerialize);
+  const schema = await Schema.create({ id: 1, properties: stringifiedData, projectId: 1 });
   console.log("db synced!");
 }
 
