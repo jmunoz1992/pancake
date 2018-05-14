@@ -51,6 +51,7 @@ class SelectionWrapper extends Component {
     let deltaY = this.props.bounds.top - positionInfo.y + this.props.offset.y;
     deltaX = Math.round(deltaX / 5) * 5; // Round to the nearest 5 for grid snapping
     deltaY = Math.round(deltaY / 5) * 5;
+    if (deltaX === 0 && deltaY === 0) return;
     this.rnd.current.updatePosition({
       x: this.props.bounds.left + this.props.offset.x - deltaX,
       y: this.props.bounds.top + this.props.offset.y - deltaY
@@ -143,6 +144,7 @@ class SelectionWrapper extends Component {
     return (
       <div
         key={element.id}
+        onClick={() => this.props.selectSingleElement(element.id)}
         style={{
           transform: `translate(${element.left - this.props.bounds.left}px, ${element.top -
             this.props.bounds.top}px)`,
@@ -150,7 +152,7 @@ class SelectionWrapper extends Component {
           height: `${height}px`,
           zIndex: `${element.zIndex}`,
           position: "absolute",
-          outline: "none",
+          outline: "1px dashed black",
           backgroundColor: "transparent",
           overflow: "hidden"
         }}>
@@ -179,6 +181,7 @@ class SelectionWrapper extends Component {
 
 const mapDispatch = (dispatch, ownProps) => {
   return {
+    selectSingleElement: element => dispatch(designerOperations.selectElements([element])),
     doResizeElement: (height, width, x, y) =>
       dispatch(designerOperations.resizeElement(ownProps.elements[0], { height, width, x, y })),
     doMoveElement: (x, y) => dispatch(designerOperations.moveSelection({ x, y }))

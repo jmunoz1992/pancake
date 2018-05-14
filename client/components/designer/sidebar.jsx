@@ -18,21 +18,20 @@ const DesignerSidebar = props => {
       )
     }
   ];
+  panes.push({
+    menuItem: "Components",
+    render: () => (
+      <Tab.Pane attached={false}>
+        <DesignerToolbox />
+      </Tab.Pane>
+    )
+  });
   if (props.areElementsSelected) {
     panes.push({
       menuItem: "Properties",
       render: () => (
         <Tab.Pane attached={false}>
           <DesignerProperties />
-        </Tab.Pane>
-      )
-    });
-  } else {
-    panes.push({
-      menuItem: "Components",
-      render: () => (
-        <Tab.Pane attached={false}>
-          <DesignerToolbox />
         </Tab.Pane>
       )
     });

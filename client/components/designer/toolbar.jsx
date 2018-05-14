@@ -13,9 +13,8 @@ class Toolbar extends Component {
   render() {
     return (
       <Menu inverted className={this.props.className}>
-        <Menu.Item header>Sort By</Menu.Item>
-
         <Menu.Item>
+          <span className="header">Change Mockup</span>
           <MockupSwitcher />
         </Menu.Item>
         {this.props.selectedElements.length ? this.renderElementTools() : this.renderNothing()}
@@ -26,7 +25,9 @@ class Toolbar extends Component {
   renderNothing() {
     return (
       <Menu.Menu>
-        <Menu.Item>Nothing selected.</Menu.Item>
+        <Menu.Item>
+          Nothing selected.<br />Tip: You can select multiple elements by holding down the Shift key.
+        </Menu.Item>
       </Menu.Menu>
     );
   }
@@ -34,21 +35,41 @@ class Toolbar extends Component {
   renderElementTools() {
     return (
       <Menu.Menu>
-        <Menu.Item>Something selected.</Menu.Item>
+        <Menu.Item>
+          <Button onClick={this.duplicateElements}>Duplicate Selection</Button>
+        </Menu.Item>
+        {this.props.selectedElements.length === 1 && (
+          <Menu.Item>
+            <Button onClick={() => this.props.sendToBack(this.props.selectedElements[0])}>
+              Send To Back
+            </Button>
+          </Menu.Item>
+        )}
+        {this.props.selectedElements.length === 1 && (
+          <Menu.Item>
+            <Button onClick={() => this.props.bringToFront(this.props.selectedElements[0])}>
+              Bring to Front
+            </Button>
+          </Menu.Item>
+        )}
       </Menu.Menu>
     );
   }
+
+  duplicateElements = () => {
+    this.props.duplicateElements();
+  };
 }
 
 const StyledToolbar = styled(Toolbar)`
-  position: absolute;
+  position: fixed;
   height: 60px;
   &&& {
-    margin-bottom: 60px;
+    margin-bottom: 0px;
   }
   width: 100%;
   bottom: 0;
-  left: 0;
+  left: -5px;
   z-index: 10000;
 `;
 
@@ -56,4 +77,12 @@ const mapState = state => {
   return { selectedElements: state.designer.selectedElements };
 };
 
-export default connect(mapState, null)(StyledToolbar);
+const mapDispatch = dispatch => {
+  return {
+    duplicateElements: () => dispatch(designerOperations.duplicateSelectedElements()),
+    sendToBack: () => dispatch(designerOperations.sendElementToBack()),
+    bringToFront: () => dispatch(designerOperations.bringElementToFront())
+  };
+};
+
+export default connect(mapState, mapDispatch)(StyledToolbar);

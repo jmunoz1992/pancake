@@ -101,10 +101,16 @@ class Properties extends Component {
     }
     return (
       <div>
-        <Form>
+        <Form onSubmit={e => e.preventDefault()}>
           {fields}
           <Form.Field>
-            <Button negative onClick={() => this.props.deleteElement()}>
+            <Button
+              negative
+              onClick={e => {
+                e.preventDefault();
+                if (e.detail === 0) return;
+                this.props.deleteElement();
+              }}>
               Delete
             </Button>
           </Form.Field>

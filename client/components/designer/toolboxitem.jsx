@@ -10,7 +10,6 @@ const ToolboxItem = ({ handleClick, item }) => {
       elementProps[key] = property.default || property.name;
     }
   }
-  console.log(item);
   elementProps.height = 60;
   elementProps.width = 60;
   return (

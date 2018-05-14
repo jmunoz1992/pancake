@@ -27,8 +27,8 @@ class DesignerCanvas extends Component {
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
-    document.addEventListener("keydown", this.onShiftDown);
-    document.addEventListener("keyup", this.onShiftUp);
+    document.addEventListener("keydown", this.onKeyDown);
+    document.addEventListener("keyup", this.onKeyUp);
   }
 
   componentWillUnmount() {
@@ -36,12 +36,14 @@ class DesignerCanvas extends Component {
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
-    document.removeEventListener("keydown", this.onShiftDown);
-    document.removeEventListener("keyup", this.onShiftUp);
+    document.removeEventListener("keydown", this.onKeyDown);
+    document.removeEventListener("keyup", this.onKeyUp);
   }
 
-  onShiftDown = ({ keyCode }) => keyCode === 16 && this.setState({ shiftDown: true });
-  onShiftUp = ({ keyCode }) => {
+  onKeyDown = ({ keyCode }) => {
+    keyCode === 16 && this.setState({ shiftDown: true });
+  };
+  onKeyUp = ({ keyCode }) => {
     if (keyCode === 16) {
       this.setState({ shiftDown: false });
       if (this.state.shiftDown) this.getBoxElementIntersection(this.state.boxSelectionPoints);
