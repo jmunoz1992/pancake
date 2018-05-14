@@ -96,7 +96,6 @@ router.post("/:number/labels", async (req, res, next) => {
 });
 
 router.delete("/:number/labels/:name", async (req, res, next) => {
-  console.log("in delete");
   try {
     const response = await req.octokit.issues.removeLabel({
       owner: req.repoOwner,
@@ -104,7 +103,6 @@ router.delete("/:number/labels/:name", async (req, res, next) => {
       number: req.params.number,
       name: req.params.name,
     });
-    console.log("RESPONSE:", response);
     res.json(response.data);
   } catch (err) {
     next(err);
