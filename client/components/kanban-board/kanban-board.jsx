@@ -26,8 +26,8 @@ class KanbanBoard extends Component {
 
     handleDragEnd = (cardId, sourceLaneId, targetLaneId) => {
         const issue = this.getIssueFromId(cardId);
-        this.props.removeLabel(issue, [sourceLaneId]);
-        this.props.addLabel(issue, [targetLaneId]);
+        if (sourceLaneId !== "inbox") this.props.removeLabel(issue, [sourceLaneId]);
+        if (targetLaneId !== "inbox") this.props.addLabel(issue, [targetLaneId]);
     };
 
     createBoard = () => {
@@ -85,6 +85,7 @@ class KanbanBoard extends Component {
 const hasLaneLabel = issue => {
     const { labels } = issue;
     for (let i = 0; i < labels.length; i++) {
+        console.log("label name", labels[i].name);
         if (labels[i].name === "todo") return true;
         if (labels[i].name === "next") return true;
         if (labels[i].name === "in progress") return true;
@@ -101,7 +102,7 @@ const mapState = ({ issues, collaborators, labels }) => {
     const inProgressIssues = issueList.filter(issue => issue.labels.find(label => label.name === "in progress"));
     const completedIssues = issueList.filter(issue => issue.labels.find(label => label.name === "completed"));
     // issues missing a lane tag go in the inbox
-    const inboxIssues = issueList.filter(issue => hasLaneLabel(issue));
+    const inboxIssues = issueList.filter(issue => !hasLaneLabel(issue));
     return { collaborators, labels, inboxIssues, todoIssues, nextIssues, inProgressIssues, completedIssues, issueList };
 };
 
