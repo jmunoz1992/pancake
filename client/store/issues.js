@@ -22,7 +22,9 @@ const create = issue => ({ type: CREATE_ISSUE, issue });
 const addLabelToIssue = (issueId, labels) => ({ type: ADD_LABEL_TO_ISSUE, issueId, labels });
 const removeLabelFromIssue = (issueId, newLabels) => ({ type: REMOVE_LABEL_FROM_ISSUE, issueId, newLabels });
 
-export const setIssueFilter = filter => ({ type: SET_ISSUE_FILTER, filter });
+export const setIssueFilter = filter => {
+  return { type: SET_ISSUE_FILTER, filter };
+};
 
 /**
  * REDUCER

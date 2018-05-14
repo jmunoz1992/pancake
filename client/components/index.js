@@ -14,8 +14,11 @@ export { default as SocketModal } from "./socketmodal";
 export { default as Issues } from "./issues/issues";
 export { default as AssigneeLabel } from "./issues/assignee-label";
 export { default as LabelLabel } from "./issues/label-label";
+<<<<<<< HEAD
 
 export { default as KanbanBoard } from "./kanban-board/kanban-board";
+=======
+>>>>>>> master
 
 export * from "./designer";
 export * from "./schemaPack";
