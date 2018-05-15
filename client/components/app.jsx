@@ -7,7 +7,8 @@ import {
   SchemaSidebar,
   SocketModal,
   Issues,
-  KanbanBoard
+  KanbanBoard,
+  Home
 } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
@@ -38,7 +39,7 @@ class App extends Component {
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route path="/board" component={KanbanBoard} />
-                <Route component={KanbanBoard} />
+                <Route exact path="/home" component={Home} />
               </Switch>
             </Grid.Column>
             <Grid.Column id="sidebar">
@@ -59,7 +60,6 @@ const StyledAppWrapper = styled.div`
     position: fixed;
     top: 60px;
     height: 100%;
-    overflow: hidden;
     width: calc(100% - ${props => (props.showSidebar ? "260px" : "0px")});
     ${props =>
       (props.showSidebar
@@ -69,6 +69,7 @@ const StyledAppWrapper = styled.div`
     padding-left: 0px;
     padding-right: 0px;
     `)};
+    overflow: hidden;
   }
 
   #sidebar {
@@ -87,7 +88,11 @@ const StyledAppWrapper = styled.div`
 
 const mapState = (state, ownProps) => {
   let showSidebar = true;
-  if (ownProps.location.pathname.startsWith("/board")) showSidebar = false;
+  if (
+    ownProps.location.pathname.startsWith("/board") ||
+    ownProps.location.pathname.startsWith("/home") ||
+    ownProps.location.pathname.startsWith("/welcome")
+  ) showSidebar = false;
   return { showSidebar };
 };
 

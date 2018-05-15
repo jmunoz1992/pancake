@@ -1,7 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { logout, fetchPullRequests } from "../store";
+import { logout, fetchPullRequests, me } from "../store";
 import { Input, Menu, Header, Dropdown, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import { default as FilterBox } from "./issues/filter-box";
@@ -15,31 +15,42 @@ class Navbar extends React.Component {
 
   componentDidMount() {
     this.props.loadPullRequests();
+    this.props.getUserAndProject();
   }
 
   render() {
-    const { doLogout, className, pullRequests } = this.props;
+    const { doLogout, className, pullRequests, user } = this.props;
+    console.log("user ", user);
     return (
       <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
         <Menu.Item>
           <Dropdown
-            trigger={<img src="/logo.png" width="auto" height="28px" />}
+            trigger={<img src="/images/logo.png" width="auto" height="28px" />}
             icon={null}
             pointing="top left">
             <Dropdown.Menu>
-              <Dropdown.Header>Logged in as {this.props.user.username}</Dropdown.Header>
-              <Dropdown.Divider />
+              <Dropdown.Header style={{ color: "#C0C0C0" }}>Logged in as {user.username}</Dropdown.Header>
               <Dropdown.Item onClick={doLogout}>Logout</Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Header style={{ color: "#C0C0C0" }}>
+                Currently working on {user.projectName}
+              </Dropdown.Header>
+              <Dropdown.Item onClick={() => this.props.history.push("/welcome")}>
+                Switch To Another Project
+              </Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
+        </Menu.Item>
+        <Menu.Item as="a" name="home" onClick={() => this.props.history.push("/home")}>
+          Home
         </Menu.Item>
         <Menu.Item as="a" name="mockup" onClick={() => this.props.history.push("/mockups")}>
           Mockups
         </Menu.Item>
         <Menu.Item as="a" name="schema" onClick={() => this.props.history.push("/schema")}>
-          Schema Designer
+          Schema
         </Menu.Item>
-        <Menu.Item as="a" name="mockup" onClick={() => this.props.history.push("/board")}>
+        <Menu.Item as="a" name="board" onClick={() => this.props.history.push("/board")}>
           Board
         </Menu.Item>
         <Menu.Menu position="right">
@@ -73,6 +84,9 @@ const mapDispatch = dispatch => {
     },
     loadPullRequests() {
       dispatch(fetchPullRequests());
+    },
+    getUserAndProject() {
+      dispatch(me());
     }
   };
 };
