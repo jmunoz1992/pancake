@@ -65,7 +65,7 @@ const bringElementToFront = element => (dispatch, getState) => {
   const allElements = getState().designer.elements;
   let highestZIndex = 0;
   allElements.forEach(el => (el.zIndex > highestZIndex ? (highestZIndex = el.zIndex) : null));
-  selection[0].zIndex = highestZIndex;
+  selection[0].zIndex = highestZIndex + 1;
   dispatchNetworkAction(actions.updateElement(selection[0]));
 };
 

@@ -27,7 +27,7 @@ class DesignerCanvas extends Component {
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
-    document.addEventListener("keydown", this.onKeyDown);
+    document.addEventListener("keydown", this.onDocumentKeyDown);
     document.addEventListener("keyup", this.onKeyUp);
   }
 
@@ -36,13 +36,17 @@ class DesignerCanvas extends Component {
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
-    document.removeEventListener("keydown", this.onKeyDown);
+    document.removeEventListener("keydown", this.onDocumentKeyDown);
     document.removeEventListener("keyup", this.onKeyUp);
   }
 
-  onKeyDown = ({ keyCode }) => {
-    keyCode === 16 && this.setState({ shiftDown: true });
+  onDocumentKeyDown = ({ keyCode }) => {
+    console.log("keycode", keyCode);
+    if (keyCode === 16) {
+      this.setState({ shiftDown: true });
+    }
   };
+
   onKeyUp = ({ keyCode }) => {
     if (keyCode === 16) {
       this.setState({ shiftDown: false });
