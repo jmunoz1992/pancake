@@ -6,7 +6,7 @@ import React from "react";
 const Login = _ => {
   return (
     <div style={{ margin: "auto", marginTop: "150px", width: "50%", textAlign: "center" }}>
-      <img src="/Pancake.png" width="auto" height="200px" />
+      <img src="/images/Pancake.png" width="auto" height="200px" />
       <br />
       <br />
       <div style={{ margin: "auto", width: "50%", textAlign: "center", display: "inline" }}>

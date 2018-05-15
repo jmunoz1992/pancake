@@ -16,9 +16,9 @@ class Home extends React.Component {
         <div id="carousel">
           <div id="carousel-text">
             <h1>Welcome To Pancake</h1>
-            <h3>A project management tool for web development.</h3>
+            <h3>A project management tool for fullstack development</h3>
           </div>
-          <img className="carousel-image" src="/bg.jpg" />
+          <img className="carousel-image" src="/images/bg.jpg" />
         </div>
         <div id="all-cards">
           <div className="cards shadow container">
@@ -26,7 +26,7 @@ class Home extends React.Component {
               <h2 className="card-title">MOCKUPS</h2>
               <div className="card-img" id="kanban-img" />
               <div className="overlay">
-                <div className="text">
+                <div className="div-card-text">
                   <h2>MOCKUPS</h2>
                   <p>Mockup several frontend wireframes with different drag and drop components.</p>
                 </div>
@@ -38,7 +38,7 @@ class Home extends React.Component {
               <h2 className="card-title">SCHEMA DESIGNER</h2>
               <div className="card-img" id="schema-img" />
               <div className="overlay">
-                <div className="text">
+                <div className="div-card-text">
                   <h2>SCHEMA DESIGNER</h2>
                   <p>
                     Outline your backend models, links, and associations using drag and drop tables and
@@ -53,7 +53,7 @@ class Home extends React.Component {
               <h2 className="card-title">Kanban Board</h2>
               <div className="card-img" id="kanban-img" />
               <div className="overlay">
-                <div className="text">
+                <div className="div-card-text">
                   <h2>Kanban Board</h2>
                   <p>
                     Organize all your project's issues by dragging and dropping each issue to their respective

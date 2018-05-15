@@ -1,7 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { logout, fetchPullRequests } from "../store";
+import { logout, fetchPullRequests, me } from "../store";
 import { Input, Menu, Header, Dropdown, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import { default as FilterBox } from "./issues/filter-box";
@@ -14,20 +14,25 @@ class Navbar extends React.Component {
 
   componentDidMount() {
     this.props.loadPullRequests();
+    console.log("is this dispatching ", this.props.getUserAndProject());
   }
 
   render() {
     const { doLogout, className, pullRequests } = this.props;
+    console.log("user ", this.props.user);
     return (
       <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
         <Menu.Item>
           <Dropdown
-            trigger={<img src="/logo.png" width="auto" height="28px" />}
+            trigger={<img src="/images/logo.png" width="auto" height="28px" />}
             icon={null}
             pointing="top left">
             <Dropdown.Menu>
               <Dropdown.Header>Logged in as {this.props.user.username}</Dropdown.Header>
               <Dropdown.Divider />
+              <Dropdown.Item onClick={() => this.props.history.push("/welcome")}>
+                Switch To Another Project
+              </Dropdown.Item>
               <Dropdown.Item onClick={doLogout}>Logout</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
@@ -72,6 +77,9 @@ const mapDispatch = dispatch => {
     },
     loadPullRequests() {
       dispatch(fetchPullRequests());
+    },
+    getUserAndProject() {
+      dispatch(me());
     }
   };
 };

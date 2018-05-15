@@ -55,6 +55,7 @@
 #carousel-text > h3 {
   font-size: 25px;
   text-align: center;
+  font-style: italic;
 }
 
 #carousel .carousel-image {
@@ -120,7 +121,7 @@
   border-radius: 12px;
 }
 
-.text {
+.div-card-text {
   color: white;
   position: absolute;
   top: 50%;
@@ -147,7 +148,7 @@
 }
 
 #schema-img {
-  background: url("schema.png");
+  background: url("images/schema.png");
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
   opacity: 0.9;
@@ -159,7 +160,7 @@
 }
 
 #kanban-img {
-  background: url("kanban.png");
+  background: url("images/kanban.png");
   border-bottom-left-radius: 12px;
   border-bottom-right-radius: 12px;
   opacity: 1;

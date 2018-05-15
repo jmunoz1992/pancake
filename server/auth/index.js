@@ -1,5 +1,6 @@
 const router = require("express").Router();
 const User = require("../db/models/user");
+const { Project } = require("../db/models");
 module.exports = router;
 
 router.post("/login", (req, res, next) => {
@@ -38,8 +39,12 @@ router.post("/logout", (req, res) => {
   res.redirect("/");
 });
 
-router.get("/me", (req, res) => {
+router.get("/me", async (req, res) => {
   console.log("req user in /me", req.user);
+  const project = await Project.findById(req.user.activeProjectId);
+  const projectName = project.repository;
+  req.user.projectName = projectName;
+  console.log("res result in router.get /me ", req.user);
   return res.json(req.user);
 });
 
