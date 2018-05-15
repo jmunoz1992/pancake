@@ -130,7 +130,6 @@ class EditIssue extends Component {
     }
 
     if (!goodSubmit) return;
-
     this.props.editIssue({ title, body, state, labels, assignees, number });
     this.closeModal();
   };
@@ -153,7 +152,7 @@ class EditIssue extends Component {
       <List.Item style={{ width: "250px", display: "inline" }}>
         <Modal
           trigger={
-            <Button onClick={this.openModal} style={{ width: "250px", display: "inline" }}>
+            <Button color="teal" onClick={this.openModal} style={{ width: "250px", display: "inline" }}>
               {this.state.title}
             </Button>
           }
@@ -239,8 +238,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                    <div />
-                  )}
+                      <div />
+                    )}
                 </Grid.Column>
                 <Grid.Column>
                   {/* Label List */}
@@ -251,8 +250,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                    <div />
-                  )}
+                      <div />
+                    )}
                 </Grid.Column>
               </Grid.Row>
             </Grid>
@@ -273,8 +272,10 @@ class EditIssue extends Component {
   }
 }
 
-const mapState = ({ issues, collaborators, labels }, ownProps) => {
-  const activeIssue = issues.issueList.find(issue => issue.id === ownProps.issue.id);
+const mapState = (state, ownProps) => {
+  let { issues, collaborators, labels } = state;
+  let activeIssue = issues.issueList.find(issue => issue.id === ownProps.issue.id);
+
   return {
     activeIssue,
     collaborators,

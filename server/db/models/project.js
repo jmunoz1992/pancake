@@ -8,9 +8,8 @@ const Project = db.define("project", {
   },
   repository: {
     type: Sequelize.STRING,
-    allowNull: false,
-    unique: true
-  },
+    allowNull: false
+  }
 });
 
 module.exports = Project;

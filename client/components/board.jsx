@@ -17,6 +17,7 @@ class Board extends React.Component {
     let { pullRequests } = this.props;
     return (
       <div>
+        <h1>Hello!</h1>
         <PullRequests allPullRequests={pullRequests} />
       </div>
     );

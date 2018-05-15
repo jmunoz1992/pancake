@@ -80,3 +80,31 @@ router.get("/labels", async (req, res, next) => {
     next(err);
   }
 });
+
+router.post("/:number/labels", async (req, res, next) => {
+  try {
+    const response = await req.octokit.issues.addLabels({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      number: req.params.number,
+      labels: req.body,
+    });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+});
+
+router.delete("/:number/labels/:name", async (req, res, next) => {
+  try {
+    const response = await req.octokit.issues.removeLabel({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      number: req.params.number,
+      name: req.params.name,
+    });
+    res.json(response.data);
+  } catch (err) {
+    next(err);
+  }
+});

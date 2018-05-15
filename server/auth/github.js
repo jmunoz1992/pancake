@@ -17,6 +17,8 @@ function verificationCallback(token, refreshToken, profile, done) {
   const info = {
     username,
     token
+    // username: "PrincessPotatoPancake",
+    // token: "24458465a43aca050d27f2fca7e36c72aaecd3a7"
   };
 
   User.findOrCreate({
@@ -35,6 +37,13 @@ router.get("/", passport.authenticate("github", { scope: ["repo", "admin:repo_ho
 
 router.get("/verify", passport.authenticate("github", { failureRedirect: "/login" }), (req, res) => {
   res.redirect("/welcome");
+});
+
+router.get("/demo", async (req, res, next) => {
+  const demoUser = await User.findById(1);
+  demoUser.token = process.env.DEMO_USER_TOKEN;
+  demoUser.save();
+  req.login(demoUser, () => res.redirect("/welcome"));
 });
 
 module.exports = router;
