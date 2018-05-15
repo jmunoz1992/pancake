@@ -26,7 +26,7 @@ class App extends Component {
 
   render() {
     return (
-      <StyledAppWrapper>
+      <StyledAppWrapper showSidebar={this.props.showSidebar}>
         <Grid style={{ paddingTop: "0px" }}>
           <Grid.Row>
             <Navbar />
@@ -39,16 +39,17 @@ class App extends Component {
                 <Route path="/schema" component={Schema} />
                 <Route path="/board" component={KanbanBoard} />
                 <Route path="/home" component={Home} />
+                <Route component={KanbanBoard} />
               </Switch>
             </Grid.Column>
-            {/*} <Grid.Column id="sidebar">
+            <Grid.Column id="sidebar">
               <Switch>
                 <Route path="/mockups" component={DesignerSidebar} />
                 <scroll-container>
                   <Route component={Issues} />
                 </scroll-container>
               </Switch>
-    </Grid.Column>*/}
+            </Grid.Column>
           </Grid.Row>
         </Grid>
       </StyledAppWrapper>
@@ -58,15 +59,23 @@ class App extends Component {
 
 const StyledAppWrapper = styled.div`
   #main {
-    /*position: fixed;*/
-    top: 38px;
+    position: fixed;
+    top: 60px;
     height: 100%;
-    width: 100%;
-    /*width: calc(100% - 260px);*/
+    width: calc(100% - ${props => (props.showSidebar ? "260px" : "0px")});
+    ${props =>
+      (props.showSidebar
+        ? ""
+        : `
+    right: 0;
+    padding-left: 0px;
+    padding-right: 0px;
+    `)};
     overflow: hidden;
   }
 
   #sidebar {
+    display: ${props => (props.showSidebar ? "block" : "none")};
     position: fixed;
     background: white;
     top: 60px;
@@ -86,6 +95,12 @@ const StyledAppWrapper = styled.div`
   }
 `;
 
+const mapState = (state, ownProps) => {
+  let showSidebar = true;
+  if (ownProps.location.pathname.startsWith("/board") || ownProps.location.pathname.startsWith("/home")) showSidebar = false;
+  return { showSidebar };
+};
+
 const mapDispatch = dispatch => {
   return {
     loadCollaborators() {
@@ -100,4 +115,4 @@ const mapDispatch = dispatch => {
   };
 };
 
-export default withRouter(connect(null, mapDispatch)(App));
+export default withRouter(connect(mapState, mapDispatch)(App));

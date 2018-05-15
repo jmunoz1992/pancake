@@ -35,7 +35,7 @@
 }
 
 #carousel {
-  height: 62vh;
+  height: 55vh;
   display: flex;
   justify-content: center;
 }
@@ -71,6 +71,66 @@
   opacity: 0;
 }
 
+.shadow {
+  position: relative;
+  -webkit-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+  -moz-box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+}
+.shadow:before,
+.shadow:after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  -moz-box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+  top: 0;
+  bottom: 0;
+  left: 10px;
+  right: 10px;
+  -moz-border-radius: 100px / 10px;
+  border-radius: 100px / 10px;
+}
+.shadow:after {
+  right: 10px;
+  left: auto;
+  -webkit-transform: skew(8deg) rotate(3deg);
+  -moz-transform: skew(8deg) rotate(3deg);
+  -ms-transform: skew(8deg) rotate(3deg);
+  -o-transform: skew(8deg) rotate(3deg);
+  transform: skew(8deg) rotate(3deg);
+}
+
+.container:hover .overlay {
+  opacity: 1;
+}
+
+.overlay {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  width: 100%;
+  opacity: 0;
+  transition: 0.5s ease;
+  background-color: #2185d0;
+  border-radius: 12px;
+}
+
+.text {
+  color: white;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  text-align: center;
+}
+
 #all-cards {
   display: flex;
   z-index: 2;
@@ -78,7 +138,7 @@
 
 .cards {
   width: 30%;
-  height: 200px;
+  height: 255px;
   background-color: black;
   flex-direction: row;
   margin: 25px;
@@ -86,15 +146,34 @@
   border-radius: 15px;
 }
 
-#schema {
-  border-radius: 7px;
+#schema-img {
+  background: url("schema.png");
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  opacity: 0.9;
   display: block;
+  height: 200px;
   margin: auto;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
 }
 
-#schema-title {
+#kanban-img {
+  background: url("kanban.png");
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+  opacity: 1;
+  display: block;
+  height: 200px;
+  margin: auto;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+}
+
+.card-title {
   color: white;
   font-size: 25px;
   text-align: center;
   padding-top: 10px;
+  z-index: 2;
 }

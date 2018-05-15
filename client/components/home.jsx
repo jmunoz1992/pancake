@@ -21,31 +21,46 @@ class Home extends React.Component {
           <img className="carousel-image" src="/bg.jpg" />
         </div>
         <div id="all-cards">
-          <div className="cards">
+          <div className="cards shadow container">
             <Link to={"/mockups"}>
-              <h2 id="schema-title">MOCKUP WIREFRAMES</h2>
-              <img id="schema" src="/kanban.png" height="105px" width="244px" />
-              <p style={{ color: "white", textAlign: "center", padding: "10px" }}>
-                Mockup several frontend wireframes.
-              </p>
+              <h2 className="card-title">MOCKUPS</h2>
+              <div className="card-img" id="kanban-img" />
+              <div className="overlay">
+                <div className="text">
+                  <h2>MOCKUPS</h2>
+                  <p>Mockup several frontend wireframes with different drag and drop components.</p>
+                </div>
+              </div>
             </Link>
           </div>
-          <div className="cards" id="schema-card">
+          <div className="cards shadow container">
             <Link to={"/schema"}>
-              <h2 id="schema-title">SCHEMA DESIGNER</h2>
-              <img id="schema" src="/schema.png" height="105px" width="244px" />
-              <p style={{ color: "white", textAlign: "center", padding: "10px" }}>
-                Outline your backend models, links, and associations.
-              </p>
+              <h2 className="card-title">SCHEMA DESIGNER</h2>
+              <div className="card-img" id="schema-img" />
+              <div className="overlay">
+                <div className="text">
+                  <h2>SCHEMA DESIGNER</h2>
+                  <p>
+                    Outline your backend models, links, and associations using drag and drop tables and
+                    labels.
+                  </p>
+                </div>
+              </div>
             </Link>
           </div>
-          <div className="cards">
+          <div className="cards shadow container">
             <Link to={"/board"}>
-              <h2 id="schema-title">KANBAN BOARD</h2>
-              <img id="schema" src="/kanban.png" height="105px" width="244px" />
-              <p style={{ color: "white", textAlign: "center", padding: "10px" }}>
-                Organize all your project's issues with an agile kanban board.
-              </p>
+              <h2 className="card-title">Kanban Board</h2>
+              <div className="card-img" id="kanban-img" />
+              <div className="overlay">
+                <div className="text">
+                  <h2>Kanban Board</h2>
+                  <p>
+                    Organize all your project's issues by dragging and dropping each issue to their respective
+                    columns.
+                  </p>
+                </div>
+              </div>
             </Link>
           </div>
         </div>
