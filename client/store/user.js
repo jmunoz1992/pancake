@@ -22,11 +22,9 @@ const removeUser = () => ({ type: REMOVE_USER });
  * THUNK CREATORS
  */
 export const me = () => dispatch => {
-  console.log("getting into store me ");
   return axios
     .get("/auth/me")
     .then(res => {
-      console.log("res result in me ", res.data);
       return dispatch(getUser(res.data || defaultUser));
     })
     .catch(err => console.log(err));

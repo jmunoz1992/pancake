@@ -14,12 +14,12 @@ class Navbar extends React.Component {
 
   componentDidMount() {
     this.props.loadPullRequests();
-    console.log("is this dispatching ", this.props.getUserAndProject());
+    this.props.getUserAndProject();
   }
 
   render() {
-    const { doLogout, className, pullRequests } = this.props;
-    console.log("user ", this.props.user);
+    const { doLogout, className, pullRequests, user } = this.props;
+    console.log("user ", user);
     return (
       <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
         <Menu.Item>
@@ -28,12 +28,15 @@ class Navbar extends React.Component {
             icon={null}
             pointing="top left">
             <Dropdown.Menu>
-              <Dropdown.Header>Logged in as {this.props.user.username}</Dropdown.Header>
+              <Dropdown.Header style={{ color: "#C0C0C0" }}>Logged in as {user.username}</Dropdown.Header>
+              <Dropdown.Item onClick={doLogout}>Logout</Dropdown.Item>
               <Dropdown.Divider />
+              <Dropdown.Header style={{ color: "#C0C0C0" }}>
+                Currently working on {user.projectName}
+              </Dropdown.Header>
               <Dropdown.Item onClick={() => this.props.history.push("/welcome")}>
                 Switch To Another Project
               </Dropdown.Item>
-              <Dropdown.Item onClick={doLogout}>Logout</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
         </Menu.Item>

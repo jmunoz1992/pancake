@@ -40,11 +40,9 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", async (req, res) => {
-  console.log("req user in /me", req.user);
   const project = await Project.findById(req.user.activeProjectId);
   const projectName = project.repository;
-  req.user.projectName = projectName;
-  console.log("res result in router.get /me ", req.user);
+  req.user.dataValues.projectName = projectName;
   return res.json(req.user);
 });
 
