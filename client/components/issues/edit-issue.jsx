@@ -238,8 +238,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                      <div />
-                    )}
+                    <div />
+                  )}
                 </Grid.Column>
                 <Grid.Column>
                   {/* Label List */}
@@ -250,8 +250,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                      <div />
-                    )}
+                    <div />
+                  )}
                 </Grid.Column>
               </Grid.Row>
             </Grid>
@@ -263,7 +263,7 @@ class EditIssue extends Component {
             </Button>
             {/* Cancel Button */}
             <Button color="red" onClick={this.closeModal}>
-              <Icon name="checkmark" /> Cancel
+              <Icon name="cancel" /> Cancel
             </Button>
           </Modal.Actions>
         </Modal>

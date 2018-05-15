@@ -240,7 +240,7 @@ class AddIssue extends Component {
               <Icon name="checkmark" /> Submit
             </Button>
             <Button color="red" onClick={this.cancel}>
-              <Icon name="checkmark" /> Cancel
+              <Icon name="cancel" /> Cancel
             </Button>
           </Modal.Actions>
         </Modal>
