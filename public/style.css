@@ -15,6 +15,10 @@
   user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
 }
 
+.ui.search > div {
+  width: 350px;
+}
+
 .srd-demo-canvas {
   height: 600px;
 }
