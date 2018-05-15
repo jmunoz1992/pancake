@@ -39,7 +39,7 @@ class App extends Component {
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route path="/board" component={KanbanBoard} />
-                <Route exact path="/home" component={Home} />
+                <Route exact path="/" component={Home} />
               </Switch>
             </Grid.Column>
             <Grid.Column id="sidebar">
@@ -90,7 +90,7 @@ const mapState = (state, ownProps) => {
   let showSidebar = true;
   if (
     ownProps.location.pathname.startsWith("/board") ||
-    ownProps.location.pathname.startsWith("/home") ||
+    ownProps.location.pathname === "/" ||
     ownProps.location.pathname.startsWith("/welcome")
   ) showSidebar = false;
   return { showSidebar };

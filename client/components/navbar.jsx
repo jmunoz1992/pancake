@@ -20,7 +20,6 @@ class Navbar extends React.Component {
 
   render() {
     const { doLogout, className, pullRequests, user } = this.props;
-    console.log("user ", user);
     return (
       <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
         <Menu.Item>
@@ -41,7 +40,7 @@ class Navbar extends React.Component {
             </Dropdown.Menu>
           </Dropdown>
         </Menu.Item>
-        <Menu.Item as="a" name="home" onClick={() => this.props.history.push("/home")}>
+        <Menu.Item as="a" name="home" onClick={() => this.props.history.push("/")}>
           Home
         </Menu.Item>
         <Menu.Item as="a" name="mockup" onClick={() => this.props.history.push("/mockups")}>
