@@ -42,9 +42,8 @@ export class Application {
   }
 
   serializerToSchema() {
-    console.log("current active model ", this.activeModel);
+    console.log(this);
     const serializedObject = this.activeModel.serializeDiagram();
-    console.log("serialized object ", serializedObject);
     const serializedData = JSON.stringify(serializedObject);
     sendSchemaUpdate(serializedData);
   }

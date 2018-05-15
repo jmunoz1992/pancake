@@ -7,6 +7,10 @@ import { Button, Header, Input, Modal, Form, Message, Icon, Divider } from "sema
 import "rc-color-picker/assets/index.css";
 import ColorPicker from "rc-color-picker";
 
+// react-diagram's DiagramWidget calls a "stopFiringAction" function when the user finishes
+// manipulating a diagram element, including after they move an element around.  Because we don't
+// otherwise have a proper event listener for node movement, we can hook stopFiringAction
+
 export class BodyWidget extends React.Component {
   constructor(props) {
     super(props);
@@ -21,7 +25,16 @@ export class BodyWidget extends React.Component {
       hideNoTitleWarning: true,
       hideNoLinkTitleWarning: true,
       hideNoPortAmountWarning: true,
-      hideNoPortsNamedWarning: true
+      hideNoPortsNamedWarning: true,
+      portInputCount: 1
+    };
+
+    const oldFunction = DiagramWidget.prototype.stopFiringAction;
+    const _self = this;
+    DiagramWidget.prototype.stopFiringAction = function(...args) {
+      console.log(args);
+      oldFunction.apply(this, args);
+      props.app.serializerToSchema();
     };
   }
 
@@ -56,6 +69,14 @@ export class BodyWidget extends React.Component {
     this.setState({ nodePorts: ports });
   };
 
+  onPortInputChange = event => {
+    if (event.target.name === `port${this.state.portInputCount - 1}`) {
+      console.log("onPortInputChange", event.target.name, this.state.portInputCount);
+      this.setState({ portInputCount: this.state.portInputCount + 1 });
+      this.forceUpdate();
+    }
+  };
+
   linkTitleSumit = () => {
     if (this.state.linkTitle === "") {
       this.setState({ hideNoLinkTitleWarning: false });
@@ -76,33 +97,40 @@ export class BodyWidget extends React.Component {
     } else {
       this.setState({ hideNoTitleWarning: true });
     }
-    if (nodePorts.length === 0) {
-      this.setState({ hideNoPortAmountWarning: false });
-      return;
-    } else {
-      this.setState({ hideNoPortAmountWarning: true });
-    }
-    let newPorts = [];
-    for (let i = 1; i <= this.state.nodePorts.length; i++) {
+
+    const validPorts = [];
+    for (let i = 0; i < this.state.portInputCount; i++) {
       const portName = "port" + i;
-      if (!event.target[portName] || event.target[portName].value === "") {
-        this.setState({ hideNoPortsNamedWarning: false });
-        return;
-      } else {
-        this.setState({ hideNoPortsNamedWarning: true });
-      }
-      newPorts.push(event.target[portName].value);
+      if (event.target[portName] && event.target[portName].value !== "") validPorts.push(event.target[portName].value);
     }
-    this.setState({ nodePorts: newPorts, open: false });
+    this.setState({ hideNoPortsNamedWarning: !!validPorts.length });
+    if (validPorts.length === 0) return;
+
+    this.setState({ nodePorts: validPorts, open: false });
     this.closeIn();
-    this.addNodeToCanvas(newPorts);
+    this.addNodeToCanvas(validPorts);
   };
 
   isModalOpen = () => this.setState({ isModalOpen: true });
-  closeIn = () => this.setState({ isModalOpen: false });
+  closeIn = () => this.setState({ isModalOpen: false, portInputCount: 1 });
 
   linkModalOpen = () => this.setState({ linkModalOpen: true });
   linkCloseIn = () => this.setState({ linkModalOpen: false });
+
+  renderPortInputs = () => {
+    console.log("renderPortInputs", this.state.portInputCount);
+    let inputArray = [];
+    for (let i = 0; i < this.state.portInputCount; i++) {
+      inputArray.push(
+        <Form.Group key={`portInput-${i}`} widths="equal">
+          <Form.Field>
+            <Input fluid label={`Field ${i + 1}`} onChange={this.onPortInputChange} name={`port${i}`} />
+          </Form.Field>
+        </Form.Group>
+      );
+    }
+    return inputArray;
+  };
 
   render() {
     const { isModalOpen } = this.state;
@@ -124,34 +152,16 @@ export class BodyWidget extends React.Component {
               <Modal.Content>
                 <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
                   <Form.Group widths="equal">
-                    <Input
-                      label="Model Title"
-                      onChange={this.handleNodeTitleChange}
-                      name="nodeTitle"
-                      value={this.state.nodeTitle}
-                    />
-                  </Form.Group>
-                  <Form.Group inline>
-                    <Form.Field>Model Fields</Form.Field>
-                    <Form.Field
-                      control="select"
-                      onChange={event => this.handlePortSelectChange(event, "inPort")}>
-                      <option value="" />
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                      <option value="6">6</option>
-                      <option value="7">7</option>
-                      <option value="8">8</option>
-                      <option value="9">9</option>
-                      <option value="10">10</option>
+                    <Form.Field>
+                      <Input
+                        label="Model Title"
+                        onChange={this.handleNodeTitleChange}
+                        name="nodeTitle"
+                        value={this.state.nodeTitle}
+                      />
                     </Form.Field>
                   </Form.Group>
-                  {this.state.nodePorts.map(portNum => {
-                    return <Input key={portNum} placeholder="Field Name Here" name={`port${portNum}`} />;
-                  })}
+                  {this.renderPortInputs()}
                   <Form.Group>
                     <Form.Field>Model Color</Form.Field>
                     <ColorPicker
