@@ -8,6 +8,7 @@ import {
   SocketModal,
   Issues,
   KanbanBoard,
+  Home
 } from "./index";
 import { connect } from "react-redux";
 import { withRouter, Switch, Route } from "react-router-dom";
@@ -37,17 +38,17 @@ class App extends Component {
                 <Route path="/mockups" component={DesignerCanvas} />
                 <Route path="/schema" component={Schema} />
                 <Route path="/board" component={KanbanBoard} />
-                <Route component={KanbanBoard} />
+                <Route path="/home" component={Home} />
               </Switch>
             </Grid.Column>
-            <Grid.Column id="sidebar">
+            {/*} <Grid.Column id="sidebar">
               <Switch>
                 <Route path="/mockups" component={DesignerSidebar} />
                 <scroll-container>
                   <Route component={Issues} />
                 </scroll-container>
               </Switch>
-            </Grid.Column>
+    </Grid.Column>*/}
           </Grid.Row>
         </Grid>
       </StyledAppWrapper>
@@ -57,10 +58,11 @@ class App extends Component {
 
 const StyledAppWrapper = styled.div`
   #main {
-    position: fixed;
-    top: 60px;
+    /*position: fixed;*/
+    top: 38px;
     height: 100%;
-    width: calc(100% - 260px);
+    width: 100%;
+    /*width: calc(100% - 260px);*/
     overflow: hidden;
   }
 

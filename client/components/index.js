@@ -16,6 +16,7 @@ export { default as AssigneeLabel } from "./issues/assignee-label";
 export { default as LabelLabel } from "./issues/label-label";
 
 export { default as KanbanBoard } from "./kanban-board/kanban-board";
+export { default as Home } from "./home";
 
 export * from "./designer";
 export * from "./schemaPack";

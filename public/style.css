@@ -16,5 +16,85 @@
 }
 
 .srd-demo-canvas {
-  height: 600px;
+  height: 1000px;
+}
+
+#home-logo {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Header logo/hiding menu */
+
+#start-logo {
+  position: absolute;
+  width: 14em;
+  top: 200px;
+  left: calc(50% - 7em);
+  z-index: 1;
+}
+
+#carousel {
+  height: 62vh;
+  display: flex;
+  justify-content: center;
+}
+#carousel #carousel-text {
+  position: absolute;
+  top: 25vh;
+  color: #fff;
+  text-shadow: 2px 2px #252525;
+  z-index: 1;
+}
+
+#carousel-text > h1 {
+  font-size: 75px;
+  text-align: center;
+}
+
+#carousel-text > h3 {
+  font-size: 25px;
+  text-align: center;
+}
+
+#carousel .carousel-image {
+  position: absolute;
+  display: block;
+  margin: auto;
+  min-width: 100%;
+  height: 100%;
+  opacity: 1;
+  transition: opacity 1.5s;
+}
+
+#carousel .carousel-image.hidden {
+  opacity: 0;
+}
+
+#all-cards {
+  display: flex;
+  z-index: 2;
+}
+
+.cards {
+  width: 30%;
+  height: 200px;
+  background-color: black;
+  flex-direction: row;
+  margin: 25px;
+  z-index: 2;
+  border-radius: 15px;
+}
+
+#schema {
+  border-radius: 7px;
+  display: block;
+  margin: auto;
+}
+
+#schema-title {
+  color: white;
+  font-size: 25px;
+  text-align: center;
+  padding-top: 10px;
 }

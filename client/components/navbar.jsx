@@ -32,13 +32,16 @@ class Navbar extends React.Component {
             </Dropdown.Menu>
           </Dropdown>
         </Menu.Item>
+        <Menu.Item as="a" name="home" onClick={() => this.props.history.push("/home")}>
+          Home
+        </Menu.Item>
         <Menu.Item as="a" name="mockup" onClick={() => this.props.history.push("/mockups")}>
           Mockups
         </Menu.Item>
         <Menu.Item as="a" name="schema" onClick={() => this.props.history.push("/schema")}>
-          Schema Designer
+          Schema
         </Menu.Item>
-        <Menu.Item as="a" name="mockup" onClick={() => this.props.history.push("/board")}>
+        <Menu.Item as="a" name="board" onClick={() => this.props.history.push("/board")}>
           Board
         </Menu.Item>
         <Menu.Menu position="right">
