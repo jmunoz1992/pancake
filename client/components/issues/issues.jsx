@@ -2,7 +2,7 @@ import React from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import { Divider, List } from "semantic-ui-react";
-import { AddIssue, EditIssue } from "../index";
+import { EditIssue } from "../index";
 
 const Issues = props => {
   let { issues, filter } = props;
@@ -10,9 +10,7 @@ const Issues = props => {
     issues = issues.filter(issue => testIssueAgainstFilter(issue, filter));
   }
   return (
-    <div style={{ width: "282px" }}>
-      <AddIssue />
-      <Divider style={{ width: "250px" }} />
+    <div>
       {Object.keys(filter).length ? (
         <p>
           Filtering by issues...<br />

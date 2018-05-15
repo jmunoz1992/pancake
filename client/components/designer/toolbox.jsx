@@ -63,6 +63,8 @@ const mapDispatch = dispatch => {
       const element = new item.element();
       element.top = getRandomIntInclusive(200, 600);
       element.left = getRandomIntInclusive(200, 600);
+      element.top -= element.top % 5;
+      element.left -= element.left % 5;
 
       // Gets some default property values from the ElementLibrary item and assigns them to the new
       // component we're creating.

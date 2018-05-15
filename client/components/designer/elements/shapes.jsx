@@ -12,8 +12,8 @@ export class Rectangle extends BaseElement {
 
   static MIN_WIDTH = 2;
   static MIN_HEIGHT = 2;
-  static MAX_HEIGHT = 1000;
-  static MAX_WIDTH = 1000;
+  static MAX_HEIGHT = 3000;
+  static MAX_WIDTH = 3000;
   static COMPONENT = styled.div`
     height: 100%;
     width: 100%;
@@ -38,5 +38,26 @@ export class Circle extends BaseElement {
     border-radius: 50%;
     background-color: white;
     border: 1px solid grey;
+  `;
+}
+
+export class Image extends BaseElement {
+  constructor() {
+    super();
+    this.type = "Image";
+    this.height = 300;
+    this.width = 300;
+    this.imageUrl = "";
+  }
+
+  static MAX_HEIGHT = 3000;
+  static MAX_WIDTH = 3000;
+  static COMPONENT = styled.div`
+    background-image: url(${props => props.element.imageUrl});
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 100%;
+    width: 100%;
   `;
 }

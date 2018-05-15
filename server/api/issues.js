@@ -58,7 +58,7 @@ router.put("/:number", async (req, res, next) => {
       body: req.body.body,
       state: req.body.state,
       assignees: req.body.assignees,
-      labels: req.body.labels,
+      labels: req.body.labels
     });
     res.json(response.data);
   } catch (err) {
@@ -81,13 +81,27 @@ router.get("/labels", async (req, res, next) => {
   }
 });
 
+router.post("/labels", async (req, res, next) => {
+  try {
+    const result = await req.octokit.issues.createLabel({
+      owner: req.repoOwner,
+      repo: req.repoName,
+      name: req.body.name,
+      color: req.body.color
+    });
+    res.json(result);
+  } catch (error) {
+    next(error);
+  }
+});
+
 router.post("/:number/labels", async (req, res, next) => {
   try {
     const response = await req.octokit.issues.addLabels({
       owner: req.repoOwner,
       repo: req.repoName,
       number: req.params.number,
-      labels: req.body,
+      labels: req.body
     });
     res.json(response.data);
   } catch (err) {
@@ -101,7 +115,7 @@ router.delete("/:number/labels/:name", async (req, res, next) => {
       owner: req.repoOwner,
       repo: req.repoName,
       number: req.params.number,
-      name: req.params.name,
+      name: req.params.name
     });
     res.json(response.data);
   } catch (err) {

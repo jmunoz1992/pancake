@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import axios from "axios";
-import { Button, Container, Divider, Form, Icon } from "semantic-ui-react";
+import { Button, Container, Divider, Form, Header, Icon } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
 import store, { me } from "../store";
 
@@ -74,7 +74,9 @@ class Welcome extends Component {
 
     return (
       <Container text>
-        <Divider hidden="true" />
+        <Divider hidden />
+        <Header as="h2">Select Organization and Project </Header>
+        <Divider hidden />
         <Form.Select
           fluid
           name="selectedOrg"
@@ -84,7 +86,7 @@ class Welcome extends Component {
           value={this.state.selectedOrg}
           onChange={this.onChange}
         />
-        <Divider hidden="true" />
+        <Divider hidden />
         <Form.Select
           fluid
           name="selectedRepo"
@@ -93,8 +95,8 @@ class Welcome extends Component {
           placeholder="Repositories"
           onChange={this.onChange}
         />
-        <Divider hidden="true" />
-        <Button onClick={this.onCreateProjectClick}>
+        <Divider hidden />
+        <Button primary onClick={this.onCreateProjectClick}>
           <Icon name="github" /> Create Project
         </Button>
       </Container>

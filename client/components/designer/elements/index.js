@@ -1,6 +1,6 @@
 import { Textbox, Checkbox, Radio, Dropdown, Button } from "./forms";
 import { Title, Header, Paragraph } from "./text";
-import { Rectangle, Circle } from "./shapes";
+import { Rectangle, Circle, Image } from "./shapes";
 
 const ElementLibrary = {
   Textbox: {
@@ -65,6 +65,12 @@ const ElementLibrary = {
     title: "Circle",
     category: "Shapes",
     properties: {}
+  },
+  Image: {
+    element: Image,
+    title: "Image",
+    category: "Shapes",
+    properties: { imageUrl: { name: "Image URL", type: "string", default: "/pancake-500.png" } }
   }
 };
 

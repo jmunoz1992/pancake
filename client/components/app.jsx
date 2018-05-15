@@ -25,6 +25,7 @@ class App extends Component {
   }
 
   render() {
+    console.log(this.props.showSidebar);
     return (
       <StyledAppWrapper showSidebar={this.props.showSidebar}>
         <Grid style={{ paddingTop: "0px" }}>
@@ -44,9 +45,7 @@ class App extends Component {
             <Grid.Column id="sidebar">
               <Switch>
                 <Route path="/mockups" component={DesignerSidebar} />
-                <scroll-container>
-                  <Route component={Issues} />
-                </scroll-container>
+                <Route path="/schema" component={SchemaSidebar} />
               </Switch>
             </Grid.Column>
           </Grid.Row>
@@ -75,6 +74,7 @@ const StyledAppWrapper = styled.div`
 
   #sidebar {
     display: ${props => (props.showSidebar ? "block" : "none")};
+    overflow-y: scroll
     position: fixed;
     background: white;
     top: 60px;
@@ -83,14 +83,6 @@ const StyledAppWrapper = styled.div`
     width: 300px;
     box-shadow: 0px 0px 30px 4px rgba(0, 0, 0, 0.3);
     /* padding-right: 0px; */
-  }
-
-  scroll-container {
-    display: block;
-    width: 400px;
-    height: 550px;
-    overflow-y: scroll;
-    scroll-behavior: smooth;
   }
 `;
 
