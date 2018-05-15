@@ -4,8 +4,6 @@ module.exports = router;
 
 router.post("/", async (req, res, next) => {
   try {
-    console.log("getting into projects post route ", req.body);
-    console.log("req user in post project ", req.user);
     const project = await Project.findOrCreate({
       where: {
         owner: req.body.owner,
@@ -15,8 +13,8 @@ router.post("/", async (req, res, next) => {
     const currentUser = await User.findById(req.user.id);
     await currentUser.setActiveProject(project[0].id);
     await currentUser.addProject(project[0]);
-
-    const mockups = await Mockup.count({ where: { projectId: req.user.activeProjectId } });
+    const mockups = await Mockup.count({ where: { projectId: project[0].id } });
+    console.log("Mockups", mockups);
     if (!mockups) {
       await Mockup.create({
         name: "Mockup 1",
@@ -24,8 +22,8 @@ router.post("/", async (req, res, next) => {
       });
     }
     await Schema.upsert(
-      { projectId: req.user.activeProjectId, properties: "" },
-      { where: { projectId: req.user.activeProjectId } }
+      { projectId: project[0].id, properties: "" },
+      { where: { projectId: project[0].id } }
     );
 
     res.json(project[0]);

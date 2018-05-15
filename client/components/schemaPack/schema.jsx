@@ -16,7 +16,7 @@ class Schema extends React.Component {
   componentDidMount() {
     connectToSession(newJson => {
       this.setState({ diagramJson: newJson });
-      console.log(this);
+      console.log("connectToSession");
       if (this.app) this.app.deserializer(newJson);
       else this.app = new Application(newJson);
       this.forceUpdate();
