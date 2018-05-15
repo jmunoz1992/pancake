@@ -53,7 +53,7 @@ class Welcome extends Component {
       .post("/api/project/", { owner: this.state.selectedOrg, repository: this.state.selectedRepo })
       .then(() => {
         store.dispatch(me());
-        this.props.history.push("/app");
+        this.props.history.push("/");
       });
   };
 

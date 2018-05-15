@@ -5,7 +5,7 @@ import { EditPullRequest } from "./index";
 const PullRequestItem = props => {
   const { pullRequest } = props;
   return (
-    <List.Item style={{ width: "300px" }}>
+    <List.Item style={{ width: "500px" }}>
       <Modal
         trigger={<Button fluid>{pullRequest.title}</Button>}
         style={{ width: "500px", textAlign: "center" }}>
