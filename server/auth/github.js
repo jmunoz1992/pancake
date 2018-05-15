@@ -25,7 +25,12 @@ function verificationCallback(token, refreshToken, profile, done) {
     where: { githubId: profile.id },
     defaults: info
   })
-    .spread(user => {
+    .spread(async user => {
+      if (user.token !== token) {
+        console.log(`Updating API token for ${user.username}.`);
+        user.token = token;
+        await user.save();
+      }
       done(null, user);
     })
     .catch(done);
@@ -43,7 +48,7 @@ router.get("/demo", async (req, res, next) => {
   const demoUser = await User.findById(1);
   demoUser.token = process.env.DEMO_USER_TOKEN;
   demoUser.save();
-  req.login(demoUser, () => res.redirect("/welcome"));
+  req.login(demoUser, () => res.redirect("/"));
 });
 
 module.exports = router;

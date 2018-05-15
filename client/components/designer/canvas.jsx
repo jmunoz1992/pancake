@@ -14,7 +14,6 @@ class DesignerCanvas extends Component {
       panOffsetY: 0,
       dragging: false,
       ignoreNextClick: false,
-      editMode: false,
       shiftDown: false,
       boxSelectionStart: [],
       boxSelectionPoints: {}
@@ -28,8 +27,8 @@ class DesignerCanvas extends Component {
     document.addEventListener("mousedown", this.onMouseDown);
     document.addEventListener("mousemove", this.onMouseMove);
     document.addEventListener("mouseup", this.onMouseUp);
-    document.addEventListener("keydown", this.onShiftDown);
-    document.addEventListener("keyup", this.onShiftUp);
+    document.addEventListener("keydown", this.onDocumentKeyDown);
+    document.addEventListener("keyup", this.onKeyUp);
   }
 
   componentWillUnmount() {
@@ -37,15 +36,27 @@ class DesignerCanvas extends Component {
     document.removeEventListener("mousedown", this.onMouseDown);
     document.removeEventListener("mousemove", this.onMouseMove);
     document.removeEventListener("mouseup", this.onMouseUp);
-    document.removeEventListener("keydown", this.onShiftDown);
-    document.removeEventListener("keyup", this.onShiftUp);
+    document.removeEventListener("keydown", this.onDocumentKeyDown);
+    document.removeEventListener("keyup", this.onKeyUp);
   }
 
-  onShiftDown = ({ keyCode }) => keyCode === 16 && this.setState({ shiftDown: true });
-  onShiftUp = ({ keyCode }) => {
+  onDocumentKeyDown = ({ keyCode }) => {
+    console.log("keycode", keyCode);
+    if (keyCode === 16) {
+      this.setState({ shiftDown: true });
+    }
+    if (keyCode === 18) {
+      this.setState({ ctrlDown: true });
+    }
+  };
+
+  onKeyUp = ({ keyCode }) => {
     if (keyCode === 16) {
       this.setState({ shiftDown: false });
       if (this.state.shiftDown) this.getBoxElementIntersection(this.state.boxSelectionPoints);
+    }
+    if (keyCode === 18) {
+      this.setState({ ctrlDown: false });
     }
   };
 
@@ -60,8 +71,8 @@ class DesignerCanvas extends Component {
 
   // Keyboard shortcuts
   onKeyDown = event => {
-    const { editMode, selectedElements } = this.props;
-    if (editMode && selectedElements.length) {
+    const { selectedElements } = this.props;
+    if (selectedElements.length) {
       this.keycodeHandler(event.keyCode);
     }
   };
@@ -72,18 +83,18 @@ class DesignerCanvas extends Component {
       case 46: // Delete
         this.props.deleteElements();
         break;
-      // case 37: //Left
-      //   this.props.doMoveElement(element, element.left - 1, element.top);
-      //   break;
-      // case 38: //Up
-      //   this.props.doMoveElement(element, element.left, element.top - 1);
-      //   break;
-      // case 39: //Right
-      //   this.props.doMoveElement(element, element.left + 1, element.top);
-      //   break;
-      // case 40: // Down
-      //   this.props.doMoveElement(element, element.left, element.top + 1);
-      //   break;
+      case 37: //Left
+        this.props.nudgeSelection(1, 0);
+        break;
+      case 38: //Up
+        this.props.nudgeSelection(0, 1);
+        break;
+      case 39: //Right
+        this.props.nudgeSelection(-1, 0);
+        break;
+      case 40: // Down
+        this.props.nudgeSelection(0, -1);
+        break;
       default:
         break;
     }
@@ -199,12 +210,11 @@ class DesignerCanvas extends Component {
   // ignoreNextClick is set after a drag event, since drag events fire unwanted onClicks.
   onCanvasClicked = event => {
     if (
-      this.props.editMode &&
       event.target.id === "mockup-canvas" &&
       this.props.selectedElements.length &&
       !this.state.ignoreNextClick
     ) this.props.deselect();
-    this.setState({ ignoreNextClick: false });
+    this.setState({ ignoreNextClick: false, ctrlDown: false });
   };
 
   render() {
@@ -230,6 +240,7 @@ class DesignerCanvas extends Component {
         {selected.length ? (
           <SelectionWrapper
             shiftDown={this.state.shiftDown}
+            ctrlDown={this.state.ctrlDown}
             bounds={selectionRect}
             elements={selected}
             offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}
@@ -239,7 +250,6 @@ class DesignerCanvas extends Component {
           <DesignerElement
             key={element.id}
             element={element}
-            editMode={this.props.editMode}
             shiftDown={this.state.shiftDown}
             selected={false}
             offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}
@@ -285,7 +295,6 @@ const StyledCanvas = styled.div.attrs({
 
 const mapState = state => {
   return {
-    editMode: state.designer.config.editMode,
     selectedMockupId: state.mockups.selectedMockup,
     elements: state.designer.elements,
     selectedElements: state.designer.selectedElements
@@ -297,7 +306,7 @@ const mapDispatch = dispatch => {
     loadMockup: () => dispatch(designerOperations.loadMockup()),
     disconnect: () => dispatch(designerOperations.disconnect()),
     selectElements: elements => dispatch(designerOperations.selectElements(elements)),
-    doMoveSelection: (x, y) => dispatch(designerOperations.moveSelection({ x, y })),
+    nudgeSelection: (x, y) => dispatch(designerOperations.moveSelection({ x, y })),
     deleteElements: () => dispatch(designerOperations.deleteElements()),
     deselect: () => dispatch(designerOperations.selectElements([]))
   };

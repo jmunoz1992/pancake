@@ -149,9 +149,7 @@ class AddIssue extends Component {
       value: label.name
     }));
     return (
-      <div style={{ width: "250px" }}>
-        <Divider />
-        <h1 style={{ width: "100px", display: "inline" }}>Issues</h1>
+      <div>
         <Button floated="right" onClick={this.openModal}>
           New Issue
         </Button>
@@ -242,7 +240,7 @@ class AddIssue extends Component {
               <Icon name="checkmark" /> Submit
             </Button>
             <Button color="red" onClick={this.cancel}>
-              <Icon name="checkmark" /> Cancel
+              <Icon name="cancel" /> Cancel
             </Button>
           </Modal.Actions>
         </Modal>

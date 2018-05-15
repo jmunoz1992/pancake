@@ -14,9 +14,6 @@ const loadElements = elements => ({ type: types.LOAD_ELEMENTS, payload: elements
 // Network status
 const setConnectionStatus = status => ({ type: types.SET_CONNECTION_STATUS, payload: status });
 
-// Designer configuration
-const setEditMode = mode => ({ type: types.SET_EDIT_MODE, payload: mode });
-
 export {
   setSelectedElements,
   addElementsToSelection,
@@ -25,6 +22,5 @@ export {
   bulkUpdateElements,
   removeElement,
   loadElements,
-  setConnectionStatus,
-  setEditMode
+  setConnectionStatus
 };

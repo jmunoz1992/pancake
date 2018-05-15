@@ -27,6 +27,16 @@ const createNewElement = element => (dispatch, getState) => {
   dispatchNetworkAction(actions.createElement(element));
 };
 
+const duplicateSelectedElements = () => (dispatch, getState) => {
+  const selection = getSelectedElementsFromIds(getState());
+  selection.forEach(selected => {
+    const newElement = { ...selected };
+    newElement.top += 50;
+    newElement.left += 50;
+    dispatchNetworkAction(actions.createElement(newElement));
+  });
+};
+
 const moveSelection = positionDelta => (dispatch, getState) => {
   const selection = getSelectedElementsFromIds(getState());
   selection.forEach(selectedElement => {
@@ -39,6 +49,24 @@ const moveSelection = positionDelta => (dispatch, getState) => {
 const updateElementProperty = (element, property, newValue) => (dispatch, getState) => {
   element[property] = newValue;
   dispatchNetworkAction(actions.updateElement(element));
+};
+
+const sendElementToBack = () => (dispatch, getState) => {
+  const selection = getSelectedElementsFromIds(getState());
+  const allElements = getState().designer.elements;
+  let lowestZIndex = 0;
+  allElements.forEach(el => (el.zIndex < lowestZIndex ? (lowestZIndex = el.zIndex) : null));
+  selection[0].zIndex = lowestZIndex;
+  dispatchNetworkAction(actions.updateElement(selection[0]));
+};
+
+const bringElementToFront = element => (dispatch, getState) => {
+  const selection = getSelectedElementsFromIds(getState());
+  const allElements = getState().designer.elements;
+  let highestZIndex = 0;
+  allElements.forEach(el => (el.zIndex > highestZIndex ? (highestZIndex = el.zIndex) : null));
+  selection[0].zIndex = highestZIndex + 1;
+  dispatchNetworkAction(actions.updateElement(selection[0]));
 };
 
 const deleteElements = () => (dispatch, getState) => {
@@ -102,11 +130,6 @@ const setError = error => (dispatch, getState) => {
   dispatch(actions.setConnectionStatus(status));
 };
 
-const setEditMode = mode => dispatch => {
-  dispatch(actions.setSelectedElements());
-  dispatch(actions.setEditMode(mode));
-};
-
 // Links to actions
 const loadElements = actions.loadElements;
 const bulkUpdateElements = actions.bulkUpdateElements;
@@ -115,13 +138,15 @@ export {
   selectElements,
   addElementsToSelection,
   createNewElement,
+  duplicateSelectedElements,
   moveSelection,
   resizeElement,
   updateElementProperty,
+  sendElementToBack,
+  bringElementToFront,
   deleteElements,
   loadElements,
   bulkUpdateElements,
-  setEditMode,
   loadMockup,
   disconnect,
   setConnecting,

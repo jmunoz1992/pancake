@@ -3,35 +3,35 @@ import axios from "axios";
  * ACTION TYPES
  */
 const GET_LABELS = "GET_LABELS";
-const CREATE_LABEL = "CREATE_LABEL";
-const ADD_LABEL = "ADD_LABEL";
 
 /**
  * ACTION CREATORS
  */
 const load = labels => ({ type: GET_LABELS, labels });
-const create = label => ({ type: CREATE_LABEL, label });
 
 /**
  * REDUCER
  */
 export default function reducer(state = [], action) {
-    switch (action.type) {
-        case GET_LABELS:
-            return action.labels;
-        case CREATE_LABEL:
-            return action.label;
-        default:
-            return state;
-    }
+  switch (action.type) {
+    case GET_LABELS:
+      return action.labels;
+    default:
+      return state;
+  }
 }
 
 /**
  * THUNK CREATORS
  */
 export const fetchLabels = () => dispatch =>
-    axios
-        .get("/api/issues/labels")
-        .then(res => dispatch(load(res.data)))
-        .catch(err => console.error("Fetching labels unsuccessful", err));
+  axios
+    .get("/api/issues/labels")
+    .then(res => dispatch(load(res.data)))
+    .catch(err => console.error("Fetching labels unsuccessful", err));
 
+export const createNewLabel = (name, color) => dispatch =>
+  axios
+    .post("/api/issues/labels", { name, color })
+    .then(res => dispatch(fetchLabels()))
+    .catch(err => console.error("Label could not be created.", err));

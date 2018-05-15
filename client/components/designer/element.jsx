@@ -14,7 +14,9 @@ class MockupElement extends Component {
     if (!this.props.selected) {
       this.props.shiftDown ? this.props.doAddElementToSelection() : this.props.doSelectElement();
     }
-    if (!this.props.editMode) this.props.doSetFilter();
+    if (this.props.element.labels && this.props.element.labels.length) {
+      this.props.doSetFilter();
+    }
   };
 
   // If the element isn't selected, we wrap it with a div and pass in style/CSS props received
@@ -48,7 +50,7 @@ class MockupElement extends Component {
 const mapDispatch = (dispatch, ownProps) => ({
   doSelectElement: () => dispatch(designerOperations.selectElements([ownProps.element.id])),
   doAddElementToSelection: () => dispatch(designerOperations.addElementsToSelection([ownProps.element.id])),
-  doSetFilter: () => dispatch(setIssueFilter(ownProps.element.name))
+  doSetFilter: () => dispatch(setIssueFilter({ labels: JSON.parse(ownProps.element.labels) }))
 });
 
 export default connect(null, mapDispatch)(MockupElement);

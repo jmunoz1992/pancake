@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { Form, Button, Dropdown } from "semantic-ui-react";
 import { designerOperations } from "../../store";
 import { default as ElementLibrary } from "./elements";
+import { default as AddLabelPopup } from "../issues/add-label-tooltip";
 
 class Properties extends Component {
   constructor(props) {
@@ -101,10 +102,16 @@ class Properties extends Component {
     }
     return (
       <div>
-        <Form>
+        <Form onSubmit={e => e.preventDefault()}>
           {fields}
           <Form.Field>
-            <Button negative onClick={() => this.props.deleteElement()}>
+            <Button
+              negative
+              onClick={e => {
+                e.preventDefault();
+                if (e.detail === 0) return;
+                this.props.deleteElement();
+              }}>
               Delete
             </Button>
           </Form.Field>
@@ -116,17 +123,24 @@ class Properties extends Component {
   renderLabels(key, fieldInfo) {
     const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
     return (
-      <Form.Dropdown
-        key={key}
-        label={"Labels:"}
-        placeholder="Labels"
-        fluid
-        multiple
-        selection
-        options={options}
-        onChange={this.serializeAndUpdateLabels}
-        value={this.state.labels}
-      />
+      <div key={key}>
+        <Form.Group>
+          <Form.Dropdown
+            label="Labels:"
+            placeholder="Labels"
+            fluid
+            multiple
+            selection
+            options={options}
+            onChange={this.serializeAndUpdateLabels}
+            value={this.state.labels}
+            width={13}
+          />
+          <Form.Field style={{ paddingTop: "23px" }} width={1}>
+            <AddLabelPopup />
+          </Form.Field>
+        </Form.Group>
+      </div>
     );
   }
 

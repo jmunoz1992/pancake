@@ -149,10 +149,10 @@ class EditIssue extends Component {
       value: label.name
     }));
     return (
-      <List.Item style={{ width: "250px", display: "inline" }}>
+      <List.Item fluid style={{ display: "inline" }}>
         <Modal
           trigger={
-            <Button color="teal" onClick={this.openModal} style={{ width: "250px", display: "inline" }}>
+            <Button fluid color="teal" onClick={this.openModal} style={{ display: "inline" }}>
               {this.state.title}
             </Button>
           }
@@ -238,8 +238,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                      <div />
-                    )}
+                    <div />
+                  )}
                 </Grid.Column>
                 <Grid.Column>
                   {/* Label List */}
@@ -250,8 +250,8 @@ class EditIssue extends Component {
                       </div>
                     ))
                   ) : (
-                      <div />
-                    )}
+                    <div />
+                  )}
                 </Grid.Column>
               </Grid.Row>
             </Grid>
@@ -263,7 +263,7 @@ class EditIssue extends Component {
             </Button>
             {/* Cancel Button */}
             <Button color="red" onClick={this.closeModal}>
-              <Icon name="checkmark" /> Cancel
+              <Icon name="cancel" /> Cancel
             </Button>
           </Modal.Actions>
         </Modal>

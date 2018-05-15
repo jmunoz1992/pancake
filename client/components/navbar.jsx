@@ -6,6 +6,7 @@ import { Input, Menu, Header, Dropdown, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import { default as FilterBox } from "./issues/filter-box";
 import { PullRequests } from "./pull-requests";
+import { default as AddIssue } from "./issues/add-issue";
 
 class Navbar extends React.Component {
   constructor(props) {
@@ -44,6 +45,9 @@ class Navbar extends React.Component {
         <Menu.Menu position="right">
           <Menu.Item>
             <PullRequests allPullRequests={pullRequests} />
+          </Menu.Item>
+          <Menu.Item>
+            <AddIssue />
           </Menu.Item>
           <Menu.Item>
             <FilterBox />
