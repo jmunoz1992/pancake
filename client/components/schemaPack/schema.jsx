@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { BodyWidget } from "./widgets/BodyWidget";
+import { default as BodyWidget } from "./widgets/BodyWidget";
 import { Application } from "./Application";
 import "./css/main.css";
 import { connectToSession } from "../../socket/schema";

@@ -6,12 +6,14 @@ require("storm-react-diagrams/dist/style.min.css");
 import { Button, Header, Input, Modal, Form, Message, Icon, Divider } from "semantic-ui-react";
 import "rc-color-picker/assets/index.css";
 import ColorPicker from "rc-color-picker";
+import { default as AddLabelPopup } from "../../issues/add-label-tooltip";
+import { connect } from "react-redux";
 
 // react-diagram's DiagramWidget calls a "stopFiringAction" function when the user finishes
 // manipulating a diagram element, including after they move an element around.  Because we don't
 // otherwise have a proper event listener for node movement, we can hook stopFiringAction
 
-export class BodyWidget extends React.Component {
+class BodyWidget extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -26,13 +28,13 @@ export class BodyWidget extends React.Component {
       hideNoLinkTitleWarning: true,
       hideNoPortAmountWarning: true,
       hideNoPortsNamedWarning: true,
-      portInputCount: 1
+      portInputCount: 1,
+      labels: []
     };
 
     const oldFunction = DiagramWidget.prototype.stopFiringAction;
     const _self = this;
     DiagramWidget.prototype.stopFiringAction = function(...args) {
-      console.log(args);
       oldFunction.apply(this, args);
       props.app.serializerToSchema();
     };
@@ -71,13 +73,12 @@ export class BodyWidget extends React.Component {
 
   onPortInputChange = event => {
     if (event.target.name === `port${this.state.portInputCount - 1}`) {
-      console.log("onPortInputChange", event.target.name, this.state.portInputCount);
       this.setState({ portInputCount: this.state.portInputCount + 1 });
       this.forceUpdate();
     }
   };
 
-  linkTitleSumit = () => {
+  linkTitleSubmit = () => {
     if (this.state.linkTitle === "") {
       this.setState({ hideNoLinkTitleWarning: false });
       return;
@@ -111,6 +112,10 @@ export class BodyWidget extends React.Component {
     this.addNodeToCanvas(validPorts);
   };
 
+  serializeAndUpdateLabels = (event, target) => {
+    this.setState({ labels: target.value });
+  };
+
   isModalOpen = () => this.setState({ isModalOpen: true });
   closeIn = () => this.setState({ isModalOpen: false, portInputCount: 1 });
 
@@ -118,7 +123,6 @@ export class BodyWidget extends React.Component {
   linkCloseIn = () => this.setState({ linkModalOpen: false });
 
   renderPortInputs = () => {
-    console.log("renderPortInputs", this.state.portInputCount);
     let inputArray = [];
     for (let i = 0; i < this.state.portInputCount; i++) {
       inputArray.push(
@@ -134,6 +138,8 @@ export class BodyWidget extends React.Component {
 
   render() {
     const { isModalOpen } = this.state;
+    const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
+
     return (
       <div className="body">
         <div className="content">
@@ -163,10 +169,25 @@ export class BodyWidget extends React.Component {
                   </Form.Group>
                   {this.renderPortInputs()}
                   <Form.Group>
+                    <Form.Dropdown
+                      label="Labels:"
+                      placeholder="Labels"
+                      fluid
+                      multiple
+                      selection
+                      options={options}
+                      onChange={this.serializeAndUpdateLabels}
+                      value={this.state.labels}
+                      width={13}
+                    />
+                    <Form.Field style={{ paddingTop: "23px" }} width={1}>
+                      <AddLabelPopup />
+                    </Form.Field>
+                  </Form.Group>
+                  <Form.Group>
                     <Form.Field>Model Color</Form.Field>
                     <ColorPicker
                       color={this.state.nodeTestColor}
-                      alpha={30}
                       onChange={event => this.handleNodeColorChange(event, "inPort")}
                       placement="topLeft"
                       className="some-class">
@@ -201,7 +222,7 @@ export class BodyWidget extends React.Component {
               onClose={this.linkCloseIn}>
               <Modal.Content>
                 <Header>Let's Make a Link Label!</Header>
-                <Form onSubmit={this.linkTitleSumit} style={{ margin: "10px" }}>
+                <Form onSubmit={this.linkTitleSubmit} style={{ margin: "10px" }}>
                   <Form.Group widths="equal">
                     <Input
                       label="Link Label"
@@ -219,7 +240,12 @@ export class BodyWidget extends React.Component {
             </Modal>
           </TrayWidget>
           <div className="diagram-layer">
-            <DiagramWidget className="srd-demo-canvas" diagramEngine={this.props.app.getDiagramEngine()} />
+            <DiagramWidget
+              maxNumberPointsPerLink={0}
+              smartRouting={true}
+              className="srd-demo-canvas"
+              diagramEngine={this.props.app.getDiagramEngine()}
+            />
           </div>
         </div>
       </div>
@@ -237,17 +263,17 @@ export class BodyWidget extends React.Component {
     } else {
       node = new DefaultNodeModel(this.state.linkTitle, this.state.nodeTestColor);
     }
+    node.extras.labels = this.state.labels;
     this.setState({
       nodeTitle: "",
       nodeColor: "",
       linkTitle: "",
       isModalOpen: false,
       linkModalOpen: false,
+      labels: "",
       nodeTestColor: "rgb(255,255, 255)"
     });
-    console.log("node in addNode before listener", node);
     this.props.app.addListenersOnNode(node);
-    console.log("node in addNode AFTER listener", node);
     this.props.app
       .getDiagramEngine()
       .getDiagramModel()
@@ -256,3 +282,9 @@ export class BodyWidget extends React.Component {
     this.props.app.serializerToSchema();
   }
 }
+
+const mapState = state => {
+  return { labels: state.labels };
+};
+
+export default connect(mapState, null)(BodyWidget);
