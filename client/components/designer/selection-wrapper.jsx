@@ -22,14 +22,14 @@ class SelectionWrapper extends Component {
   // Handles arrow key nudging events, which come from the parent
   componentWillReceiveProps = newProps => {
     if (newProps.shiftDown) {
-      // this.style.backgroundColor = "#EAEAEA66";
       this.style.opacity = 0.8;
       this.style.pointerEvents = "none";
     } else {
-      // this.style.backgroundColor = "#EAEAEADD";
       delete this.style.pointerEvents;
       this.style.opacity = 1;
     }
+    if (newProps.ctrlDown) this.style.display = "none";
+    else delete this.style.display;
     if (this.props.offset !== newProps.offset || this.props.elements !== newProps.elements) {
       this.rnd.current.updatePosition({
         x: newProps.bounds.left + newProps.offset.x,

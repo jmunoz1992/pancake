@@ -26,7 +26,8 @@ class Toolbar extends Component {
     return (
       <Menu.Menu>
         <Menu.Item>
-          Nothing selected.<br />Tip: You can select multiple elements by holding down the Shift key.
+          Tip: You can select multiple elements by holding down the Shift key.<br />Hold down the Alt/Option
+          key to hide the selected elements.
         </Menu.Item>
       </Menu.Menu>
     );

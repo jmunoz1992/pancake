@@ -39,7 +39,6 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", (req, res) => {
-  console.log("req user in /me", req.user);
   return res.json(req.user);
 });
 

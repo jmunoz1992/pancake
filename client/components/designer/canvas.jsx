@@ -45,12 +45,18 @@ class DesignerCanvas extends Component {
     if (keyCode === 16) {
       this.setState({ shiftDown: true });
     }
+    if (keyCode === 18) {
+      this.setState({ ctrlDown: true });
+    }
   };
 
   onKeyUp = ({ keyCode }) => {
     if (keyCode === 16) {
       this.setState({ shiftDown: false });
       if (this.state.shiftDown) this.getBoxElementIntersection(this.state.boxSelectionPoints);
+    }
+    if (keyCode === 18) {
+      this.setState({ ctrlDown: false });
     }
   };
 
@@ -208,7 +214,7 @@ class DesignerCanvas extends Component {
       this.props.selectedElements.length &&
       !this.state.ignoreNextClick
     ) this.props.deselect();
-    this.setState({ ignoreNextClick: false });
+    this.setState({ ignoreNextClick: false, ctrlDown: false });
   };
 
   render() {
@@ -234,6 +240,7 @@ class DesignerCanvas extends Component {
         {selected.length ? (
           <SelectionWrapper
             shiftDown={this.state.shiftDown}
+            ctrlDown={this.state.ctrlDown}
             bounds={selectionRect}
             elements={selected}
             offset={{ x: this.state.panOffsetX, y: this.state.panOffsetY }}

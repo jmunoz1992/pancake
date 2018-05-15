@@ -1,9 +1,12 @@
 import React from "react";
+import { Message } from "semantic-ui-react";
+import { withRouter } from "react-router-dom";
 
 /**
  * COMPONENT
  */
-const Login = _ => {
+const Login = props => {
+  console.log(props);
   return (
     <div style={{ margin: "auto", marginTop: "150px", width: "50%", textAlign: "center" }}>
       <img src="/Pancake.png" width="auto" height="200px" />
@@ -23,8 +26,13 @@ const Login = _ => {
           </a>
         </button>
       </div>
+      {props.location.search && (
+        <Message warning icon="padlock">
+          {props.location.search.slice(props.location.search.indexOf("=") + 1)}
+        </Message>
+      )}
     </div>
   );
 };
 
-export default Login;
+export default withRouter(Login);
