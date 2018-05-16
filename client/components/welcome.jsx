@@ -17,9 +17,7 @@ class Welcome extends Component {
   }
 
   componentDidMount() {
-    this.getUserRepos();
     this.getUserOrganizations();
-    this.props.fetchRepoInfo();
   }
 
   getUserOrganizations() {
@@ -36,9 +34,7 @@ class Welcome extends Component {
     axios
       .get("/api/repos")
       .then(res => res.data)
-      .then(repos => {
-        this.setState({ repos: repos.data });
-      });
+      .then(repos => this.setState({ repos: repos }));
   }
 
   getOrganizationRepos(organization) {
@@ -68,19 +64,10 @@ class Welcome extends Component {
   };
 
   render() {
-    const { orgs } = this.state;
+    const { orgs, repos } = this.state;
     const { user } = this.props;
-    console.log("state repos ", this.state.repos);
-    console.log("props repos ", this.props.repos);
     let orgOptions = orgs.map(org => ({ key: org.login, text: org.login, value: org.login }));
-    let repoOptions = [];
-    if (this.state.repos) {
-      repoOptions = this.state.repos.map(repo => ({ key: repo.name, text: repo.name, value: repo.name }));
-    } else if (this.props.repos) {
-      repoOptions = [
-        { key: this.props.repos.name, text: this.props.repos.name, value: this.props.repos.name }
-      ];
-    }
+    const repoOptions = repos.map(repo => ({ key: repo.name, text: repo.name, value: repo.name }));
     orgOptions = [{ key: user.username, text: user.username, value: user.username }, ...orgOptions];
     console.log("org options ", orgOptions);
     console.log("repo options ", repoOptions);
@@ -118,17 +105,7 @@ class Welcome extends Component {
 
 const mapState = state => {
   return {
-    user: state.user.username ? state.user : { username: "Nothing" },
-    repos: state.repos
+    user: state.user.username ? state.user : { username: "Nothing" }
   };
 };
-
-const mapDispatch = dispatch => {
-  return {
-    fetchRepoInfo() {
-      dispatch(getRepoInfo());
-    }
-  };
-};
-
-export default withRouter(connect(mapState, mapDispatch)(Welcome));
+export default withRouter(connect(mapState, null)(Welcome));
