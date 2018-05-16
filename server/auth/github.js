@@ -36,7 +36,7 @@ function verificationCallback(token, refreshToken, profile, done) {
 
 passport.use(new GitHubStrategy(githubCredentials, verificationCallback));
 
-router.get("/", passport.authenticate("github", { scope: ["repo", "admin:repo_hook", "gist"] }));
+router.get("/", passport.authenticate("github", { scope: ["repo"] }));
 
 router.get("/verify", passport.authenticate("github", { failureRedirect: "/login" }), (req, res) => {
   res.redirect("/");
