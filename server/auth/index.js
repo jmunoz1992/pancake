@@ -40,12 +40,16 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", async (req, res) => {
-  const project = await Project.findById(req.user.activeProjectId);
-  const projectName = project.repository;
-  req.user.dataValues.projectName = projectName;
-  return res.json(req.user);
+  try {
+    const project = await Project.findById(req.user.activeProjectId);
+    if (project) {
+      const projectName = project.repository;
+      req.user.dataValues.projectName = projectName;
+    }
+    return res.json(req.user);
+  } catch (error) {
+    console.log("error in auth/me ", error);
+  }
 });
-
-router.use("/google", require("./google"));
 
 router.use("/github", require("./github"));

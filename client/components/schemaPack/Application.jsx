@@ -20,9 +20,7 @@ export class Application {
 
   deserializer(data) {
     const deserializedData = JSON.parse(data);
-    console.log("deserialized data", deserializedData);
     if (!Object.keys(deserializedData).length) {
-      console.log("getting in deserializer");
       this.activeModel = new SRD.DiagramModel();
       this.diagramEngine.setDiagramModel(this.activeModel);
       return;
@@ -37,14 +35,10 @@ export class Application {
         this.addListenersOnNode(nodeToAdd);
       }
     }
-
-    console.log("new active model with links ", this.activeModel);
   }
 
   serializerToSchema() {
-    console.log("current active model ", this.activeModel);
     const serializedObject = this.activeModel.serializeDiagram();
-    console.log("serialized object ", serializedObject);
     const serializedData = JSON.stringify(serializedObject);
     sendSchemaUpdate(serializedData);
   }
@@ -54,7 +48,6 @@ export class Application {
       selectionChanged: () => {
         setTimeout(this.serializerToSchema.bind(this), 0);
         const nodeName = nodeToAdd.name.toLowerCase();
-        console.log("node name ", nodeName);
         const labelObj = {
           labels: [nodeName]
         };
