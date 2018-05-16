@@ -26,7 +26,7 @@ router.post("/", async (req, res, next) => {
       console.log("Creating default schema for new project.");
       await Schema.create({
         projectId: project[0].id,
-        properties: ""
+        properties: JSON.stringify({})
       });
     }
 
