@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { BodyWidget } from "./widgets/BodyWidget";
+import { default as BodyWidget } from "./widgets/BodyWidget";
 import { Application } from "./Application";
 import "./css/main.css";
 import { connectToSession } from "../../socket/schema";
@@ -16,12 +16,18 @@ class Schema extends React.Component {
   componentDidMount() {
     connectToSession(newJson => {
       this.setState({ diagramJson: newJson });
+      console.log("connectToSession", newJson, this.app);
+      if (!this.app) {
+        this.app = new Application(newJson);
+      }
+      this.app.deserializer(newJson);
+      this.forceUpdate();
     });
   }
 
   render() {
-    var app = new Application(this.state.diagramJson);
-    return <BodyWidget app={app} />;
+    if (this.app) return <BodyWidget app={this.app} />;
+    return <div>Loading...</div>;
   }
 }
 

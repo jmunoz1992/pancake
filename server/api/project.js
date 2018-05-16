@@ -13,18 +13,22 @@ router.post("/", async (req, res, next) => {
     const currentUser = await User.findById(req.user.id);
     await currentUser.setActiveProject(project[0].id);
     await currentUser.addProject(project[0]);
-
-    const mockups = await Mockup.count({ where: { projectId: req.user.activeProjectId } });
+    const mockups = await Mockup.count({ where: { projectId: project[0].id } });
     if (!mockups) {
+      console.log("Creating default mockup for new project.");
       await Mockup.create({
         name: "Mockup 1",
         projectId: project[0].id
       });
     }
-    await Schema.upsert(
-      { projectId: req.user.activeProjectId, properties: "" },
-      { where: { projectId: req.user.activeProjectId } }
-    );
+    const schema = await Schema.findOne({ where: { projectId: project[0].id } });
+    if (!schema) {
+      console.log("Creating default schema for new project.");
+      await Schema.create({
+        projectId: project[0].id,
+        properties: ""
+      });
+    }
 
     res.json(project[0]);
   } catch (error) {

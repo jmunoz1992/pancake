@@ -14,7 +14,6 @@ class Toolbar extends Component {
     return (
       <Menu inverted className={this.props.className}>
         <Menu.Item>
-          <span className="header">Change Mockup</span>
           <MockupSwitcher />
         </Menu.Item>
         {this.props.selectedElements.length ? this.renderElementTools() : this.renderNothing()}

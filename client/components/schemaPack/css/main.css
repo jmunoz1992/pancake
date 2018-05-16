@@ -6,15 +6,6 @@
   background-color: grey;
 }
 
-.header {
-  display: flex;
-  flex-grow: 0;
-  flex-shrink: 0;
-  color: white;
-  font-family: Helvetica, Arial;
-  padding: 10px;
-}
-
 .content {
   display: flex;
   flex-grow: 1;
@@ -26,21 +17,11 @@
 }
 
 .tray {
+  position: fixed;
+  z-index: 100;
   width: 150px;
   height: 125px;
-  /* background: rgb(20, 20, 20); */
   flex-grow: 0;
   flex-shrink: 0;
   border-radius: 0% 10% 10% 0%;
-}
-
-.tray-item {
-  color: white;
-  font-family: Helvetica, Arial;
-  padding: 5px;
-  margin: 10px;
-  border: solid 1px;
-  border-radius: 5px;
-  margin-bottom: 2px;
-  cursor: pointer;
 }
