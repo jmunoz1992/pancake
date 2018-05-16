@@ -32,12 +32,13 @@ class AddLabelPopup extends Component {
   };
 
   onOpenEvent = _ => this.setState({ open: true });
+
   render() {
     return (
       <Popup
-        style={{ zIndex: 50 }}
+        style={{ zIndex: 5000 }}
         trigger={
-          <Button icon color="green">
+          <Button icon color="green" onClick={event => event.preventDefault()}>
             <Icon name="add" />
           </Button>
         }

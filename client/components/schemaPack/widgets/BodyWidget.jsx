@@ -6,12 +6,19 @@ require("storm-react-diagrams/dist/style.min.css");
 import { Button, Header, Input, Modal, Form, Message, Icon, Divider } from "semantic-ui-react";
 import "rc-color-picker/assets/index.css";
 import ColorPicker from "rc-color-picker";
+import { default as AddLabelPopup } from "../../issues/add-label-tooltip";
+import { connect } from "react-redux";
+import { default as Toolbar } from "./toolbar";
 
-export class BodyWidget extends React.Component {
+// react-diagram's DiagramWidget calls a "stopFiringAction" function when the user finishes
+// manipulating a diagram element, including after they move an element around.  Because we don't
+// otherwise have a proper event listener for node movement, we can hook stopFiringAction
+
+class BodyWidget extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      nodeTitle: "Default Model Title",
+      nodeTitle: "",
       nodeColor: "rgb(192,255,0)",
       nodePorts: [],
       linkTitle: "",
@@ -21,7 +28,38 @@ export class BodyWidget extends React.Component {
       hideNoTitleWarning: true,
       hideNoLinkTitleWarning: true,
       hideNoPortAmountWarning: true,
-      hideNoPortsNamedWarning: true
+      hideNoPortsNamedWarning: true,
+      portInputCount: 1,
+      labels: [],
+      editMode: false,
+      existingPorts: []
+    };
+
+    // Save DiagramWidget's original, unhooked stopFiringAction if a previous instance of this
+    // class did not already do so
+    if (!DiagramWidget.prototype.originalStopFiringAction) {
+      console.log("Saving original stopFiringAction");
+      DiagramWidget.prototype.originalStopFiringAction = DiagramWidget.prototype.stopFiringAction;
+    }
+
+    // Update stopFiringAction with our hook so we can react to events for which an official event
+    // listener is not provided
+    console.log("Setting stopFiringAction hook");
+
+    // We need access to both BodyWidget's this context and the internal DiagramWidget this context
+    let widgetThis = this;
+    DiagramWidget.prototype.stopFiringAction = function(...args) {
+      DiagramWidget.prototype.originalStopFiringAction.apply(this, args);
+      props.app.serializerToSchema();
+      widgetThis.forceUpdate();
+    };
+
+    // Hook onkeyup to stop it from deleting nodes when we're typing
+    if (!DiagramWidget.prototype.originalOnKeyUp) {
+      DiagramWidget.prototype.originalOnKeyUp = DiagramWidget.prototype.onKeyUp;
+    }
+    DiagramWidget.prototype.onKeyUp = function(...args) {
+      if (args[0].target === document.getElementsByTagName("body")[0]) DiagramWidget.prototype.originalOnKeyUp.apply(this, args);
     };
   }
 
@@ -56,14 +94,21 @@ export class BodyWidget extends React.Component {
     this.setState({ nodePorts: ports });
   };
 
-  linkTitleSumit = () => {
+  onPortInputChange = event => {
+    if (event.target.name === `port${this.state.portInputCount - 1}`) {
+      this.setState({ portInputCount: this.state.portInputCount + 1 });
+      this.forceUpdate();
+    }
+  };
+
+  linkTitleSubmit = () => {
     if (this.state.linkTitle === "") {
       this.setState({ hideNoLinkTitleWarning: false });
       return;
     } else {
       this.setState({ hideNoLinkTitleWarning: true });
     }
-    this.closeIn();
+    this.closeModal();
     this.addNodeToCanvas();
   };
 
@@ -76,144 +121,230 @@ export class BodyWidget extends React.Component {
     } else {
       this.setState({ hideNoTitleWarning: true });
     }
-    if (nodePorts.length === 0) {
-      this.setState({ hideNoPortAmountWarning: false });
+
+    if (this.state.editMode) {
+      this.editExistingNode(event.target);
       return;
-    } else {
-      this.setState({ hideNoPortAmountWarning: true });
     }
-    let newPorts = [];
-    for (let i = 1; i <= this.state.nodePorts.length; i++) {
+
+    const validPorts = [];
+    for (let i = 0; i < this.state.portInputCount; i++) {
       const portName = "port" + i;
-      if (!event.target[portName] || event.target[portName].value === "") {
-        this.setState({ hideNoPortsNamedWarning: false });
-        return;
-      } else {
-        this.setState({ hideNoPortsNamedWarning: true });
-      }
-      newPorts.push(event.target[portName].value);
+      if (event.target[portName] && event.target[portName].value !== "") validPorts.push(event.target[portName].value);
     }
-    this.setState({ nodePorts: newPorts, open: false });
-    this.closeIn();
-    this.addNodeToCanvas(newPorts);
+    this.setState({ hideNoPortsNamedWarning: !!validPorts.length });
+    if (validPorts.length === 0) return;
+
+    this.setState({ nodePorts: validPorts, open: false });
+    this.closeModal();
+    this.addNodeToCanvas(validPorts);
   };
 
-  isModalOpen = () => this.setState({ isModalOpen: true });
-  closeIn = () => this.setState({ isModalOpen: false });
+  serializeAndUpdateLabels = (event, target) => {
+    this.setState({ labels: target.value });
+  };
+
+  openModal = () => {
+    const selected = this.props.app.selectedNode;
+    this.initializeState(true);
+    if (selected && Object.keys(selected.ports).length) {
+      this.setState({
+        editMode: true,
+        nodeTitle: selected.name,
+        nodeColor: selected.color,
+        portInputCount: Object.keys(selected.ports).length / 2 + 1,
+        labels: selected.extras.labels,
+        existingPorts: Object.values(selected.ports).map(port => port.label)
+      });
+    }
+  };
+  closeModal = () => this.setState({ isModalOpen: false });
 
   linkModalOpen = () => this.setState({ linkModalOpen: true });
   linkCloseIn = () => this.setState({ linkModalOpen: false });
 
+  initializeState = open => {
+    console.log("Modal: initializeState");
+    this.setState({
+      nodeTitle: "",
+      nodeColor: "",
+      linkTitle: "",
+      isModalOpen: !!open,
+      linkModalOpen: false,
+      nodeTestColor: "rgb(255,255, 255)",
+      portInputCount: 1,
+      labels: [],
+      editMode: false,
+      existingPorts: []
+    });
+  };
+
+  renderPortInputs = () => {
+    let inputArray = [];
+    for (let i = 0; i < this.state.portInputCount; i++) {
+      inputArray.push(
+        <Form.Group key={`portInput-${i}`} widths="equal">
+          <Form.Field>
+            <Input
+              fluid
+              label={`Field ${i + 1}`}
+              onChange={this.onPortInputChange}
+              name={`port${i}`}
+              defaultValue={this.state.existingPorts[i * 2] ? this.state.existingPorts[i * 2] : ""}
+            />
+          </Form.Field>
+        </Form.Group>
+      );
+    }
+    return inputArray;
+  };
+
+  renderModelModal() {
+    const { isModalOpen } = this.state;
+    const selected = this.props.app.selectedNode && Object.keys(this.props.app.selectedNode.ports).length;
+    const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
+    return (
+      <Modal
+        trigger={
+          <Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>
+            {selected ? "Edit Model" : "Create New Model"}
+          </Button>
+        }
+        closeIcon
+        style={{ width: "400px" }}
+        open={isModalOpen}
+        onOpen={this.openModal}
+        onClose={this.closeModal}>
+        <Header icon="block layout" content={this.state.editMode ? "Edit Selected Model" : "Create New Model"} />
+        <Modal.Content>
+          <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
+            <Form.Group widths="equal">
+              <Form.Field>
+                <Input
+                  label="Model Name"
+                  onChange={this.handleNodeTitleChange}
+                  name="nodeTitle"
+                  value={this.state.nodeTitle}
+                />
+              </Form.Field>
+            </Form.Group>
+            {this.renderPortInputs()}
+            <Form.Group>
+              <Form.Dropdown
+                label="GitHub Labels:"
+                placeholder="Labels"
+                fluid
+                multiple
+                selection
+                options={options}
+                onChange={this.serializeAndUpdateLabels}
+                value={this.state.labels}
+                width={13}
+              />
+              <Form.Field style={{ paddingTop: "23px" }} width={1}>
+                <AddLabelPopup />
+              </Form.Field>
+            </Form.Group>
+            <Form.Group>
+              <Form.Field>Model Color</Form.Field>
+              <ColorPicker
+                color={this.state.nodeTestColor}
+                onChange={event => this.handleNodeColorChange(event, "inPort")}
+                placement="topLeft"
+                className="some-class">
+                <span className="rc-color-picker-trigger" />
+              </ColorPicker>
+            </Form.Group>
+            <Form.Button>Submit</Form.Button>
+          </Form>
+          <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning>
+            <Icon name="warning sign" />Model must contain a title
+          </Message>
+          <Message hidden={this.state.hideNoPortsNamedWarning} attached="bottom" warning>
+            <Icon name="warning sign" />Must have at least one field.
+          </Message>
+        </Modal.Content>
+      </Modal>
+    );
+  }
+
+  renderLinkModal() {
+    return (
+      <Modal
+        trigger={
+          <Button style={{ backgroundColor: "rgb(255,255, 255)", color: "#000000" }}>Create Label</Button>
+        }
+        closeIcon
+        open={this.state.linkModalOpen}
+        style={{ width: "400px" }}
+        onOpen={this.linkModalOpen}
+        onClose={this.linkCloseIn}>
+        <Modal.Content>
+          <Header>Create New Label</Header>
+          <Form onSubmit={this.linkTitleSubmit} style={{ margin: "10px" }}>
+            <Form.Group widths="equal">
+              <Input
+                label="Label Content"
+                onChange={this.handleLinkTitleChange}
+                name="linkTitle"
+                value={this.state.linkTitle}
+              />
+            </Form.Group>
+            <Form.Button>Submit</Form.Button>
+          </Form>
+          <Message hidden={this.state.hideNoLinkTitleWarning} attached="bottom" warning>
+            <Icon name="warning sign" />Label must contain a title
+          </Message>
+        </Modal.Content>
+      </Modal>
+    );
+  }
+
   render() {
     const { isModalOpen } = this.state;
+    const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
+
     return (
       <div className="body">
         <div className="content">
-          <TrayWidget>
-            <br />
-            <Modal
-              trigger={
-                <Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>Add A Model</Button>
-              }
-              closeIcon
-              style={{ width: "400px" }}
-              open={isModalOpen}
-              onOpen={this.isModalOpen}
-              onClose={this.closeIn}>
-              <Header icon="block layout" content="Let's Make A Model!" />
-              <Modal.Content>
-                <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
-                  <Form.Group widths="equal">
-                    <Input
-                      label="Model Title"
-                      onChange={this.handleNodeTitleChange}
-                      name="nodeTitle"
-                      value={this.state.nodeTitle}
-                    />
-                  </Form.Group>
-                  <Form.Group inline>
-                    <Form.Field>Model Fields</Form.Field>
-                    <Form.Field
-                      control="select"
-                      onChange={event => this.handlePortSelectChange(event, "inPort")}>
-                      <option value="" />
-                      <option value="1">1</option>
-                      <option value="2">2</option>
-                      <option value="3">3</option>
-                      <option value="4">4</option>
-                      <option value="5">5</option>
-                      <option value="6">6</option>
-                      <option value="7">7</option>
-                      <option value="8">8</option>
-                      <option value="9">9</option>
-                      <option value="10">10</option>
-                    </Form.Field>
-                  </Form.Group>
-                  {this.state.nodePorts.map(portNum => {
-                    return <Input key={portNum} placeholder="Field Name Here" name={`port${portNum}`} />;
-                  })}
-                  <Form.Group>
-                    <Form.Field>Model Color</Form.Field>
-                    <ColorPicker
-                      color={this.state.nodeTestColor}
-                      alpha={30}
-                      onChange={event => this.handleNodeColorChange(event, "inPort")}
-                      placement="topLeft"
-                      className="some-class">
-                      <span className="rc-color-picker-trigger" />
-                    </ColorPicker>
-                  </Form.Group>
-                  <Form.Button>Submit</Form.Button>
-                </Form>
-                <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning>
-                  <Icon name="warning sign" />Model must contain a Title
-                </Message>
-                <Message hidden={this.state.hideNoPortAmountWarning} attached="bottom" warning>
-                  <Icon name="warning sign" />Must pick a number of fields.
-                </Message>
-                <Message hidden={this.state.hideNoPortsNamedWarning} attached="bottom" warning>
-                  <Icon name="warning sign" />Must have names for all fields.
-                </Message>
-              </Modal.Content>
-            </Modal>
-            <br />
-            <br />
-            <Modal
-              trigger={
-                <Button style={{ backgroundColor: "rgb(255,255, 255)", color: "#000000" }}>
-                  Add A Link Label
-                </Button>
-              }
-              closeIcon
-              open={this.state.linkModalOpen}
-              style={{ width: "400px" }}
-              onOpen={this.linkModalOpen}
-              onClose={this.linkCloseIn}>
-              <Modal.Content>
-                <Header>Let's Make a Link Label!</Header>
-                <Form onSubmit={this.linkTitleSumit} style={{ margin: "10px" }}>
-                  <Form.Group widths="equal">
-                    <Input
-                      label="Link Label"
-                      onChange={this.handleLinkTitleChange}
-                      name="linkTitle"
-                      value={this.state.linkTitle}
-                    />
-                  </Form.Group>
-                  <Form.Button>Submit</Form.Button>
-                </Form>
-                <Message hidden={this.state.hideNoLinkTitleWarning} attached="bottom" warning>
-                  <Icon name="warning sign" />Link must contain a Title
-                </Message>
-              </Modal.Content>
-            </Modal>
-          </TrayWidget>
           <div className="diagram-layer">
-            <DiagramWidget className="srd-demo-canvas" diagramEngine={this.props.app.getDiagramEngine()} />
+            <DiagramWidget
+              maxNumberPointsPerLink={0}
+              smartRouting={true}
+              className="srd-demo-canvas"
+              diagramEngine={this.props.app.getDiagramEngine()}
+            />
+            <Toolbar createModel={this.renderModelModal()} createLabel={this.renderLinkModal()} />
           </div>
         </div>
       </div>
     );
+  }
+
+  editExistingNode(formObj) {
+    let node = this.props.app.selectedNode;
+    node.name = this.state.nodeTitle;
+    node.extras.labels = this.state.labels;
+
+    const keys = Object.keys(node.ports);
+
+    for (let i = 0; i < keys.length; i += 2) {
+      const port = node.ports[keys[i]];
+      const newName = formObj[`port${i / 2}`];
+      port.label = newName.value;
+    }
+
+    for (let i = keys.length / 2 - 1; i < this.state.portInputCount; i++) {
+      const portName = "port" + i;
+      if (event.target[portName] && event.target[portName].value !== "") {
+        node.addInPort(event.target[portName].value);
+        node.addOutPort(" ");
+      }
+    }
+
+    this.props.app.serializerToSchema();
+    this.closeModal();
+    this.forceUpdate();
   }
 
   addNodeToCanvas(newPorts) {
@@ -227,14 +358,10 @@ export class BodyWidget extends React.Component {
     } else {
       node = new DefaultNodeModel(this.state.linkTitle, this.state.nodeTestColor);
     }
-    this.setState({
-      nodeTitle: "",
-      nodeColor: "",
-      linkTitle: "",
-      isModalOpen: false,
-      linkModalOpen: false,
-      nodeTestColor: "rgb(255,255, 255)"
-    });
+    node.x = 150;
+    node.y = 150;
+    node.extras.labels = this.state.labels;
+    this.initializeState(false);
     this.props.app.addListenersOnNode(node);
     this.props.app
       .getDiagramEngine()
@@ -244,3 +371,9 @@ export class BodyWidget extends React.Component {
     this.props.app.serializerToSchema();
   }
 }
+
+const mapState = state => {
+  return { labels: state.labels };
+};
+
+export default connect(mapState, null)(BodyWidget);

@@ -149,7 +149,7 @@ class EditIssue extends Component {
       value: label.name
     }));
     return (
-      <List.Item fluid style={{ display: "inline" }}>
+      <List.Item style={{ display: "inline" }}>
         <Modal
           trigger={
             <Button fluid color="teal" onClick={this.openModal} style={{ display: "inline" }}>

@@ -16,30 +16,30 @@ class Home extends React.Component {
         <div id="carousel">
           <div id="carousel-text">
             <h1>Welcome To Pancake</h1>
-            <h3>A project management tool for fullstack development</h3>
+            <h3>Collaborative, full-stack planning and project management</h3>
           </div>
           <img className="carousel-image" src="/images/bg.jpg" />
         </div>
         <div id="all-cards">
           <div className="cards shadow container">
             <Link to={"/mockups"}>
-              <h2 className="card-title">MOCKUPS</h2>
+              <h2 className="card-title">Mockup Designer</h2>
               <div className="card-img" id="kanban-img" />
               <div className="overlay">
                 <div className="div-card-text">
-                  <h2>MOCKUPS</h2>
-                  <p>Mockup several frontend wireframes with different drag and drop components.</p>
+                  <h2>Mockup Designer</h2>
+                  <p>Plan your front-end by dragging and dropping UI components to build wireframe mockups</p>
                 </div>
               </div>
             </Link>
           </div>
           <div className="cards shadow container">
             <Link to={"/schema"}>
-              <h2 className="card-title">SCHEMA DESIGNER</h2>
+              <h2 className="card-title">Schema Designer</h2>
               <div className="card-img" id="schema-img" />
               <div className="overlay">
                 <div className="div-card-text">
-                  <h2>SCHEMA DESIGNER</h2>
+                  <h2>Schema Designer</h2>
                   <p>
                     Outline your backend models, links, and associations using drag and drop tables and
                     labels.
@@ -50,14 +50,14 @@ class Home extends React.Component {
           </div>
           <div className="cards shadow container">
             <Link to={"/board"}>
-              <h2 className="card-title">Kanban Board</h2>
+              <h2 className="card-title">Scrum Board</h2>
               <div className="card-img" id="kanban-img" />
               <div className="overlay">
                 <div className="div-card-text">
-                  <h2>Kanban Board</h2>
+                  <h2>Scrum Board</h2>
                   <p>
-                    Organize all your project's issues by dragging and dropping each issue to their respective
-                    columns.
+                    Organize your project's issues and user stories by dragging and dropping each issue to
+                    their respective columns.
                   </p>
                 </div>
               </div>

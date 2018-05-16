@@ -40,16 +40,10 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", async (req, res) => {
-  try {
-    const project = await Project.findById(req.user.activeProjectId);
-    if (project) {
-      const projectName = project.repository;
-      req.user.dataValues.projectName = projectName;
-    }
-    return res.json(req.user);
-  } catch (error) {
-    console.log("error in auth/me ", error);
-  }
+  if (!req.user) return res.json({});
+  const project = await Project.findById(req.user.activeProjectId);
+  if (project) req.user.dataValues.projectName = project.repository;
+  return res.json(req.user);
 });
 
 router.use("/github", require("./github"));

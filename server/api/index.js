@@ -12,7 +12,6 @@ const authenticateGithub = (req, res, next) => {
     token: req.user.token
   });
   req.octokit = octokit;
-  req.user.activeProjectId = 1;
   next();
 };
 

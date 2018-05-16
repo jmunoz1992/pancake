@@ -14,7 +14,7 @@ const PullRequests = props => {
         }
         style={{ width: "550px" }}>
         <Modal.Content>
-          <h1 style={{ textAlign: "center" }}>All Open Pull Requests</h1>
+          <h1 style={{ textAlign: "center" }}>Open Pull Requests</h1>
           <List>
             {allPullRequests.map(pullRequest => (
               <PullRequestItem key={pullRequest.id} pullRequest={pullRequest} />

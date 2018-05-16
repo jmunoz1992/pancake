@@ -8,6 +8,7 @@ export class Application {
     this.diagramEngine = new SRD.DiagramEngine();
     this.diagramEngine.installDefaultFactories();
     this.activeModel = new SRD.DiagramModel();
+    this.selectedNode = null;
     this.loadDiagram(json);
     this.ports = [];
   }
@@ -20,14 +21,9 @@ export class Application {
 
   deserializer(data) {
     const deserializedData = JSON.parse(data);
-    if (!Object.keys(deserializedData).length) {
-      this.activeModel = new SRD.DiagramModel();
-      this.diagramEngine.setDiagramModel(this.activeModel);
-      return;
-    }
     this.activeModel = new SRD.DiagramModel();
     this.diagramEngine.setDiagramModel(this.activeModel);
-    this.activeModel.deSerializeDiagram(deserializedData, this.diagramEngine);
+    if (Object.keys(deserializedData).length) this.activeModel.deSerializeDiagram(deserializedData, this.diagramEngine);
     const allNodes = this.activeModel.getNodes();
     for (let node in allNodes) {
       if (allNodes.hasOwnProperty(node)) {
@@ -45,16 +41,16 @@ export class Application {
 
   addListenersOnNode(nodeToAdd) {
     nodeToAdd.addListener({
-      selectionChanged: () => {
-        setTimeout(this.serializerToSchema.bind(this), 0);
-        const nodeName = nodeToAdd.name.toLowerCase();
-        const labelObj = {
-          labels: [nodeName]
-        };
-        store.dispatch(setIssueFilter(labelObj));
+      selectionChanged: node => {
+        if (node.isSelected) this.selectedNode = node.entity;
+        else this.selectedNode = null;
+        if (node.entity.extras.labels.length) {
+          store.dispatch(setIssueFilter({ labels: node.entity.extras.labels }));
+        }
       },
       entityRemoved: () => {
         setTimeout(this.serializerToSchema.bind(this), 0);
+        this.selectedNode = null;
       }
     });
   }
