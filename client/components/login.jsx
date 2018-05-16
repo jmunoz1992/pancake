@@ -6,7 +6,6 @@ import { withRouter } from "react-router-dom";
  * COMPONENT
  */
 const Login = props => {
-  console.log(props);
   return (
     <div style={{ margin: "auto", marginTop: "150px", width: "50%", textAlign: "center" }}>
       <img src="/images/Pancake.png" width="auto" height="200px" />

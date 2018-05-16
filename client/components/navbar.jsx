@@ -1,7 +1,7 @@
 import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
-import { logout, fetchPullRequests, me } from "../store";
+import { logout, fetchPullRequests, me, getRepoInfo } from "../store";
 import { Input, Menu, Header, Dropdown, Icon } from "semantic-ui-react";
 import styled from "styled-components";
 import { default as FilterBox } from "./issues/filter-box";
@@ -16,15 +16,20 @@ class Navbar extends React.Component {
   componentDidMount() {
     this.props.loadPullRequests();
     this.props.getUserAndProject();
+    this.props.fetchRepoInfo();
   }
 
   render() {
-    const { doLogout, className, pullRequests, user } = this.props;
+    const { doLogout, className, pullRequests, user, repos } = this.props;
+    let logoPic = "";
+    if (repos.owner) {
+      logoPic = repos.owner.avatar_url;
+    }
     return (
       <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
         <Menu.Item>
           <Dropdown
-            trigger={<img src="/images/logo.png" width="auto" height="28px" />}
+            trigger={<img src={logoPic} width="auto" height="28px" />}
             icon={null}
             pointing="top left">
             <Dropdown.Menu>
@@ -74,7 +79,9 @@ const StyledNavbar = styled(Navbar)`
   }
 `;
 
-const mapState = ({ user, issues, pullRequests }) => ({ user, issues, pullRequests });
+const mapState = ({ user, issues, pullRequests, repos }) => {
+  return { user, issues, pullRequests, repos };
+};
 
 const mapDispatch = dispatch => {
   return {
@@ -86,6 +93,9 @@ const mapDispatch = dispatch => {
     },
     getUserAndProject() {
       dispatch(me());
+    },
+    fetchRepoInfo() {
+      dispatch(getRepoInfo());
     }
   };
 };

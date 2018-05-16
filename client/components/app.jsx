@@ -25,7 +25,6 @@ class App extends Component {
   }
 
   render() {
-    console.log(this.props.showSidebar);
     return (
       <StyledAppWrapper showSidebar={this.props.showSidebar}>
         <Grid style={{ paddingTop: "0px" }}>

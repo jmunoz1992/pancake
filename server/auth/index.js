@@ -46,6 +46,4 @@ router.get("/me", async (req, res) => {
   return res.json(req.user);
 });
 
-router.use("/google", require("./google"));
-
 router.use("/github", require("./github"));

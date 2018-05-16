@@ -69,9 +69,11 @@ class Welcome extends Component {
     const { orgs, repos } = this.state;
     const { user } = this.props;
     let orgOptions = orgs.map(org => ({ key: org.login, text: org.login, value: org.login }));
-    const repoOptions = repos.map(repo => ({ key: repo.name, text: repo.name, value: repo.name }));
-    orgOptions = [{ key: user.username, text: user.username, value: user.username }, ...orgOptions];
-
+    let repoOptions = [];
+    if (orgOptions && repos) {
+      repoOptions = repos.map(repo => ({ key: repo.name, text: repo.name, value: repo.name }));
+      orgOptions = [{ key: user.username, text: user.username, value: user.username }, ...orgOptions];
+    }
     return (
       <Container text>
         <Divider hidden />
@@ -105,7 +107,6 @@ class Welcome extends Component {
 }
 
 const mapState = ({ user }) => {
-  console.log("user in welcome ", user);
   return { user: user.username ? user : { username: "Nothing" } };
 };
 
