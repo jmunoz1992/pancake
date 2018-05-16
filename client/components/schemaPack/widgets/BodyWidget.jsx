@@ -8,6 +8,7 @@ import "rc-color-picker/assets/index.css";
 import ColorPicker from "rc-color-picker";
 import { default as AddLabelPopup } from "../../issues/add-label-tooltip";
 import { connect } from "react-redux";
+import { default as Toolbar } from "./toolbar";
 
 // react-diagram's DiagramWidget calls a "stopFiringAction" function when the user finishes
 // manipulating a diagram element, including after they move an element around.  Because we don't
@@ -29,14 +30,36 @@ class BodyWidget extends React.Component {
       hideNoPortAmountWarning: true,
       hideNoPortsNamedWarning: true,
       portInputCount: 1,
-      labels: []
+      labels: [],
+      editMode: false,
+      existingPorts: []
     };
 
-    const oldFunction = DiagramWidget.prototype.stopFiringAction;
-    const _self = this;
+    // Save DiagramWidget's original, unhooked stopFiringAction if a previous instance of this
+    // class did not already do so
+    if (!DiagramWidget.prototype.originalStopFiringAction) {
+      console.log("Saving original stopFiringAction");
+      DiagramWidget.prototype.originalStopFiringAction = DiagramWidget.prototype.stopFiringAction;
+    }
+
+    // Update stopFiringAction with our hook so we can react to events for which an official event
+    // listener is not provided
+    console.log("Setting stopFiringAction hook");
+
+    // We need access to both BodyWidget's this context and the internal DiagramWidget this context
+    let widgetThis = this;
     DiagramWidget.prototype.stopFiringAction = function(...args) {
-      oldFunction.apply(this, args);
+      DiagramWidget.prototype.originalStopFiringAction.apply(this, args);
       props.app.serializerToSchema();
+      widgetThis.forceUpdate();
+    };
+
+    // Hook onkeyup to stop it from deleting nodes when we're typing
+    if (!DiagramWidget.prototype.originalOnKeyUp) {
+      DiagramWidget.prototype.originalOnKeyUp = DiagramWidget.prototype.onKeyUp;
+    }
+    DiagramWidget.prototype.onKeyUp = function(...args) {
+      if (args[0].target === document.getElementsByTagName("body")[0]) DiagramWidget.prototype.originalOnKeyUp.apply(this, args);
     };
   }
 
@@ -99,6 +122,11 @@ class BodyWidget extends React.Component {
       this.setState({ hideNoTitleWarning: true });
     }
 
+    if (this.state.editMode) {
+      this.editExistingNode(event.target);
+      return;
+    }
+
     const validPorts = [];
     for (let i = 0; i < this.state.portInputCount; i++) {
       const portName = "port" + i;
@@ -117,13 +145,39 @@ class BodyWidget extends React.Component {
   };
 
   openModal = () => {
-    console.log();
-    this.setState({ isModalOpen: true });
+    const selected = this.props.app.selectedNode;
+    this.initializeState(true);
+    if (selected && Object.keys(selected.ports).length) {
+      this.setState({
+        editMode: true,
+        nodeTitle: selected.name,
+        nodeColor: selected.color,
+        portInputCount: Object.keys(selected.ports).length / 2 + 1,
+        labels: selected.extras.labels,
+        existingPorts: Object.values(selected.ports).map(port => port.label)
+      });
+    }
   };
   closeModal = () => this.setState({ isModalOpen: false });
 
   linkModalOpen = () => this.setState({ linkModalOpen: true });
   linkCloseIn = () => this.setState({ linkModalOpen: false });
+
+  initializeState = open => {
+    console.log("Modal: initializeState");
+    this.setState({
+      nodeTitle: "",
+      nodeColor: "",
+      linkTitle: "",
+      isModalOpen: !!open,
+      linkModalOpen: false,
+      nodeTestColor: "rgb(255,255, 255)",
+      portInputCount: 1,
+      labels: [],
+      editMode: false,
+      existingPorts: []
+    });
+  };
 
   renderPortInputs = () => {
     let inputArray = [];
@@ -131,7 +185,13 @@ class BodyWidget extends React.Component {
       inputArray.push(
         <Form.Group key={`portInput-${i}`} widths="equal">
           <Form.Field>
-            <Input fluid label={`Field ${i + 1}`} onChange={this.onPortInputChange} name={`port${i}`} />
+            <Input
+              fluid
+              label={`Field ${i + 1}`}
+              onChange={this.onPortInputChange}
+              name={`port${i}`}
+              defaultValue={this.state.existingPorts[i * 2] ? this.state.existingPorts[i * 2] : ""}
+            />
           </Form.Field>
         </Form.Group>
       );
@@ -141,23 +201,27 @@ class BodyWidget extends React.Component {
 
   renderModelModal() {
     const { isModalOpen } = this.state;
+    const selected = this.props.app.selectedNode && Object.keys(this.props.app.selectedNode.ports).length;
     const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
-
     return (
       <Modal
-        trigger={<Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>Add A Model</Button>}
+        trigger={
+          <Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>
+            {selected ? "Edit Model" : "Create New Model"}
+          </Button>
+        }
         closeIcon
         style={{ width: "400px" }}
         open={isModalOpen}
         onOpen={this.openModal}
         onClose={this.closeModal}>
-        <Header icon="block layout" content="Let's Make A Model!" />
+        <Header icon="block layout" content={this.state.editMode ? "Edit Selected Model" : "Create New Model"} />
         <Modal.Content>
           <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
             <Form.Group widths="equal">
               <Form.Field>
                 <Input
-                  label="Model Title"
+                  label="Model Name"
                   onChange={this.handleNodeTitleChange}
                   name="nodeTitle"
                   value={this.state.nodeTitle}
@@ -167,7 +231,7 @@ class BodyWidget extends React.Component {
             {this.renderPortInputs()}
             <Form.Group>
               <Form.Dropdown
-                label="Labels:"
+                label="GitHub Labels:"
                 placeholder="Labels"
                 fluid
                 multiple
@@ -208,7 +272,7 @@ class BodyWidget extends React.Component {
     return (
       <Modal
         trigger={
-          <Button style={{ backgroundColor: "rgb(255,255, 255)", color: "#000000" }}>Add A Link Label</Button>
+          <Button style={{ backgroundColor: "rgb(255,255, 255)", color: "#000000" }}>Create Label</Button>
         }
         closeIcon
         open={this.state.linkModalOpen}
@@ -216,11 +280,11 @@ class BodyWidget extends React.Component {
         onOpen={this.linkModalOpen}
         onClose={this.linkCloseIn}>
         <Modal.Content>
-          <Header>Let's Make a Link Label!</Header>
+          <Header>Create New Label</Header>
           <Form onSubmit={this.linkTitleSubmit} style={{ margin: "10px" }}>
             <Form.Group widths="equal">
               <Input
-                label="Link Label"
+                label="Label Content"
                 onChange={this.handleLinkTitleChange}
                 name="linkTitle"
                 value={this.state.linkTitle}
@@ -229,7 +293,7 @@ class BodyWidget extends React.Component {
             <Form.Button>Submit</Form.Button>
           </Form>
           <Message hidden={this.state.hideNoLinkTitleWarning} attached="bottom" warning>
-            <Icon name="warning sign" />Link must contain a Title
+            <Icon name="warning sign" />Label must contain a title
           </Message>
         </Modal.Content>
       </Modal>
@@ -243,13 +307,6 @@ class BodyWidget extends React.Component {
     return (
       <div className="body">
         <div className="content">
-          <TrayWidget>
-            <br />
-            {this.renderModelModal()}
-            <br />
-            <br />
-            {this.renderLinkModal()}
-          </TrayWidget>
           <div className="diagram-layer">
             <DiagramWidget
               maxNumberPointsPerLink={0}
@@ -257,10 +314,37 @@ class BodyWidget extends React.Component {
               className="srd-demo-canvas"
               diagramEngine={this.props.app.getDiagramEngine()}
             />
+            <Toolbar createModel={this.renderModelModal()} createLabel={this.renderLinkModal()} />
           </div>
         </div>
       </div>
     );
+  }
+
+  editExistingNode(formObj) {
+    let node = this.props.app.selectedNode;
+    node.name = this.state.nodeTitle;
+    node.extras.labels = this.state.labels;
+
+    const keys = Object.keys(node.ports);
+
+    for (let i = 0; i < keys.length; i += 2) {
+      const port = node.ports[keys[i]];
+      const newName = formObj[`port${i / 2}`];
+      port.label = newName.value;
+    }
+
+    for (let i = keys.length / 2 - 1; i < this.state.portInputCount; i++) {
+      const portName = "port" + i;
+      if (event.target[portName] && event.target[portName].value !== "") {
+        node.addInPort(event.target[portName].value);
+        node.addOutPort(" ");
+      }
+    }
+
+    this.props.app.serializerToSchema();
+    this.closeModal();
+    this.forceUpdate();
   }
 
   addNodeToCanvas(newPorts) {
@@ -274,16 +358,10 @@ class BodyWidget extends React.Component {
     } else {
       node = new DefaultNodeModel(this.state.linkTitle, this.state.nodeTestColor);
     }
+    node.x = 150;
+    node.y = 150;
     node.extras.labels = this.state.labels;
-    this.setState({
-      nodeTitle: "",
-      nodeColor: "",
-      linkTitle: "",
-      isModalOpen: false,
-      linkModalOpen: false,
-      labels: "",
-      nodeTestColor: "rgb(255,255, 255)"
-    });
+    this.initializeState(false);
     this.props.app.addListenersOnNode(node);
     this.props.app
       .getDiagramEngine()

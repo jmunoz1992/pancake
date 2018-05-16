@@ -36,7 +36,7 @@ class AddLabelPopup extends Component {
   render() {
     return (
       <Popup
-        style={{ zIndex: 50 }}
+        style={{ zIndex: 5000 }}
         trigger={
           <Button icon color="green" onClick={event => event.preventDefault()}>
             <Icon name="add" />
