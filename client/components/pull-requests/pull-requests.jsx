@@ -9,7 +9,7 @@ const PullRequests = props => {
       <Modal
         trigger={
           <Button fluid color="blue">
-            See All Open Pull Requests
+            Open Pull Requests
           </Button>
         }
         style={{ width: "550px" }}>
