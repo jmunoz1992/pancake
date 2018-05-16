@@ -16,7 +16,6 @@ class KanbanBoard extends Component {
   }
 
   createIssueCard = issue => {
-    console.log("issue", issue);
     return {
       issue,
       id: String(issue.id),

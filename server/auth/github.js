@@ -13,7 +13,7 @@ const githubCredentials = {
 function verificationCallback(token, refreshToken, profile, done) {
   // github may not provide an email, if so we'll just fake it
   const username = profile.username;
-
+  console.log("profile in verification callback ", profile);
   const info = {
     username,
     token
