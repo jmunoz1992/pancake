@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import axios from "axios";
 import { Button, Container, Divider, Form, Header, Icon } from "semantic-ui-react";
 import { withRouter } from "react-router-dom";
-import store, { me } from "../store";
+import store, { me, getRepoInfo } from "../store";
 
 class Welcome extends Component {
   constructor(props) {
@@ -17,7 +17,6 @@ class Welcome extends Component {
   }
 
   componentDidMount() {
-    this.getUserRepos();
     this.getUserOrganizations();
   }
 
@@ -27,6 +26,7 @@ class Welcome extends Component {
       .then(res => res.data)
       .then(orgs => {
         this.setState({ orgs: orgs.data });
+        this.getUserRepos();
       });
   }
 
@@ -34,9 +34,7 @@ class Welcome extends Component {
     axios
       .get("/api/repos")
       .then(res => res.data)
-      .then(repos => {
-        this.setState({ repos: repos.data });
-      });
+      .then(repos => this.setState({ repos: repos }));
   }
 
   getOrganizationRepos(organization) {
@@ -69,11 +67,10 @@ class Welcome extends Component {
     const { orgs, repos } = this.state;
     const { user } = this.props;
     let orgOptions = orgs.map(org => ({ key: org.login, text: org.login, value: org.login }));
-    let repoOptions = [];
-    if (orgOptions && repos) {
-      repoOptions = repos.map(repo => ({ key: repo.name, text: repo.name, value: repo.name }));
-      orgOptions = [{ key: user.username, text: user.username, value: user.username }, ...orgOptions];
-    }
+    const repoOptions = repos.map(repo => ({ key: repo.name, text: repo.name, value: repo.name }));
+    orgOptions = [{ key: user.username, text: user.username, value: user.username }, ...orgOptions];
+    console.log("org options ", orgOptions);
+    console.log("repo options ", repoOptions);
     return (
       <Container text>
         <Divider hidden />
@@ -106,8 +103,9 @@ class Welcome extends Component {
   }
 }
 
-const mapState = ({ user }) => {
-  return { user: user.username ? user : { username: "Nothing" } };
+const mapState = state => {
+  return {
+    user: state.user.username ? state.user : { username: "Nothing" }
+  };
 };
-
 export default withRouter(connect(mapState, null)(Welcome));

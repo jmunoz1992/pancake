@@ -2,7 +2,7 @@ import React from "react";
 import { withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 import { logout, fetchPullRequests, me, getRepoInfo } from "../store";
-import { Input, Menu, Header, Dropdown, Icon } from "semantic-ui-react";
+import { Input, Menu, Header, Dropdown, Icon, Image } from "semantic-ui-react";
 import styled from "styled-components";
 import { default as FilterBox } from "./issues/filter-box";
 import { PullRequests } from "./pull-requests";
@@ -21,7 +21,7 @@ class Navbar extends React.Component {
 
   render() {
     const { doLogout, className, pullRequests, user, repos } = this.props;
-    let logoPic = "";
+    let logoPic = "/images/logo.png";
     if (repos.owner) {
       logoPic = repos.owner.avatar_url;
     }
@@ -29,7 +29,7 @@ class Navbar extends React.Component {
       <Menu fixed="top" inverted size="huge" borderless fluid className={className}>
         <Menu.Item>
           <Dropdown
-            trigger={<img src={logoPic} width="auto" height="28px" />}
+            trigger={<Image src={logoPic} width="auto" height="28px" avatar />}
             icon={null}
             pointing="top left">
             <Dropdown.Menu>

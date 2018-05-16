@@ -150,8 +150,11 @@ class AddIssue extends Component {
     }));
     return (
       <div>
-        <Button floated="right" onClick={this.openModal}>
-          New Issue
+        <Button
+          floated="right"
+          onClick={this.openModal}
+          style={{ backgroundColor: "#00b5ad", color: "white" }}>
+          Add A New Issue
         </Button>
         <Modal open={this.state.modalOpen}>
           <Modal.Header>New Issue</Modal.Header>
