@@ -15,11 +15,11 @@ const { Project, Mockup, Schema, User } = require("../server/db/models");
 async function seed() {
   await db.sync({ force: true });
   const project = await Project.create({ owner: "PrincessPotatoPancake", repository: "demo" });
-  const user = await User.create({
-    username: "PrincessPotatoPancake",
-    activeProjectId: 1
-  });
-  const mockup = await Mockup.create({ id: 1, name: "My Test Mockup", projectId: 1 });
+  const user = await User.create({ username: "PrincessPotatoPancake" });
+  user.setActiveProject(project);
+  const mockup = Mockup.build({ name: "My Test Mockup" });
+  mockup.setProject(project, { save: false });
+  mockup.save();
   const objToSerialize = {
     id: "7fe33b4d-9470-4f97-b53c-0c2ead0fd180",
     offsetX: 0,
@@ -261,7 +261,9 @@ async function seed() {
     ]
   };
   const stringifiedData = JSON.stringify(objToSerialize);
-  const schema = await Schema.create({ id: 1, properties: stringifiedData, projectId: 1 });
+  const schema = Schema.build({ properties: stringifiedData });
+  schema.setProject(project, { save: false });
+  schema.save();
   console.log("db synced!");
 }
 
