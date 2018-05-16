@@ -8,6 +8,7 @@ export class Application {
     this.diagramEngine = new SRD.DiagramEngine();
     this.diagramEngine.installDefaultFactories();
     this.activeModel = new SRD.DiagramModel();
+    this.selectedNode = null;
     this.loadDiagram(json);
     this.ports = [];
   }
@@ -46,7 +47,9 @@ export class Application {
   addListenersOnNode(nodeToAdd) {
     nodeToAdd.addListener({
       selectionChanged: node => {
-        if (node.entity.extras.labels) {
+        if (node.entity.isSelected) this.setState({ selectedNode: node.entity });
+        else this.setState({ selectedNode: null });
+        if (node.entity.extras.labels.length) {
           console.log(node.entity.extras);
           store.dispatch(setIssueFilter({ labels: node.entity.extras.labels }));
         }

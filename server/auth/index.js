@@ -40,6 +40,7 @@ router.post("/logout", (req, res) => {
 });
 
 router.get("/me", async (req, res) => {
+  if (!req.user) return res.json({});
   const project = await Project.findById(req.user.activeProjectId);
   if (project) req.user.dataValues.projectName = project.repository;
   return res.json(req.user);

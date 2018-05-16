@@ -17,7 +17,7 @@ class BodyWidget extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      nodeTitle: "Default Model Title",
+      nodeTitle: "",
       nodeColor: "rgb(192,255,0)",
       nodePorts: [],
       linkTitle: "",
@@ -85,7 +85,7 @@ class BodyWidget extends React.Component {
     } else {
       this.setState({ hideNoLinkTitleWarning: true });
     }
-    this.closeIn();
+    this.closeModal();
     this.addNodeToCanvas();
   };
 
@@ -108,7 +108,7 @@ class BodyWidget extends React.Component {
     if (validPorts.length === 0) return;
 
     this.setState({ nodePorts: validPorts, open: false });
-    this.closeIn();
+    this.closeModal();
     this.addNodeToCanvas(validPorts);
   };
 
@@ -116,8 +116,11 @@ class BodyWidget extends React.Component {
     this.setState({ labels: target.value });
   };
 
-  isModalOpen = () => this.setState({ isModalOpen: true });
-  closeIn = () => this.setState({ isModalOpen: false, portInputCount: 1 });
+  openModal = () => {
+    console.log();
+    this.setState({ isModalOpen: true });
+  };
+  closeModal = () => this.setState({ isModalOpen: false });
 
   linkModalOpen = () => this.setState({ linkModalOpen: true });
   linkCloseIn = () => this.setState({ linkModalOpen: false });
@@ -136,6 +139,103 @@ class BodyWidget extends React.Component {
     return inputArray;
   };
 
+  renderModelModal() {
+    const { isModalOpen } = this.state;
+    const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
+
+    return (
+      <Modal
+        trigger={<Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>Add A Model</Button>}
+        closeIcon
+        style={{ width: "400px" }}
+        open={isModalOpen}
+        onOpen={this.openModal}
+        onClose={this.closeModal}>
+        <Header icon="block layout" content="Let's Make A Model!" />
+        <Modal.Content>
+          <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
+            <Form.Group widths="equal">
+              <Form.Field>
+                <Input
+                  label="Model Title"
+                  onChange={this.handleNodeTitleChange}
+                  name="nodeTitle"
+                  value={this.state.nodeTitle}
+                />
+              </Form.Field>
+            </Form.Group>
+            {this.renderPortInputs()}
+            <Form.Group>
+              <Form.Dropdown
+                label="Labels:"
+                placeholder="Labels"
+                fluid
+                multiple
+                selection
+                options={options}
+                onChange={this.serializeAndUpdateLabels}
+                value={this.state.labels}
+                width={13}
+              />
+              <Form.Field style={{ paddingTop: "23px" }} width={1}>
+                <AddLabelPopup />
+              </Form.Field>
+            </Form.Group>
+            <Form.Group>
+              <Form.Field>Model Color</Form.Field>
+              <ColorPicker
+                color={this.state.nodeTestColor}
+                onChange={event => this.handleNodeColorChange(event, "inPort")}
+                placement="topLeft"
+                className="some-class">
+                <span className="rc-color-picker-trigger" />
+              </ColorPicker>
+            </Form.Group>
+            <Form.Button>Submit</Form.Button>
+          </Form>
+          <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning>
+            <Icon name="warning sign" />Model must contain a title
+          </Message>
+          <Message hidden={this.state.hideNoPortsNamedWarning} attached="bottom" warning>
+            <Icon name="warning sign" />Must have at least one field.
+          </Message>
+        </Modal.Content>
+      </Modal>
+    );
+  }
+
+  renderLinkModal() {
+    return (
+      <Modal
+        trigger={
+          <Button style={{ backgroundColor: "rgb(255,255, 255)", color: "#000000" }}>Add A Link Label</Button>
+        }
+        closeIcon
+        open={this.state.linkModalOpen}
+        style={{ width: "400px" }}
+        onOpen={this.linkModalOpen}
+        onClose={this.linkCloseIn}>
+        <Modal.Content>
+          <Header>Let's Make a Link Label!</Header>
+          <Form onSubmit={this.linkTitleSubmit} style={{ margin: "10px" }}>
+            <Form.Group widths="equal">
+              <Input
+                label="Link Label"
+                onChange={this.handleLinkTitleChange}
+                name="linkTitle"
+                value={this.state.linkTitle}
+              />
+            </Form.Group>
+            <Form.Button>Submit</Form.Button>
+          </Form>
+          <Message hidden={this.state.hideNoLinkTitleWarning} attached="bottom" warning>
+            <Icon name="warning sign" />Link must contain a Title
+          </Message>
+        </Modal.Content>
+      </Modal>
+    );
+  }
+
   render() {
     const { isModalOpen } = this.state;
     const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
@@ -145,99 +245,10 @@ class BodyWidget extends React.Component {
         <div className="content">
           <TrayWidget>
             <br />
-            <Modal
-              trigger={
-                <Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>Add A Model</Button>
-              }
-              closeIcon
-              style={{ width: "400px" }}
-              open={isModalOpen}
-              onOpen={this.isModalOpen}
-              onClose={this.closeIn}>
-              <Header icon="block layout" content="Let's Make A Model!" />
-              <Modal.Content>
-                <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
-                  <Form.Group widths="equal">
-                    <Form.Field>
-                      <Input
-                        label="Model Title"
-                        onChange={this.handleNodeTitleChange}
-                        name="nodeTitle"
-                        value={this.state.nodeTitle}
-                      />
-                    </Form.Field>
-                  </Form.Group>
-                  {this.renderPortInputs()}
-                  <Form.Group>
-                    <Form.Dropdown
-                      label="Labels:"
-                      placeholder="Labels"
-                      fluid
-                      multiple
-                      selection
-                      options={options}
-                      onChange={this.serializeAndUpdateLabels}
-                      value={this.state.labels}
-                      width={13}
-                    />
-                    <Form.Field style={{ paddingTop: "23px" }} width={1}>
-                      <AddLabelPopup />
-                    </Form.Field>
-                  </Form.Group>
-                  <Form.Group>
-                    <Form.Field>Model Color</Form.Field>
-                    <ColorPicker
-                      color={this.state.nodeTestColor}
-                      onChange={event => this.handleNodeColorChange(event, "inPort")}
-                      placement="topLeft"
-                      className="some-class">
-                      <span className="rc-color-picker-trigger" />
-                    </ColorPicker>
-                  </Form.Group>
-                  <Form.Button>Submit</Form.Button>
-                </Form>
-                <Message hidden={this.state.hideNoTitleWarning} attached="bottom" warning>
-                  <Icon name="warning sign" />Model must contain a Title
-                </Message>
-                <Message hidden={this.state.hideNoPortAmountWarning} attached="bottom" warning>
-                  <Icon name="warning sign" />Must pick a number of fields.
-                </Message>
-                <Message hidden={this.state.hideNoPortsNamedWarning} attached="bottom" warning>
-                  <Icon name="warning sign" />Must have names for all fields.
-                </Message>
-              </Modal.Content>
-            </Modal>
+            {this.renderModelModal()}
             <br />
             <br />
-            <Modal
-              trigger={
-                <Button style={{ backgroundColor: "rgb(255,255, 255)", color: "#000000" }}>
-                  Add A Link Label
-                </Button>
-              }
-              closeIcon
-              open={this.state.linkModalOpen}
-              style={{ width: "400px" }}
-              onOpen={this.linkModalOpen}
-              onClose={this.linkCloseIn}>
-              <Modal.Content>
-                <Header>Let's Make a Link Label!</Header>
-                <Form onSubmit={this.linkTitleSubmit} style={{ margin: "10px" }}>
-                  <Form.Group widths="equal">
-                    <Input
-                      label="Link Label"
-                      onChange={this.handleLinkTitleChange}
-                      name="linkTitle"
-                      value={this.state.linkTitle}
-                    />
-                  </Form.Group>
-                  <Form.Button>Submit</Form.Button>
-                </Form>
-                <Message hidden={this.state.hideNoLinkTitleWarning} attached="bottom" warning>
-                  <Icon name="warning sign" />Link must contain a Title
-                </Message>
-              </Modal.Content>
-            </Modal>
+            {this.renderLinkModal()}
           </TrayWidget>
           <div className="diagram-layer">
             <DiagramWidget
