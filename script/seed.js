@@ -19,7 +19,7 @@ async function seed() {
   user.setActiveProject(project);
   const mockup = Mockup.build({ name: "My Test Mockup" });
   mockup.setProject(project, { save: false });
-  mockup.save();
+  await mockup.save();
   const objToSerialize = {
     id: "7fe33b4d-9470-4f97-b53c-0c2ead0fd180",
     offsetX: 0,
@@ -263,7 +263,7 @@ async function seed() {
   const stringifiedData = JSON.stringify(objToSerialize);
   const schema = Schema.build({ properties: stringifiedData });
   schema.setProject(project, { save: false });
-  schema.save();
+  await schema.save();
   console.log("db synced!");
 }
 
