@@ -293,6 +293,7 @@ class BodyWidget extends React.Component {
                 onChange={this.handleLinkTitleChange}
                 name="linkTitle"
                 value={this.state.linkTitle}
+                style={{ width: "250px" }}
               />
             </Form.Group>
             <Form.Button>Submit</Form.Button>
