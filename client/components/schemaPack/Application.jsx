@@ -142,7 +142,7 @@ export class Application {
       }
     }
     this.cleanupDeserializedLinks(linksVisited);
-  }``
+  }
 
   cleanupDeserializedLinks(linksVisited) {
     const activeModelLinks = this.activeModel.getLinks();
