@@ -11,22 +11,28 @@ class Schema extends React.Component {
     this.state = {
       diagramJson: ""
     };
+    this.widgetRef = React.createRef();
   }
 
   componentDidMount() {
     connectToSession(newJson => {
       this.setState({ diagramJson: newJson });
-      console.log("connectToSession", newJson, this.app);
       if (!this.app) {
-        this.app = new Application(newJson);
+        this.app = new Application();
       }
-      this.app.deserializer(newJson);
+      this.app.deserializeSchema(newJson);
+
+      // This is awful but necessary to cause the diagram to visually update when someone else makes
+      // a change to it.
+      const bodyWidget = this.widgetRef.current;
+      const stormWidget = bodyWidget && bodyWidget.wrappedInstance.stormRef.current;
+      if (stormWidget) stormWidget.forceUpdate();
       this.forceUpdate();
     });
   }
 
   render() {
-    if (this.app) return <BodyWidget app={this.app} />;
+    if (this.app) return <BodyWidget ref={this.widgetRef} app={this.app} />;
     return <div>Loading...</div>;
   }
 }

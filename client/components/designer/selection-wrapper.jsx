@@ -8,7 +8,7 @@ import { ElementComponentWrapper } from "./element-wrapper";
 class SelectionWrapper extends Component {
   constructor(props) {
     super(props);
-    this.state = { tempSizeDelta: null };
+    this.state = { tempSizeDelta: null, isUserInteracting: false };
     this.rnd = React.createRef();
   }
 
@@ -30,6 +30,11 @@ class SelectionWrapper extends Component {
     }
     if (newProps.ctrlDown) this.style.display = "none";
     else delete this.style.display;
+
+    // If the user is interacting with the element (moving or resizing) ignore incoming prop changes
+    // to avoid interrupting them
+    if (this.state.isUserInteracting) return;
+
     if (this.props.offset !== newProps.offset || this.props.elements !== newProps.elements) {
       this.rnd.current.updatePosition({
         x: newProps.bounds.left + newProps.offset.x,
@@ -56,6 +61,7 @@ class SelectionWrapper extends Component {
       x: this.props.bounds.left + this.props.offset.x - deltaX,
       y: this.props.bounds.top + this.props.offset.y - deltaY
     });
+    this.setState({ isUserInteracting: false });
     this.props.doMoveElement(deltaX, deltaY);
   };
 
@@ -66,8 +72,12 @@ class SelectionWrapper extends Component {
   onResizeStop = (event, handleName, element, sizeDelta, coords) => {
     const width = this.props.elements[0].width + sizeDelta.width;
     const height = this.props.elements[0].height + sizeDelta.height;
-    this.setState({ tempSizeDelta: null });
+    this.setState({ tempSizeDelta: null, isUserInteracting: false });
     this.props.doResizeElement(height, width, coords.x - this.props.offset.x, coords.y - this.props.offset.y);
+  };
+
+  onInteractionStart = _ => {
+    this.setState({ isUserInteracting: true });
   };
 
   renderSingleElement() {
@@ -100,8 +110,10 @@ class SelectionWrapper extends Component {
           topLeft: "resize-handle-fix",
           topRight: "resize-handle-fix"
         }}
+        onResizeStart={this.onInteractionStart}
         onResize={this.onResize}
         onResizeStop={this.onResizeStop}
+        onDragStart={this.onInteractionStart}
         onDragStop={this.onDragStop}>
         {this.renderElementWrapper(this.props.elements[0])}
       </Rnd>
@@ -128,6 +140,7 @@ class SelectionWrapper extends Component {
         bounds={"parent"}
         dragGrid={[5, 5]}
         enableResizing={false}
+        onDragStart={this.onInteractionStart}
         onDragStop={this.onDragStop}>
         {this.props.elements.map(element => this.renderElementWrapper(element))}
       </Rnd>

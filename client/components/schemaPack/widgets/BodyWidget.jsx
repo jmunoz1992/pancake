@@ -35,22 +35,21 @@ class BodyWidget extends React.Component {
       existingPorts: []
     };
 
+    this.stormRef = React.createRef();
+
     // Save DiagramWidget's original, unhooked stopFiringAction if a previous instance of this
     // class did not already do so
     if (!DiagramWidget.prototype.originalStopFiringAction) {
-      console.log("Saving original stopFiringAction");
       DiagramWidget.prototype.originalStopFiringAction = DiagramWidget.prototype.stopFiringAction;
     }
 
     // Update stopFiringAction with our hook so we can react to events for which an official event
     // listener is not provided
-    console.log("Setting stopFiringAction hook");
-
     // We need access to both BodyWidget's this context and the internal DiagramWidget this context
     let widgetThis = this;
     DiagramWidget.prototype.stopFiringAction = function(...args) {
       DiagramWidget.prototype.originalStopFiringAction.apply(this, args);
-      props.app.serializerToSchema();
+      props.app.serializeSchema();
       widgetThis.forceUpdate();
     };
 
@@ -59,7 +58,10 @@ class BodyWidget extends React.Component {
       DiagramWidget.prototype.originalOnKeyUp = DiagramWidget.prototype.onKeyUp;
     }
     DiagramWidget.prototype.onKeyUp = function(...args) {
-      if (args[0].target === document.getElementsByTagName("body")[0]) DiagramWidget.prototype.originalOnKeyUp.apply(this, args);
+      if (args[0].target === document.getElementsByTagName("body")[0]) {
+        DiagramWidget.prototype.originalOnKeyUp.apply(this, args);
+        props.app.serializeSchema();
+      }
     };
   }
 
@@ -145,7 +147,7 @@ class BodyWidget extends React.Component {
   };
 
   openModal = () => {
-    const selected = this.props.app.selectedNode;
+    const selected = this.props.app.activeModel.getNode(this.props.app.selectedNode);
     this.initializeState(true);
     if (selected && Object.keys(selected.ports).length) {
       this.setState({
@@ -164,7 +166,6 @@ class BodyWidget extends React.Component {
   linkCloseIn = () => this.setState({ linkModalOpen: false });
 
   initializeState = open => {
-    console.log("Modal: initializeState");
     this.setState({
       nodeTitle: "",
       nodeColor: "",
@@ -201,13 +202,14 @@ class BodyWidget extends React.Component {
 
   renderModelModal() {
     const { isModalOpen } = this.state;
-    const selected = this.props.app.selectedNode && Object.keys(this.props.app.selectedNode.ports).length;
+    const selectedItem = this.props.app.activeModel.getNode(this.props.app.selectedNode);
+    const isSelected = selectedItem && Object.keys(selectedItem.ports).length;
     const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
     return (
       <Modal
         trigger={
           <Button style={{ backgroundColor: "rgb(192,255,0)", color: "#000000" }}>
-            {selected ? "Edit Model" : "Create New Model"}
+            {isSelected ? "Edit Model" : "Create New Model"}
           </Button>
         }
         closeIcon
@@ -215,7 +217,10 @@ class BodyWidget extends React.Component {
         open={isModalOpen}
         onOpen={this.openModal}
         onClose={this.closeModal}>
-        <Header icon="block layout" content={this.state.editMode ? "Edit Selected Model" : "Create New Model"} />
+        <Header
+          icon="block layout"
+          content={this.state.editMode ? "Edit Selected Model" : "Create New Model"}
+        />
         <Modal.Content>
           <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
             <Form.Group widths="equal">
@@ -303,14 +308,13 @@ class BodyWidget extends React.Component {
   render() {
     const { isModalOpen } = this.state;
     const options = this.props.labels.map(label => ({ key: label.id, text: label.name, value: label.name }));
-
     return (
       <div className="body">
         <div className="content">
           <div className="diagram-layer">
             <DiagramWidget
+              ref={this.stormRef}
               maxNumberPointsPerLink={0}
-              smartRouting={true}
               className="srd-demo-canvas"
               diagramEngine={this.props.app.getDiagramEngine()}
             />
@@ -322,27 +326,24 @@ class BodyWidget extends React.Component {
   }
 
   editExistingNode(formObj) {
-    let node = this.props.app.selectedNode;
+    let node = this.props.app.activeModel.getNode(this.props.app.selectedNode);
     node.name = this.state.nodeTitle;
     node.extras.labels = this.state.labels;
 
     const keys = Object.keys(node.ports);
 
-    for (let i = 0; i < keys.length; i += 2) {
-      const port = node.ports[keys[i]];
-      const newName = formObj[`port${i / 2}`];
-      port.label = newName.value;
-    }
-
-    for (let i = keys.length / 2 - 1; i < this.state.portInputCount; i++) {
-      const portName = "port" + i;
-      if (event.target[portName] && event.target[portName].value !== "") {
-        node.addInPort(event.target[portName].value);
+    for (let i = 0; i < this.state.portInputCount; i++) {
+      const existingPort = node.ports[keys[i * 2]];
+      const portInputValue = formObj[`port${i}`] && formObj[`port${i}`].value;
+      if (existingPort) {
+        existingPort.label = portInputValue;
+      } else if (portInputValue) {
+        node.addInPort(portInputValue);
         node.addOutPort(" ");
       }
     }
 
-    this.props.app.serializerToSchema();
+    this.props.app.serializeSchema();
     this.closeModal();
     this.forceUpdate();
   }
@@ -368,7 +369,7 @@ class BodyWidget extends React.Component {
       .getDiagramModel()
       .addNode(node);
     this.forceUpdate();
-    this.props.app.serializerToSchema();
+    this.props.app.serializeSchema();
   }
 }
 
@@ -376,4 +377,4 @@ const mapState = state => {
   return { labels: state.labels };
 };
 
-export default connect(mapState, null)(BodyWidget);
+export default connect(mapState, null, null, { withRef: true })(BodyWidget);
