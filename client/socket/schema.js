@@ -9,25 +9,25 @@ const schemaSocket = io(`${window.location.origin}/schema`, {
 
 export const connectToSession = callback => {
   if (!schemaSocket.connected) schemaSocket.connect();
-  console.log("sending join-session");
+  console.log("Joining schema session...");
   const projectId = store.getState().user.activeProjectId;
   schemaSocket.emit("join-session", projectId);
   schemaSocket.callback = callback;
 };
 
 export const sendSchemaUpdate = json => {
-  console.log("sendSchemaUpdate");
   if (!schemaSocket.connected) throw new Error("Not connected to schema socket.");
+  console.log("Sending schema update to server.");
   schemaSocket.emit("dispatch-schema", json);
 };
 
 schemaSocket.on("load-initial-state", state => {
-  console.log("onLoadInitialState", state);
+  console.log("Joined schema session.");
   schemaSocket.callback(state);
 });
 
 schemaSocket.on("notify-client-schema", json => {
-  console.log("notifyClientSchema");
+  console.log("Received schema update from server.");
   schemaSocket.callback(json);
 });
 
