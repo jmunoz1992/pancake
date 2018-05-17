@@ -215,7 +215,10 @@ class BodyWidget extends React.Component {
         open={isModalOpen}
         onOpen={this.openModal}
         onClose={this.closeModal}>
-        <Header icon="block layout" content={this.state.editMode ? "Edit Selected Model" : "Create New Model"} />
+        <Header
+          icon="block layout"
+          content={this.state.editMode ? "Edit Selected Model" : "Create New Model"}
+        />
         <Modal.Content>
           <Form onSubmit={this.nodePortsSubmit} style={{ margin: "10px" }}>
             <Form.Group widths="equal">
@@ -288,6 +291,7 @@ class BodyWidget extends React.Component {
                 onChange={this.handleLinkTitleChange}
                 name="linkTitle"
                 value={this.state.linkTitle}
+                style={{ width: "250px" }}
               />
             </Form.Group>
             <Form.Button>Submit</Form.Button>

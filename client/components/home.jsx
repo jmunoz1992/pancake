@@ -24,7 +24,7 @@ class Home extends React.Component {
           <div className="cards shadow container">
             <Link to={"/mockups"}>
               <h2 className="card-title">Mockup Designer</h2>
-              <div className="card-img" id="kanban-img" />
+              <div className="card-img" id="mockup-img" />
               <div className="overlay">
                 <div className="div-card-text">
                   <h2>Mockup Designer</h2>
